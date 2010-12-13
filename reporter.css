@@ -1,0 +1,47 @@
+/*
+<application>JAVASCRIPT ASSERTION UNIT</application>
+<version>1.1</version>
+<author>D. Fournier</author>
+<e-mail>zenon48@users.sourceforge.net</e-mail>
+<copyright>2002 ID EST</copyright>
+<license>GPL</license>
+<filename>reporter.css</filename>
+<documentation></documentation>
+*/
+body
+	{background-color:#505070; color:#d0e0f0; font-family:Verdana, sans-serif; font-weight:300;}
+div.title
+	{background-color:#303050; color:#8080a0; font-size:16px; line-height:32px; font-weight:900; text-align:center}
+div.stamp
+	{position:relative; top:20px; margin-right:5px; font-size:10px; line-height:16px; text-align:right;}
+div.source
+	{margin-top:2px; padding:2px; border-color:#d0e0f0; border-style:solid; border-width:1px; font-size:10px; line-height:14px;}
+div.stat
+	{background-color:#505070;}
+div.failure,
+div.warn
+	{margin-left:10px; font-size:11px; line-height:14px;}
+div.failure
+	{background-color:#707090; color:#000020;}
+div.warn
+	{background-color:#0040f0;}
+
+span.checked,
+span.failed
+	{margin-left:10px; margin-right:20px; color:#d0e0f0;}
+span.checked
+	{background-color:#0040f0;}
+span.failed
+	{background-color:#ff3000;}
+span.expected,
+span.found
+	{margin-right:5px; background-color:#505070; color:#d0e0f0; border-style:solid; border-width:1px;}
+span.expected
+	{border-color:#00ff30;}
+span.found
+	{border-color:#ff3000;}
+span.comment
+	{margin-left:10px; color:#d0e0f0;}
+span.warn
+	{background-color:#505070;  color:#d0e0f0; font-weight:500;}
+
