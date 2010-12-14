@@ -619,7 +619,7 @@ Edit these variables to reflect your configuration needs
 ################################
 */
 var
-/*static final string*/	REPORTER_URL = 'reporter.html',				//put an absolute path if you prefer
+/*static final string*/	REPORTER_URL = 'assert/reporter.html',				//put an absolute path if you prefer
 /*static final int*/	REPORTER_WIDTH = 700, REPORTER_HEIGHT = 400,	//reporter window dimensions
 						REPORTER_LEFT = 100, REPORTER_TOP = 0;			//reporter window screen position
 

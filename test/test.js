@@ -50,14 +50,9 @@ B = Class({
 });
 
 a = A.new();
-/*for(i in A) {
-	alert(i);
-}*/
 b = B.new();
 
-
-
-Assert.isFalse(typeof a.foo == 'undefined');
+Assert.isTrue(typeof a.foo == 'undefined');
 Assert.isFalse(typeof b.foo == 'undefined');
 Assert.isTrue(b.foo == null);
 Assert.isTrue(typeof a.bar == 'undefined');
