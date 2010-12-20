@@ -8,7 +8,7 @@ class-side methods.
 CLASS CREATION
 ==============
 
-Foo = Class() {
+Foo = Class({
 	superClass: Bar,
 
 	instanceVariables: ['a', 'b', 'c'],
@@ -27,7 +27,7 @@ Foo = Class() {
 			return 'Foo';
 		}
 	}
-}
+});
 
 inst = Foo.new()
 
