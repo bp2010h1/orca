@@ -3,8 +3,6 @@
 A = Class({
 	instanceVariables: ['foo'],
 	instanceMethods: {
-		initialize: function() {
-		},
 		testMethod: function() {
 		},
 		setTest: function(num) {
@@ -52,7 +50,9 @@ B = Class({
 a = A.new();
 b = B.new();
 
-Assert.isTrue(typeof a.foo == 'undefined');
+// testing
+Assert.isTrue(typeof a.initialize == 'function');
+Assert.isFalse(typeof a.foo == 'undefined');
 Assert.isFalse(typeof b.foo == 'undefined');
 Assert.isTrue(b.foo == null);
 Assert.isTrue(typeof a.bar == 'undefined');

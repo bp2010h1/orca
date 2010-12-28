@@ -37,6 +37,9 @@ Class = function(attributes)
 	
 	// initialize method is called after instanciation
 	newClass.prototype.$objectPrototype = function() { this.initialize(); };
+	
+	// default constructor
+	newClass.prototype.$objectPrototype.prototype.initialize = function() { };
 
 	newClass.prototype.new = function() {
 		// create new instance of our class
