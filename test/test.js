@@ -1,3 +1,23 @@
+/*
+ * This file is part of the squeakyJS project.
+ *
+ * Copyright (C) 2010, Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 // setup
 
 A = Class({
@@ -30,16 +50,16 @@ B = Class({
 			return num; 
 		},
 		setTest: function(num) {
-			return this.$super('setTest', [num]);
+			return this._super('setTest', [num]);
 		},
 		lastName: function() {
-			return this.class.lastName();
+			return this._class.lastName();
 		}
 	},
 	classVariables: ['size'],
 	classMethods: {
 		myAge: function() {
-			return this.$super('myAge', []);
+			return this._super('myAge', []);
 		},
 		lastName: function() {
 			return 'Skywalker';
@@ -47,8 +67,8 @@ B = Class({
 	}
 });
 
-a = A.new();
-b = B.new();
+a = A._new();
+b = B._new();
 
 // testing
 Assert.isTrue(typeof a.initialize == 'function');
@@ -60,7 +80,7 @@ Assert.isTrue(typeof a.initialize == 'function');
 Assert.isTrue(typeof b.testMethod == 'function');
 Assert.isTrue(typeof b.testMethod2 == 'function');
 Assert.isTrue(b.testMethod2(1337) == 1337);
-Assert.isTrue(typeof A.new == 'function');
+Assert.isTrue(typeof A._new == 'function');
 Assert.isTrue(typeof A.firstName == 'function');
 Assert.isTrue(A.firstName() == 'Chuck');
 Assert.isTrue(A.lastName() == 'Norris');
