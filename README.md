@@ -1,12 +1,12 @@
 # squeakyJS
 
-### INTRODUCTION
+## INTRODUCTION
 
 This is a Squeak like implementation of the class system in JavaScript.
 It supports inheritance of classes, access to superclass methods and
 class-side methods.
 
-### GETTING STARTED
+## GETTING STARTED
 
 	Foo = Class({
 		superClass: Bar,
@@ -35,7 +35,7 @@ class-side methods.
 Every parameter is optional. To get more familiar, please try out
 the examples.
 
-### CONTACT
+## CONTACT
 
 For further questions feel free to contact me under
-robert.strobl@gloriabyte.de
+robert.strobl _at_ gloriabyte.de
