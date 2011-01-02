@@ -14,6 +14,7 @@ class-side methods.
 		instanceVariables: ['a', 'b', 'c'],
 
 		instanceMethods: {
+			// initalize method is called after instanciation
 			initialize: function() {
 				alert('foobar');
 			},
@@ -24,6 +25,9 @@ class-side methods.
 
 		classMethods: {
 			name: function() {
+				this._block(function() { return "This is a non local return"; });
+				
+				// this part should never be executed
 				return 'Foo';
 			}
 		}
