@@ -39,6 +39,11 @@ A = Class({
 		},		
 		lastName: function() {
 			return 'Norris';
+		},
+		married: function() {
+			// for non-local return testing
+			block(function() { return true; });
+			return false;
 		}
 	}
 });
@@ -100,3 +105,5 @@ B.age = 100;
 Assert.isTrue(B.myAge() == 100);
 Assert.isTrue(b.lastName() == B.lastName());
 
+// test non-local return
+Assert.isTrue(A.married() == true);

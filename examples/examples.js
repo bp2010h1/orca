@@ -44,7 +44,7 @@ Pirate = Class({
 	},
 	classMethods: {
 		noise: function() {
-			this._block(function() { return "The non-local return \'Arrrrr\'"; });
+			block(function() { return "The non-local return \'Arrrrr\'"; });
 			return 'Arrrrrr!!!';
 		}
 	}
