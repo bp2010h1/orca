@@ -67,7 +67,9 @@ Class = function(attributes)
 		
 		// ability to call superclass methods in the context of the current object
 		newClass.prototype.$objectPrototype.prototype._super = function(method, args) {
-			return this.$superClass.$objectPrototype.prototype[method].apply(this, args);
+			// super calls methods without invoker for avoiding infinite recursion because
+			// just the invoker comes from the superclass, the invoked method comes from the current class
+			return this.$superClass.$objectPrototype.prototype['_' + method].apply(this, args);
 		};
 	}
 
@@ -81,7 +83,11 @@ Class = function(attributes)
 	if('instanceMethods' in attributes) {
 		// extent by new instance methods
 		for(method in attributes['instanceMethods']) {
-			newClass.prototype.$objectPrototype.prototype[method] = attributes['instanceMethods'][method];		
+			newClass.prototype.$objectPrototype.prototype['_' + method] = attributes['instanceMethods'][method];
+			newClass.prototype.$objectPrototype.prototype[method] = function() {
+				return this[arguments.callee.methodToCall].apply(this, arguments);
+			}		
+			newClass.prototype.$objectPrototype.prototype[method].methodToCall = '_' + method;
 		}
 	}
 	
