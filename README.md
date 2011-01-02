@@ -25,7 +25,7 @@ class-side methods.
 
 		classMethods: {
 			name: function() {
-				this._block(function() { return "This is a non local return"; });
+				block(function() { return "This is a non local return"; });
 				
 				// this part should never be executed
 				return 'Foo';

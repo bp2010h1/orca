@@ -68,6 +68,10 @@ B = Class({
 		},
 		lastName: function() {
 			return 'Skywalker';
+		},
+		married: function() {
+			// for non-local return testing
+			return this._super('married', []);
 		}
 	}
 });

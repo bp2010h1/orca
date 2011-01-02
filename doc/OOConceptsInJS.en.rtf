@@ -1,0 +1,142 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Monaco;}
+{\colortbl;\red255\green255\blue255;\red88\green85\blue88;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww18040\viewh11960\viewkind1
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\fs34 \cf0 Implementation of Object-oriented Concepts in JavaScript
+\fs24 \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\fs28 \cf0 Introduction
+\fs24 \
+\
+JavaScript is an object-oriented language with no support for classes and other concepts you may be familiar with. JavaScript supports OOP on its own way - with 
+\i prototypes
+\i0 . 
+\i Prototypes
+\i0  come with the benefits that they are compact and flexible. You can use them to implement other object-oriented concepts easily.\
+\
+
+\fs28 Note
+\fs24 \
+\
+In this paper I will use words from the OOP vocabulary like classes, methods or attributes in a JavaScript context. Those things have actually nothing to do with JavaScript. I just want to try to avoid expressions like "the class-like object" for not to confuse you.\
+\
+
+\fs28 Classes and Instanciation
+\fs24 \
+\
+Functions in JavaScript are nothing less than objects. That means that variables can be functions which can be applied later in a context of your choice. With 
+\i new
+\i0  you can instantiate objects from a function. In this case the function will be called with the context of the new object.\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	SimpleClass = function() \{\
+		this.foo = "bar";\
+	\}\
+\
+	anObject = new SimpleClass();\
+	alert(anObject.foo);\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0 \cf0 \
+In this example an object is instantiated from the class SimpleClass and foo is set to "bar". So we can use functions for defining sth. like a class. The function itself can be used as a constructor for new objects.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\fs30 \cf0 Inheritance
+\fs24 \
+\
+For implementing inheritance we can make use of the JavaScript native 
+\i prototype
+\i0  concept. Every object has a 
+\i prototype
+\i0 . Child objects from this prototype are copied to every object that is instantiated from the parent object and on instantiation. \
+\
+For inheritance we can set the 
+\i prototype
+\i0  of our child-class to an instance of the parent class. This way every child instances will have the same structure like the parent instances. We can also add and overload parent objects by explicitely defining new objects in the prototype.\
+\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	SimpleClass = function() \{ \}\
+	SimpleClass.prototype.foo = function() \{ alert("bar") \};\
+\
+	SecondClass = function() \{ \}\
+	SecondClass.prototype = new SimpleClass();\
+\
+	anObject = new SecondClass();\
+	anObject.foo();\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\fs30 \cf0 Overloading and access to parent methods - 
+\i super
+\i0\fs24 \
+\
+The next problem is the access to methods from super classes (parent classes) in case you have overloaded them in you inherited class. In Squeak you would simply do sth. like this:\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	add: aNumber to: aSecondNumber\
+		super add: aNumber to: aSecondNumber.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0 \cf0 If we want to overload a method from our inherited methods we don't know which class the prototype object was instantiated from. Therefore we have to save a reference to the superclass to the new class.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	SimpleClass = function() \{ \}\
+	SimpleClass.prototype.foo = function() \{ alert("bar") \};\
+\
+	SecondClass = function() \{ \}\
+	SecondClass.prototype = new SimpleClass();\
+	SecondClass.prototype.superClass = SimpleClass;\
+	SecondClass.prototype.foo = function() \{ alert("nu bar"); \}\
+\
+	anObject = new SecondClass();\
+	anObject.foo();\
+	anObject.superClass.prototype.foo.apply(this);\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0 \cf0 When we access the super classes method by the prototype it is very important that the invoked method will run in the context of the current instance. Otherwise the method won't use the attributes from our instance or call other methods as super methods.\
+\
+JavaScript comes with a very nice solution for this problem - the 
+\i apply
+\i0  function, which is part of every function. You just call the apply method with a pointer to the context as the first parameter and an array of arguments as an optional second parameter.\
+\
+\
+With this knowledge we can write a method called 
+\i super
+\i0  which should be implemented to every class.\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	Object.prototype.super = function(method, args) \{ \
+		this.superClass.prototype[method].apply(this);\
+	\}\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0 \cf0 The method can be called like this:\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 	anObject.super('foo');\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0 \cf0 and even with parameters:\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f1 \cf2 \
+	anObject.super('add', [1,5]);\
+}
