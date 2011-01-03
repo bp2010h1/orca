@@ -39,6 +39,16 @@ class-side methods.
 Every parameter is optional. To get more familiar, please try out
 the examples.
 
+## RESERVED METHODS
+
+# Class side
+- _new
+
+# Instance side
+- _class
+- _className
+- _block
+
 ## CONTACT
 
 For further questions feel free to contact me under

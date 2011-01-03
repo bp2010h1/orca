@@ -18,37 +18,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-NonLocalReturnException = function(retVal) {
-	var value = retVal;
-
-	this.setReturnValue = function(retVal) { value = retVal; };
-	this.getReturnValue = function(retVal) { return value; };
-}
-
-block = function(func) {
-	var retVal = func();
-
-	if(retVal != undefined)
-		throw new NonLocalReturnException(retVal);
+nonLocalReturn = function(v) {
+	arguments.callee.caller.nonLocalReturnValue = v;
+	throw arguments.callee.caller;
 }
 
 // hide real method behind a wrapper methods which catches exceptions
 Function.prototype._createMethod = function(name, method) {
-	
+
 	// this is a wrapper for method invocation
 	this.prototype[name] = function() {
 		try {
-			return arguments.callee.methodToCall.apply(this, arguments);
+			return method.apply(this, arguments);
 		}
 		catch(e) {
-			if(e instanceof NonLocalReturnException)
-				return e.getReturnValue();
+			if(e == method)
+				return e.nonLocalReturnValue;
 			else
 				throw e;
 		}
 	}
-	
-	this.prototype[name].methodToCall = method;
 }
 
 Class = function(attrs) {
@@ -93,7 +82,7 @@ Class = function(attrs) {
 		// create new instance of our class
 		return new this._objectPrototype();
 	}
-	
+		
 	if('superClass' in attrs) {
 		// inherit methods and attrs from superclass
 		newClass.prototype._objectPrototype.prototype = attrs['superClass']._new();
@@ -126,3 +115,39 @@ Class = function(attrs) {
 	
 	return newClass.prototype._objectPrototype.prototype._class;
 };
+
+BlockClosure = Class({
+	instanceMethods: {
+		value: function() {
+			return this.$func.apply(this, arguments);
+		}
+	}
+});
+
+
+block = function(func) {
+	b = BlockClosure._new();
+	b.$creationContext = arguments.callee.caller;
+	
+	b.$func = function() {
+		try {
+			ret = func.apply(this, arguments);
+			if (ret.$creationContext == func) {
+				ret.$creationContext = this.$creationContext;
+			}
+			return ret;
+		}
+		catch(e) {
+			if(e == func) {
+				this.$creationContext.nonLocalReturnValue = e.nonLocalReturnValue;
+				throw this.$creationContext;
+			} 
+			else {
+				throw e;
+			}
+		}
+	}
+	b.$func.$creationContext = arguments.callee.caller;
+	
+	return b;
+}

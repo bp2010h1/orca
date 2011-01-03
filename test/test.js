@@ -42,7 +42,8 @@ A = Class({
 		},
 		married: function() {
 			// for non-local return testing
-			block(function() { return true; });
+			b = this._block(function() { return true; });
+			b.value();
 			return false;
 		}
 	}
