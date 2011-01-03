@@ -34,12 +34,11 @@ block = function(func) {
 
 // hide real method behind a wrapper methods which catches exceptions
 Function.prototype._createMethod = function(name, method) {
-	this.prototype['_' + name] = method;
-
+	
 	// this is a wrapper for method invocation
 	this.prototype[name] = function() {
 		try {
-			return this[arguments.callee.methodToCall].apply(this, arguments);
+			return arguments.callee.methodToCall.apply(this, arguments);
 		}
 		catch(e) {
 			if(e instanceof NonLocalReturnException)
@@ -49,7 +48,7 @@ Function.prototype._createMethod = function(name, method) {
 		}
 	}
 	
-	this.prototype[name].methodToCall = '_' + name;
+	this.prototype[name].methodToCall = method;
 }
 
 Class = function(attrs) {
@@ -65,7 +64,7 @@ Class = function(attrs) {
 		newClass.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
 			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return this._superClass['_' + method].apply(this, args);
+			return this._superClass[method].apply(this, args);
 		};
 	}
 
@@ -104,7 +103,7 @@ Class = function(attrs) {
 		newClass.prototype._objectPrototype.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
 			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return this._superClass._objectPrototype.prototype['_' + method].apply(this, args);
+			return this._superClass._objectPrototype.prototype[method].apply(this, args);
 		};
 	}
 

@@ -111,3 +111,4 @@ Assert.isTrue(b.lastName() == B.lastName());
 
 // test non-local return
 Assert.isTrue(A.married() == true);
+Assert.isTrue(B.married() == true);
