@@ -53,11 +53,10 @@ Class = function(attrs) {
 			newClass.prototype[attr] = attrs['superClass'][attr];
 		}
 		
-		newClass.prototype._superClass = attrs['superClass'];
 		newClass.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
 			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return this._superClass[method].apply(this, args);
+			return attrs['superClass'][method].apply(this, args);
 		};
 	}
 
@@ -86,20 +85,21 @@ Class = function(attrs) {
 		
 	if('superClass' in attrs) {
 		// inherit methods and attrs from superclass
+
 		if(attrs['superClass']._objectPrototype != undefined) {
-      for(attr in attrs['superClass']._objectPrototype.prototype) {
-        newClass.prototype._objectPrototype.prototype[attr] = attrs['superClass']._objectPrototype.prototype[attr];
-      }
-      // newClass.prototype._objectPrototype.prototype = attrs['superClass']._new();
-  		newClass.prototype._objectPrototype.prototype._superClass = attrs['superClass'];
+			for(attr in attrs['superClass']._objectPrototype.prototype) {
+				newClass.prototype._objectPrototype.prototype[attr] = attrs['superClass']._objectPrototype.prototype[attr];
+			}
+
+			newClass.prototype._objectPrototype.prototype._superClass = attrs['superClass'];
 		
-  		// ability to call superclass methods in the context of the current object
-  		newClass.prototype._objectPrototype.prototype._super = function(method, args) {
-  			// super calls methods without invoker for avoiding infinite recursion because
-  			// just the invoker comes from the superclass, the invoked method comes from the current class
-  			return this._superClass._objectPrototype.prototype[method].apply(this, args);
-  		};
-	  }
+			// ability to call superclass methods in the context of the current object
+			newClass.prototype._objectPrototype.prototype._super = function(method, args) {
+				// super calls methods without invoker for avoiding infinite recursion because
+  				// just the invoker comes from the superclass, the invoked method comes from the current class
+  				return this._superClass._objectPrototype.prototype[method].apply(this, args);
+  			};
+		}
 	}
 
 	if('instanceVariables' in attrs) {
