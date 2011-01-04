@@ -18,26 +18,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+// hide real method behind a wrapper methods which catches exceptions
+WithNonLocalReturn = function(method) {
+ 	// this is a wrapper for method invocation
+ 	return function() {
+ 		try {
+ 			return method.apply(this, arguments);
+ 		}
+ 		catch(e) {
+ 			if(e == method)
+ 				return e.nonLocalReturnValue;
+ 			else
+ 				throw e;
+ 		}
+ 	}
+}
+
 nonLocalReturn = function(v) {
 	arguments.callee.caller.nonLocalReturnValue = v;
 	throw arguments.callee.caller;
 }
 
-// hide real method behind a wrapper methods which catches exceptions
 Function.prototype._createMethod = function(name, method) {
-
 	// this is a wrapper for method invocation
-	this.prototype[name] = function() {
-		try {
-			return method.apply(this, arguments);
-		}
-		catch(e) {
-			if(e == method)
-				return e.nonLocalReturnValue;
-			else
-				throw e;
-		}
-	}
+	this.prototype[name] = WithNonLocalReturn(method);
 }
 
 Class = function(attrs) {
