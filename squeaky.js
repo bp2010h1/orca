@@ -76,10 +76,7 @@ Class = function(attrs) {
 	}
 	
 	// initialize method is called after instanciation
-	newClass.prototype._objectPrototype = function() { this.initialize(); };
-
-	// default constructor, can be overloaded if wanted
-	newClass.prototype._objectPrototype.prototype.initialize = function() { };
+   newClass.prototype._objectPrototype = function() { };
 	
 	// "new" is a reserved keyword in Safari -> leading underline
 	newClass.prototype.basicNew = function() {

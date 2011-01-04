@@ -3,7 +3,7 @@ JsGlobal = this;
 Object$=Class({
   instanceMethods: {
     initialize: function(){}
-    },
+  },
   classMethods: {
     _new: function(){ return this.basicNew().initialize(); }
   }
