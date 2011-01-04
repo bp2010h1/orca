@@ -5,7 +5,7 @@ Object$=Class({
     initialize: function(){}
     },
   classMethods: {
-    _new: function(){ return this.basicNew.apply(this, arguments).initialize(); }
+    _new: function(){ return this.basicNew().initialize(); }
   }
 });
 
