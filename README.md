@@ -25,7 +25,8 @@ class-side methods.
 
 		classMethods: {
 			name: function() {
-				block(function() { return "This is a non local return"; });
+				aBlock = block(function() { nonLocalReturn("This is a non local return"); });
+				aBlock();
 				
 				// this part should never be executed
 				return 'Foo';
@@ -46,8 +47,6 @@ the examples.
 
 # Instance side
 - _class
-- _className
-- _block
 
 ## CONTACT
 
