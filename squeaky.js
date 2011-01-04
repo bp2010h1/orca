@@ -89,7 +89,10 @@ Class = function(attrs) {
 		
 	if('superClass' in attrs) {
 		// inherit methods and attrs from superclass
-		newClass.prototype._objectPrototype.prototype = attrs['superClass']._new();
+    for(attr in attrs['superClass']) {
+      newClass.prototype._objectPrototype.prototype[attr] = attrs['superClass']._objectPrototype.prototype[attr];
+    }
+    // newClass.prototype._objectPrototype.prototype = attrs['superClass']._new();
 		newClass.prototype._objectPrototype.prototype._superClass = attrs['superClass'];
 		
 		// ability to call superclass methods in the context of the current object
