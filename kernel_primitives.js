@@ -1,16 +1,16 @@
-ProtoObject._new = function() {
+ProtoObject.$new = function() {
   return this.basicNew().initialize();
 };
 
-$Object._new = ProtoObject._new;
-OrderedCollection._new = $Object._new;
-Point._new = $Object._new;
-Rectangle._new = $Object._new;
+$Object.$new = ProtoObject.$new;
+OrderedCollection.$new = $Object.$new;
+Point.$new = $Object.$new;
+Rectangle.$new = $Object.$new;
 
 Number.prototype.$plus = function(anotherNumber){ return this +  anotherNumber };
 Number.prototype.$minus = function(anotherNumber){ return this -  anotherNumber };
 
-Array.prototype.new$ = function(arr){return new Array(arr)};
+Array.new$ = function(arr){return new Array(arr)};
 
 BlockClosure.value = function(){
   this.$func.apply(this, arguments);
