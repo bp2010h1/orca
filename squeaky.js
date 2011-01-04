@@ -82,7 +82,7 @@ Class = function(attrs) {
 	newClass.prototype._objectPrototype.prototype.initialize = function() { };
 	
 	// "new" is a reserved keyword in Safari -> leading underline
-	newClass.prototype._new = function() {
+	newClass.prototype.basicNew = function() {
 		// create new instance of our class
 		return new this._objectPrototype();
 	}
