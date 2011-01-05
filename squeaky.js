@@ -21,7 +21,7 @@
 // hide real method behind a wrapper methods which catches exceptions
 WithNonLocalReturn = function(method) {
  	// this is a wrapper for method invocation
- 	return function() {
+ 	var methodWithNonLocalReturn = function() {
  		try {
  			return method.apply(this, arguments);
  		}
@@ -31,7 +31,9 @@ WithNonLocalReturn = function(method) {
  			else
  				throw e;
  		}
- 	}
+ 	};
+ 	methodWithNonLocalReturn.$originalMethod = method;
+ 	return methodWithNonLocalReturn;
 }
 
 nonLocalReturn = function(v) {
