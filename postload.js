@@ -18,9 +18,11 @@ block = function(func) {
 	b.$func = function() {
 		try {
 			ret = func.apply(this, arguments);
-			if (ret.$creationContext == func) {
-				ret.$creationContext = this.$creationContext;
-			}
+			if (ret != undefined) {
+			  if(ret.$creationContext == func) {
+				  ret.$creationContext = this.$creationContext;
+			  }
+		  }
 			return ret;
 		}
 		catch(e) {
@@ -36,4 +38,4 @@ block = function(func) {
 	b.$func.$creationContext = arguments.callee.caller;
 	
 	return b;
-}
+};
