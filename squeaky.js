@@ -53,6 +53,8 @@ Class = function(attrs) {
 		// copy superclass methods and attrs to new class
 		for(attr in attrs['superClass']) {
 			newClass.prototype[attr] = attrs['superClass'][attr];
+  	  // until we got a cleaner solution for translation of super we do it like this:
+    	newClass.prototype.mockForSuper = attrs['superClass']._objectPrototype.prototype;
 		}
 		
 		newClass.prototype._super = function(method, args) {
