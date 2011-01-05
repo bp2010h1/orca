@@ -3,7 +3,7 @@ ProtoObject._new = function() {
 };
 
 _Object._new = ProtoObject._new;
-OrderedCollection._new = _Object._new;
+//OrderedCollection._new = _Object._new;
 Point._new = _Object._new;
 Rectangle._new = _Object._new;
 S2JWorld._new = _Object._new; 
