@@ -11,9 +11,23 @@ Function.prototype._new = function(){
  return obj;
 };
 
+
+/* TODO:
+obj = {
+  $priv: "correct",
+  fun: function(){
+    return block( function(){ return this.$priv } );
+  }
+};
+alert(obj.fun().value());
+
+should alert 3, but this in this.$priv is not obj, but it is the BlockClosure instance
+*/
+
 block = function(func) {
 	b = BlockClosure._new();
 	b.$creationContext = arguments.callee.caller;
+	b.$ctx = this;
 	
 	b.$func = function() {
 		try {
