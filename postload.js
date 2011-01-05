@@ -1,5 +1,5 @@
-$true = True.basicNew();
-$false = False.basicNew(); 
+_true = True.basicNew();
+_false = False.basicNew(); 
 
 // Make JsGlobal alert: 'something' work out of the box
 JsGlobal = this;
@@ -12,7 +12,7 @@ Function.prototype._new = function(){
 };
 
 block = function(func) {
-	b = BlockClosure.$new();
+	b = BlockClosure._new();
 	b.$creationContext = arguments.callee.caller;
 	
 	b.$func = function() {

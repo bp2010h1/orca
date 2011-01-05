@@ -1,3 +1,3 @@
 // these two get overridden when True and False classes are available
-$true = true;
-$false = false;
+_true = true;
+_false = false;

@@ -2,12 +2,12 @@ ProtoObject._new = function() {
   return this.basicNew().initialize();
 };
 
-$Object._new = ProtoObject._new;
-OrderedCollection._new = $Object._new;
-Point._new = $Object._new;
-Rectangle._new = $Object._new;
-S2JWorld._new = $Object._new; 
-BlockClosure._new = $Object._new; 
+_Object._new = ProtoObject._new;
+OrderedCollection._new = _Object._new;
+Point._new = _Object._new;
+Rectangle._new = _Object._new;
+S2JWorld._new = _Object._new; 
+BlockClosure._new = _Object._new; 
 
 Number.prototype._plus = function(anotherNumber){ return this +  anotherNumber };
 Number.prototype._minus = function(anotherNumber){ return this -  anotherNumber };
