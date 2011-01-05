@@ -13,10 +13,9 @@ Function.prototype._new = function(){
 
 
 
-block = function(func) {
+block = function(func, that) {
 	b = BlockClosure._new();
 	b.$creationContext = arguments.callee.caller;
-	that = this;
 	
 	b.$func = function() {
 		try {

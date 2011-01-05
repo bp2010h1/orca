@@ -34,7 +34,7 @@ Number.prototype._less_equals = function(anotherNumber) {
 Array.new_ = function(arr){return new Array(arr)};
 
 BlockClosure._objectPrototype.prototype.value = function(){
-  return this.$func.apply(this.$ctx, arguments);
+  return this.$func.apply(this, arguments);
 };
 
 BlockClosure._objectPrototype.prototype.whileTrue_ = function(anotherBlock){
