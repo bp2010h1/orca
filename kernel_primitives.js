@@ -30,13 +30,22 @@ Number.prototype._greater = function(anotherNumber) {
     return _false;
 };
 Number.prototype._less_equals = function(anotherNumber) {
-  if( this <= anotherNumber)
-    return _true;
-  else
-    return _false;
+  if( this <= anotherNumber)  return _true;
+  else return _false;
 };
+Number.prototype._equals = function(anotherNumber) {
+  if( this == anotherNumber)  return _true;
+  else return _false;
+};
+Number.prototype.timesRepeat_ = function(aBlock){
+  for(var i = 0; i < this; i++) {
+    aBlock.value();
+  }
+}
 
 Array.new_ = function(arr){return new Array(arr)};
+Array.prototype.size = function(){ return this.length };
+Array.prototype.at_put_ = function(idx, val){ this[idx-1] = val};
 
 BlockClosure._objectPrototype.prototype.value = function(){
   return this.$func.apply(this, arguments);
