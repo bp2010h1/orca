@@ -18,6 +18,7 @@ Error._objectPrototype.prototype.signal=function(){throw this}
 
 Number.prototype._plus = function(anotherNumber){ return this + anotherNumber };
 Number.prototype._minus = function(anotherNumber){ return this - anotherNumber };
+Number.prototype._times = function(anotherNumber){ return this * anotherNumber };
 Number.prototype._at = function(anotherNumber){ return Point.x_y_(this, anotherNumber); };
 Number.prototype._less = function(anotherNumber) {
   if( this < anotherNumber)
@@ -44,6 +45,10 @@ Number.prototype.timesRepeat_ = function(aBlock){
     aBlock.value();
   }
 }
+Number.prototype.isPoint = function(){ return _false };
+Number.prototype.adaptToPoint_andSend_ = function(rcvr, selector){return rcvr.perform_with_(selector, this._at(this));};
+
+Point._objectPrototype.prototype._times = function(aNumber){ return (this.x()._times(aNumber))._at(this.y()._times(aNumber))};
 
 Array.new_ = function(arr){return new Array(arr)};
 Array.prototype.size = function(){ return this.length };
