@@ -7,7 +7,12 @@ _Object._new = ProtoObject._new;
 Point._new = _Object._new;
 Rectangle._new = _Object._new;
 S2JWorld._new = _Object._new; 
+S2JBallGame._new = S2JWorld._new;
+S2JBall._new = S2JWorld._new;
 BlockClosure._new = _Object._new; 
+Error._new = _Object._new;
+
+Error._objectPrototype.prototype.signal=function(){throw this}
 
 Number.prototype._plus = function(anotherNumber){ return this + anotherNumber };
 Number.prototype._minus = function(anotherNumber){ return this - anotherNumber };
