@@ -48,6 +48,8 @@ Number.prototype.timesRepeat_ = function(aBlock){
 Number.prototype.isPoint = function(){ return _false };
 Number.prototype.adaptToPoint_andSend_ = function(rcvr, selector){return rcvr.perform_with_(selector, this._at(this));};
 
+JsGlobal.repeatWithPause = function(block, interval){ setInterval(function(){block.value()}, interval) };
+
 Point._objectPrototype.prototype._times = function(aNumber){ return (this.x()._times(aNumber))._at(this.y()._times(aNumber))};
 
 Array.new_ = function(arr){return new Array(arr)};
