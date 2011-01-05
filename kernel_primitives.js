@@ -15,6 +15,13 @@ Number.prototype._at = function(anotherNumber){ return Point.x_y_(this, anotherN
 
 Array.new_ = function(arr){return new Array(arr)};
 
-BlockClosure._objectPrototype.value = function(){
+BlockClosure._objectPrototype.prototype.value = WithNonLocalReturn(function(){
   this.$func.apply(this, arguments);
-}
+});
+
+BlockClosure._objectPrototype.prototype.whileTrue_ = function(anotherBlock){
+  // TODO implement whileTrue for real
+  while(this.value() == _true) {
+    anotherBlock.value();
+  }
+};
