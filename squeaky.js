@@ -63,6 +63,9 @@ Class = function(attrs) {
 			return attrs['superClass'][method].apply(this, args);
 		};
 	}
+	
+  // better do not yourself message send in cascades then remove this code TODO
+	newClass.prototype.yourself = function() { return this };
 
 	if('classVariables' in attrs) {
 		// extent by new class variables
