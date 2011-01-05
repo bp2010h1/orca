@@ -12,26 +12,15 @@ Function.prototype._new = function(){
 };
 
 
-/* TODO:
-obj = {
-  $priv: "correct",
-  fun: function(){
-    return block( function(){ return this.$priv } );
-  }
-};
-alert(obj.fun().value());
-
-should alert 3, but this in this.$priv is not obj, but it is the BlockClosure instance
-*/
 
 block = function(func) {
 	b = BlockClosure._new();
 	b.$creationContext = arguments.callee.caller;
-	b.$ctx = this;
+	that = this;
 	
 	b.$func = function() {
 		try {
-			ret = func.apply(this, arguments);
+			ret = func.apply(that, arguments);
 			if (ret != undefined) {
 			  if(ret.$creationContext == func) {
 				  ret.$creationContext = this.$creationContext;
