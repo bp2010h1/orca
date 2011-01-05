@@ -1,3 +1,5 @@
+primitiveCall = function(){ alert(arguments.callee.caller) };
+
 ProtoObject._new = function() {
   return this.basicNew().initialize();
 };
@@ -45,11 +47,16 @@ Number.prototype.timesRepeat_ = function(aBlock){
 
 Array.new_ = function(arr){return new Array(arr)};
 Array.prototype.size = function(){ return this.length };
-Array.prototype.at_put_ = function(idx, val){ this[idx-1] = val};
+Array.prototype.at_put_ = function(idx, val){ this[idx-1] = val; return val };
+Array.prototype.at_ = function(idx){ return this[idx-1] };
 
 BlockClosure._objectPrototype.prototype.value = function(){
   return this.$func.apply(this, arguments);
 };
+BlockClosure._objectPrototype.prototype.value_ = BlockClosure._objectPrototype.prototype.value;
+BlockClosure._objectPrototype.prototype.value_value_ = BlockClosure._objectPrototype.prototype.value;
+BlockClosure._objectPrototype.prototype.value_value_value_ = BlockClosure._objectPrototype.prototype.value;
+BlockClosure._objectPrototype.prototype.value_value_value_value_ = BlockClosure._objectPrototype.prototype.value;
 
 BlockClosure._objectPrototype.prototype.whileTrue_ = function(anotherBlock){
   // TODO implement whileTrue for real
