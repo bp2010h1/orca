@@ -43,14 +43,17 @@ Pirate = Class({
 		}
 	},
 	classMethods: {
+		evaluateBlock: function(aBlock) {
+			aBlock.value("yiii").value("haaaa");	
+		},
 		noise: function() {
-			foo = block(function(a) {				
+			aBlock = block(function(a) {				
 				return block(function(b) { 
 					nonLocalReturn(a+b); 
 				});
 			});
 			
-			return foo.value(3).value(4);
+			this.evaluateBlock(aBlock);	
 				
 			return 'Arrrrrr!!!';
 		}
