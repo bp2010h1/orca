@@ -1,61 +1,63 @@
-primitiveCall = function(){ alert(arguments.callee.caller) };
+// 
+// Implementations of primitive methods
+// This is loaded at the very end, everything is already available
+// If this gets too long, split it in multiple files
+// 
 
-ProtoObject._new = function() {
-  return this.basicNew().initialize();
-};
+// TODO see Float
+// TODO add _Array as Squeak-class! (see Array)
 
-_Object._new = ProtoObject._new;
-//OrderedCollection._new = _Object._new;
-Point._new = _Object._new;
-Rectangle._new = _Object._new;
-S2JWorld._new = _Object._new; 
-S2JBallGame._new = S2JWorld._new;
-S2JBall._new = S2JWorld._new;
-BlockClosure._new = _Object._new; 
-Error._new = _Object._new;
+// Error
 
-Error._objectPrototype.prototype.signal=function(){throw this}
+Error._objectPrototype.prototype.signal = function(){ throw this };
 
-Number.prototype._plus = function(anotherNumber){ return this + anotherNumber };
-Number.prototype._minus = function(anotherNumber){ return this - anotherNumber };
-Number.prototype._times = function(anotherNumber){ return this * anotherNumber };
-Number.prototype._at = function(anotherNumber){ return Point.x_y_(this, anotherNumber); };
-Number.prototype._less = function(anotherNumber) {
-  if( this < anotherNumber)
-    return _true;
+// Float (TODO this should be moved to Number or something... the whole Number-class-hierarchy should be supported in JS)
+// For this, the Parser must "find out" which class is instantiated from a number-literal.. Integer/SmallInteger/Floast/etc.
+
+Float.addMethod('_plus', function(other) { return number(this.num$ + other.num$); };
+Float._objectPrototype.prototype._minus = function(other) { return number(this.num$ - other.num$); };
+Float._objectPrototype.prototype._times = function(other) { return number(this.num$ * other.num$); };
+Float._objectPrototype.prototype._slash = function(other) { return number(this.num$ / other.num$); };
+Float._objectPrototype.prototype._slash_slash = function(other) { return number(this.num$ / other.num$); };
+Float._objectPrototype.prototype._less = function(other) {
+  if( this.num$ < other.num$)
+  return _true;
   else
-    return _false;
+  return _false;
 };
-Number.prototype._greater = function(anotherNumber) {
-  if( this > anotherNumber)
-    return _true;
+Float._objectPrototype.prototype._greater = function(other) {
+  if( this.num$ > other.num$)
+  return _true;
   else
-    return _false;
+  return _false;
 };
-Number.prototype._less_equals = function(anotherNumber) {
-  if( this <= anotherNumber)  return _true;
+Float._objectPrototype.prototype._less_equals = function(other) {
+  if( this.num$ <= other.num$) return _true;
   else return _false;
-};
-Number.prototype._equals = function(anotherNumber) {
-  if( this == anotherNumber)  return _true;
+  };
+Float._objectPrototype.prototype._equals = function(other) {
+  if( this.num$ == other.num$)  return _true;
   else return _false;
-};
-Number.prototype.timesRepeat_ = function(aBlock){
-  for(var i = 0; i < this; i++) {
-    aBlock.value();
+  };
+Float._objectPrototype.prototype.timesRepeat_ = function(aBlock){
+  for(var i = 0; i < this.num$; i++) {
+  aBlock.value();
   }
 }
-Number.prototype.isPoint = function(){ return _false };
-Number.prototype.adaptToPoint_andSend_ = function(rcvr, selector){return rcvr.perform_with_(selector, this._at(this));};
 
-JsGlobal.repeatWithPause = function(block, interval){ setInterval(function(){block.value()}, interval) };
+// Point
 
 Point._objectPrototype.prototype._times = function(aNumber){ return (this.x()._times(aNumber))._at(this.y()._times(aNumber))};
 
-Array.new_ = function(arr){return new Array(arr)};
-Array.prototype.size = function(){ return this.length };
-Array.prototype.at_put_ = function(idx, val){ this[idx-1] = val; return val };
-Array.prototype.at_ = function(idx){ return this[idx-1] };
+// Array (TODO this is no squeak-class, must be changed (includes array()-function, js()-function for array-objects,
+// translated Array-litarly to the array()-function, implement the primitives in a real way.
+
+Array.new_ = function(size){return new Array(size.num$)};
+Array.prototype.size = function(){ return number(this.length) };
+Array.prototype.at_put_ = function(idx, val){ this[idx.num$-1] = val; return val };
+Array.prototype.at_ = function(idx){ return this[idx.num$-1] };
+
+// BlockClosure
 
 BlockClosure._objectPrototype.prototype.value = function(){
   return this.$func.apply(this, arguments);
@@ -68,6 +70,6 @@ BlockClosure._objectPrototype.prototype.value_value_value_value_ = BlockClosure.
 BlockClosure._objectPrototype.prototype.whileTrue_ = function(anotherBlock){
   // TODO implement whileTrue for real
   while(this.value() == _true) {
-    anotherBlock.value();
+  anotherBlock.value();
   }
 };

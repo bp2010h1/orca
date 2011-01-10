@@ -49,18 +49,18 @@ Function.prototype._createMethod = function(name, method) {
 Class = function(attrs) {
 	var newClass = function() {};
 	
-	if('superClass' in attrs) {
+	if('superclass' in attrs) {
 		// copy superclass methods and attrs to new class
-		for(attr in attrs['superClass']) {
-			newClass.prototype[attr] = attrs['superClass'][attr];
+		for(attr in attrs['superclass']) {
+			newClass.prototype[attr] = attrs['superclass'][attr];
   	  // until we got a cleaner solution for translation of super we do it like this:
-    	newClass.prototype.mockForSuper = attrs['superClass']._objectPrototype.prototype;
+    	newClass.prototype.mockForSuper = attrs['superclass']._objectPrototype.prototype;
 		}
 		
 		newClass.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
 			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return attrs['superClass'][method].apply(this, args);
+			return attrs['superclass'][method].apply(this, args);
 		};
 	}
 	
@@ -89,16 +89,16 @@ Class = function(attrs) {
 		// create new instance of our class
 		return new this._objectPrototype();
 	}
-		
-	if('superClass' in attrs) {
+	
+	if('superclass' in attrs) {
 		// inherit methods and attrs from superclass
 
-		if(attrs['superClass']._objectPrototype != undefined) {
-			for(attr in attrs['superClass']._objectPrototype.prototype) {
-				newClass.prototype._objectPrototype.prototype[attr] = attrs['superClass']._objectPrototype.prototype[attr];
+		if(attrs['superclass']._objectPrototype != undefined) {
+			for(attr in attrs['superclass']._objectPrototype.prototype) {
+				newClass.prototype._objectPrototype.prototype[attr] = attrs['superclass']._objectPrototype.prototype[attr];
 			}
 
-			newClass.prototype._objectPrototype.prototype._superClass = attrs['superClass'];
+			newClass.prototype._objectPrototype.prototype._superClass = attrs['superclass'];
 		
 			// ability to call superclass methods in the context of the current object
 			newClass.prototype._objectPrototype.prototype._super = function(method, args) {
