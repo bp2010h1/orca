@@ -23,7 +23,7 @@ WithNonLocalReturn = function(method) {
  	// this is a wrapper for method invocation
  	methodWithNonLocalReturn = function() {
  		try {
- 			return method.apply(this, arguments);
+ 			return arguments.callee.originalMethod.apply(this, arguments);
  		}
  		catch(e) {
  			if(e == method)
@@ -32,7 +32,8 @@ WithNonLocalReturn = function(method) {
  				throw e;
  		}
  	};
- 	methodWithNonLocalReturn.$originalMethod = method;
+
+ 	methodWithNonLocalReturn.originalMethod = method;
  	return methodWithNonLocalReturn;
 }
 
@@ -47,6 +48,26 @@ Function.prototype._createMethod = function(name, method) {
 	this.prototype[name].isMethod = true;
 }
 
+createSuperMethods = function(superPrototype, newInstance) {
+	newInstance._super = {}
+
+	// copy supermethods to new objects
+	for(method in superPrototype) {
+		// filter instance methods only
+		if(typeof superPrototype[method] == 'function' && superPrototype[method].isMethod != undefined) {
+			wrapperFunction = function() {
+				// super methods are called in the new object's context
+				return superPrototype[arguments.callee.wrappedMethodName].apply(newInstance, arguments);
+			}
+			
+			// local variable 'method' has to be stored explicitely because the variable is not bound inside
+			// the wrapper function when the loop continues
+			wrapperFunction.wrappedMethodName = method;
+			newInstance._super[method] = wrapperFunction;
+		}
+	}
+}
+
 Class = function(attrs) {
 	var newClass = function() {};
 	
@@ -55,12 +76,6 @@ Class = function(attrs) {
 		for(attr in attrs['superclass']) {
 			newClass.prototype[attr] = attrs['superclass'][attr];
 		}
-		
-		newClass.prototype._super = function(method, args) {
-			// super calls methods without invoker for avoiding infinite recursion because
-			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return attrs['superclass'][method].apply(this, args);
-		};
 	}
 	
 	// better do not yourself message send in cascades then remove this code TODO
@@ -86,22 +101,9 @@ Class = function(attrs) {
 	newClass.prototype.basicNew = function() {
 		// create new instance of our class
 		inst = new this._instancePrototype();
-		inst._super = {};
 		
 		if(inst._superclass != undefined) {
-			var superInstancePrototype = inst._superclass._instancePrototype.prototype;
-			// copy supermethods to new objects
-			for(method in superInstancePrototype) {
-				// filter instance methods only
-				if(typeof superInstancePrototype[method] == 'function' && superInstancePrototype[method].isMethod != undefined) {
-					newFunction = function() {
-						// super methods are called in the new object's context
-						superInstancePrototype[arguments.callee.functionName].apply(inst, arguments);
-					}
-					newFunction.functionName = method;
-					inst._super[method] = newFunction;
-				}
-			}
+			createSuperMethods(inst._superclass._instancePrototype.prototype, inst);
 		}
 		
 		return inst;
@@ -116,19 +118,13 @@ Class = function(attrs) {
 			}
 
 			newClass.prototype._instancePrototype.prototype._superclass = attrs['superclass'];
-		
-			// ability to call superclass methods in the context of the current object
-			newClass.prototype._instancePrototype.prototype._super = function(method, args) {
-				// super calls methods without invoker for avoiding infinite recursion because
-  				// just the invoker comes from the superclass, the invoked method comes from the current class
-  				return this._superclass._instancePrototype.prototype[method].apply(this, args);
-  			};
 		}
 	}
 
 	if('instanceVariables' in attrs) {
 		// set instance variables to null by default
 		for(idx in attrs['instanceVariables']) {
+			// TODO: should be _nil
 			newClass.prototype._instancePrototype.prototype[attrs['instanceVariables'][idx]] = null;		
 		}
 	}
@@ -143,5 +139,11 @@ Class = function(attrs) {
 	// "class" is a reserved keyword in Safari -> leading underline
 	newClass.prototype._instancePrototype.prototype._class = new newClass();
 	
+	if(attrs['superclass'] != undefined) {
+		createSuperMethods(attrs['superclass'], newClass.prototype._instancePrototype.prototype._class);
+ 	}
+	
 	return newClass.prototype._instancePrototype.prototype._class;
 };
+
+

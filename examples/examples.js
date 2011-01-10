@@ -39,7 +39,7 @@ Pirate = Class({
 	instanceMethods: {
 		makeNoise: function() {
 			// access makeNoise method from superclass (doesn't need parameters)
-			return this._super('makeNoise') + this._class.noise();
+			return this._super.makeNoise() + this._class.noise();
 		}
 	},
 	classMethods: {
@@ -47,13 +47,13 @@ Pirate = Class({
 			aBlock.value("yiii").value("haaaa");	
 		},
 		noise: function() {
-			aBlock = block(function(a) {				
+/*			aBlock = block(function(a) {				
 				return block(function(b) { 
 					nonLocalReturn(a+b); 
 				});
-			});
+			});*/
 			
-			this.evaluateBlock(aBlock);	
+//			this.evaluateBlock(aBlock);	
 				
 			return 'Arrrrrr!!!';
 		}
