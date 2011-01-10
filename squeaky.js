@@ -49,9 +49,10 @@ Class = function(attrs) {
 	
 	if('superClass' in attrs) {
 		// copy superclass methods and attrs to new class
-		for(attr in attrs['superClass']) {
+		newClass.prototype = new attrs['superClass']._instancePrototype();
+/*		for(attr in attrs['superClass']) {
 			newClass.prototype[attr] = attrs['superClass'][attr];
-		}
+		}*/
 		
 		newClass.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
@@ -75,47 +76,47 @@ Class = function(attrs) {
 	}
 	
 	// initialize method is called after instanciation
-	newClass.prototype._objectPrototype = function() { this.initialize(); };
+	newClass.prototype._instancePrototype = function() { this.initialize(); };
 
 	// default constructor, can be overloaded if wanted
-	newClass.prototype._objectPrototype.prototype.initialize = function() { };
+	newClass.prototype._instancePrototype.prototype.initialize = function() { };
 	
 	// "new" is a reserved keyword in Safari -> leading underline
 	newClass.prototype._new = function() {
 		// create new instance of our class
-		return new this._objectPrototype();
+		return new this._instancePrototype();
 	}
 		
 	if('superClass' in attrs) {
 		// inherit methods and attrs from superclass
-		newClass.prototype._objectPrototype.prototype = attrs['superClass']._new();
+		newClass.prototype._instancePrototype.prototype = attrs['superClass']._new();
 		
 		// ability to call superclass methods in the context of the current object
-		newClass.prototype._objectPrototype.prototype._super = function(method, args) {
+		newClass.prototype._instancePrototype.prototype._super = function(method, args) {
 			// super calls methods without invoker for avoiding infinite recursion because
 			// just the invoker comes from the superclass, the invoked method comes from the current class
-			return attrs['superClass']._objectPrototype.prototype[method].apply(this, args);
+			return attrs['superClass']._instancePrototype.prototype[method].apply(this, args);
 		};
 	}
 
 	if('instanceVariables' in attrs) {
 		// set instance variables to null by default
 		for(idx in attrs['instanceVariables']) {
-			newClass.prototype._objectPrototype.prototype[attrs['instanceVariables'][idx]] = null;		
+			newClass.prototype._instancePrototype.prototype[attrs['instanceVariables'][idx]] = null;		
 		}
 	}
 		
 	if('instanceMethods' in attrs) {
 		// extent by new instance methods
 		for(method in attrs['instanceMethods']) {
-			newClass.prototype._objectPrototype._createMethod(method, attrs['instanceMethods'][method]);
+			newClass.prototype._instancePrototype._createMethod(method, attrs['instanceMethods'][method]);
 		}
 	}
 	
 	// "class" is a reserved keyword in Safari -> leading underline
-	newClass.prototype._objectPrototype.prototype._class = new newClass();
+	newClass.prototype._instancePrototype.prototype._class = new newClass();
 	
-	return newClass.prototype._objectPrototype.prototype._class;
+	return newClass.prototype._instancePrototype.prototype._class;
 };
 
 BlockClosure = Class({
