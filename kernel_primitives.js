@@ -14,7 +14,7 @@ Error._objectPrototype.prototype.signal = function(){ throw this };
 // Float (TODO this should be moved to Number or something... the whole Number-class-hierarchy should be supported in JS)
 // For this, the Parser must "find out" which class is instantiated from a number-literal.. Integer/SmallInteger/Floast/etc.
 
-Float.addMethod('_plus', function(other) { return number(this.num$ + other.num$); };
+Float._objectPrototype.prototype._plus = function(other) { return number(this.num$ + other.num$); };
 Float._objectPrototype.prototype._minus = function(other) { return number(this.num$ - other.num$); };
 Float._objectPrototype.prototype._times = function(other) { return number(this.num$ * other.num$); };
 Float._objectPrototype.prototype._slash = function(other) { return number(this.num$ / other.num$); };
