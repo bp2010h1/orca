@@ -23,6 +23,9 @@
 A = Class({
 	instanceVariables: ['foo'],
 	instanceMethods: {
+		initialize: function() {
+			
+		},
 		testMethod: function() {
 		},
 		setTest: function(num) {
@@ -50,13 +53,13 @@ A = Class({
 });
 
 B = Class({
-	superClass: A,
+	superclass: A,
 	instanceMethods: {
 		testMethod2: function(num) { 
 			return num; 
 		},
 		setTest: function(num) {
-			return this._super('setTest', [num]);
+			return this._super.setTest(num);
 		},
 		lastName: function() {
 			return this._class.lastName();
@@ -65,20 +68,20 @@ B = Class({
 	classVariables: ['size'],
 	classMethods: {
 		myAge: function() {
-			return this._super('myAge', []);
+			return this._super.myAge();
 		},
 		lastName: function() {
 			return 'Skywalker';
 		},
 		married: function() {
 			// for non-local return testing
-			return this._super('married', []);
+			return this._super.married();
 		}
 	}
 });
 
-a = A._new();
-b = B._new();
+a = A.basicNew();
+b = B.basicNew();
 
 // testing
 Assert.isTrue(typeof a.initialize == 'function');
@@ -90,7 +93,7 @@ Assert.isTrue(typeof a.initialize == 'function');
 Assert.isTrue(typeof b.testMethod == 'function');
 Assert.isTrue(typeof b.testMethod2 == 'function');
 Assert.isTrue(b.testMethod2(1337) == 1337);
-Assert.isTrue(typeof A._new == 'function');
+Assert.isTrue(typeof A.basicNew == 'function');
 Assert.isTrue(typeof A.firstName == 'function');
 Assert.isTrue(A.firstName() == 'Chuck');
 Assert.isTrue(A.lastName() == 'Norris');

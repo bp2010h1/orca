@@ -1,1 +1,3 @@
-- block support for super method calls
+- non-local return documentation
+- testing framwork
+- addMethod, super-implementation

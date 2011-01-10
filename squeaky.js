@@ -44,6 +44,7 @@ nonLocalReturn = function(v) {
 Function.prototype._createMethod = function(name, method) {
 	// this is a wrapper for method invocation
 	this.prototype[name] = WithNonLocalReturn(method);
+	this.prototype[name].isMethod = true;
 }
 
 Class = function(attrs) {
@@ -53,8 +54,6 @@ Class = function(attrs) {
 		// copy superclass methods and attrs to new class
 		for(attr in attrs['superclass']) {
 			newClass.prototype[attr] = attrs['superclass'][attr];
-  	  // until we got a cleaner solution for translation of super we do it like this:
-    	newClass.prototype.mockForSuper = attrs['superclass']._objectPrototype.prototype;
 		}
 		
 		newClass.prototype._super = function(method, args) {
@@ -64,7 +63,7 @@ Class = function(attrs) {
 		};
 	}
 	
-  // better do not yourself message send in cascades then remove this code TODO
+	// better do not yourself message send in cascades then remove this code TODO
 	newClass.prototype.yourself = function() { return this };
 
 	if('classVariables' in attrs) {
@@ -82,29 +81,47 @@ Class = function(attrs) {
 	}
 	
 	// initialize method is called after instanciation
-   newClass.prototype._objectPrototype = function() { };
+	newClass.prototype._instancePrototype = function() { };
 	
-	// "new" is a reserved keyword in Safari -> leading underline
 	newClass.prototype.basicNew = function() {
 		// create new instance of our class
-		return new this._objectPrototype();
+		inst = new this._instancePrototype();
+		inst._super = {};
+		
+		if(inst._superclass != undefined) {
+			var superInstancePrototype = inst._superclass._instancePrototype.prototype;
+			// copy supermethods to new objects
+			for(method in superInstancePrototype) {
+				// filter instance methods only
+				if(typeof superInstancePrototype[method] == 'function' && superInstancePrototype[method].isMethod != undefined) {
+					newFunction = function() {
+						// super methods are called in the new object's context
+						superInstancePrototype[arguments.callee.functionName].apply(inst, arguments);
+					}
+					newFunction.functionName = method;
+					inst._super[method] = newFunction;
+				}
+			}
+		}
+		
+		return inst;
 	}
 	
 	if('superclass' in attrs) {
 		// inherit methods and attrs from superclass
 
-		if(attrs['superclass']._objectPrototype != undefined) {
-			for(attr in attrs['superclass']._objectPrototype.prototype) {
-				newClass.prototype._objectPrototype.prototype[attr] = attrs['superclass']._objectPrototype.prototype[attr];
+		if(attrs['superclass']._instancePrototype != undefined) {
+			for(attr in attrs['superclass']._instancePrototype.prototype) {
+				newClass.prototype._instancePrototype.prototype[attr] = attrs['superclass']._instancePrototype.prototype[attr];
 			}
 
-			newClass.prototype._objectPrototype.prototype._superClass = attrs['superclass'];
+			newClass.prototype._instancePrototype.prototype._superclass = attrs['superclass'];
 		
 			// ability to call superclass methods in the context of the current object
-			newClass.prototype._objectPrototype.prototype._super = function(method, args) {
+			newClass.prototype._instancePrototype.prototype._super = function(method, args) {
 				// super calls methods without invoker for avoiding infinite recursion because
   				// just the invoker comes from the superclass, the invoked method comes from the current class
-  				return this._superClass._objectPrototype.prototype[method].apply(this, args);
+  				return this._superclass._instancePrototype.prototype[method].apply(this, args);
   			};
 		}
 	}
@@ -112,19 +129,19 @@ Class = function(attrs) {
 	if('instanceVariables' in attrs) {
 		// set instance variables to null by default
 		for(idx in attrs['instanceVariables']) {
-			newClass.prototype._objectPrototype.prototype[attrs['instanceVariables'][idx]] = null;		
+			newClass.prototype._instancePrototype.prototype[attrs['instanceVariables'][idx]] = null;		
 		}
 	}
 		
 	if('instanceMethods' in attrs) {
 		// extent by new instance methods
 		for(method in attrs['instanceMethods']) {
-			newClass.prototype._objectPrototype._createMethod(method, attrs['instanceMethods'][method]);
+			newClass.prototype._instancePrototype._createMethod(method, attrs['instanceMethods'][method]);
 		}
 	}
 	
 	// "class" is a reserved keyword in Safari -> leading underline
-	newClass.prototype._objectPrototype.prototype._class = new newClass();
+	newClass.prototype._instancePrototype.prototype._class = new newClass();
 	
-	return newClass.prototype._objectPrototype.prototype._class;
+	return newClass.prototype._instancePrototype.prototype._class;
 };
