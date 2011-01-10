@@ -35,7 +35,7 @@ Person = Class({
 
 Pirate = Class({
 	// inherits from Person
-	superClass: Person,
+	superclass: Person,
 	instanceMethods: {
 		makeNoise: function() {
 			// access makeNoise method from superclass (doesn't need parameters)
@@ -48,19 +48,19 @@ Pirate = Class({
 		},
 		noise: function() {
 /*			aBlock = block(function(a) {				
-				return block(function(b) { 
+				return block(function(b) {
 					nonLocalReturn(a+b); 
 				});
-			});*/
+			});
 			
-//			this.evaluateBlock(aBlock);	
-				
+			this.evaluateBlock(aBlock);	
+				*/
 			return 'Arrrrrr!!!';
 		}
 	}
 });
 
-jack = Pirate._new();
+jack = Pirate.basicNew();
 jack.setName("Captain Jack Sparrow");
 
 alert(jack.makeNoise());

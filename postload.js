@@ -8,7 +8,7 @@ JsGlobal = this;
 
 // Helper functions...
 // Please check whether they're needed..
-primitiveDeclaration = function(){ alert(arguments.callee.caller.caller.name) };
+JsGlobal.primitiveDeclaration = function(){ alert(this) };
 JsGlobal.repeatWithPause = function(block, interval){ setInterval(function(){block.value()}, interval.num$) };
 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
