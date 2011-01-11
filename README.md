@@ -2,21 +2,20 @@
 
 ## INTRODUCTION
 
-This is a Squeak like implementation of the class system in JavaScript.
-It supports inheritance of classes, access to superclass methods and
-class-side methods.
+squeakyJS is the implementation of the class class model from the programmers
+views in JavaScript. It supports inheritance of classes, access to superclass methods and
+class-side methods. Furthermore there is an implementation for nonlocal return and
+blocks.
 
 ## GETTING STARTED
 
 	Foo = Class({
-		superClass: Bar,
+		superclass: Bar,
 
 		instanceVariables: ['a', 'b', 'c'],
 
 		instanceMethods: {
-			// initalize method is called after instanciation
 			initialize: function() {
-				alert('foobar');
 			},
 			// further methods
 		},
@@ -26,7 +25,7 @@ class-side methods.
 		classMethods: {
 			name: function() {
 				aBlock = block(function() { nonLocalReturn("This is a non local return"); });
-				aBlock();
+				aBlock.value();
 				
 				// this part should never be executed
 				return 'Foo';
@@ -40,15 +39,23 @@ class-side methods.
 Every parameter is optional. To get more familiar, please try out
 the examples.
 
-## RESERVED METHODS
+## META PROGRAMMING
+
+You can extend your class and instance methods by using the following methods:
+
+	Foo._addClassMethod("test", function() { });
+	Foo._addInstanceMethod("test", function() { });
+
+This will extend the prototypes. So the new methods will be there
+for subclasses too.
+
+## RESERVED METHOD NAMES
 
 # Class side
-- _new
+- _classPrototype
+- _objectPrototype
+- _super
 
 # Instance side
+- _super
 - _class
-
-## CONTACT
-
-For further questions feel free to contact me under
-robert.strobl _at_ gloriabyte.de
