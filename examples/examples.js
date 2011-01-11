@@ -21,7 +21,7 @@
  */
 
 Person = Class({
-	instanceVariables: [name],
+	instanceVariables: ['name'],
 	instanceMethods: {
 		setName: function(aName) {
 			this.name = aName;
