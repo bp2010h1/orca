@@ -21,6 +21,7 @@ blocks.
 		},
 
 		classVariables: ['d', 'e', 'f'],
+		classInstanceVariables: ['ABC'],
 
 		classMethods: {
 			name: function() {
@@ -33,7 +34,7 @@ blocks.
 		}
 	});
 
-	inst = Foo._new()
+	inst = Foo._newInstance()
 
 
 Every parameter is optional. To get more familiar, please try out
@@ -43,18 +44,28 @@ the examples.
 
 You can extend your class and instance methods by using the following methods:
 
-	Foo._addClassMethod("test", function() { });
-	Foo._addInstanceMethod("test", function() { });
+	Foo._addClassMethods( {test: function() { } });
+	Foo._addInstanceMethods( {test: function() { } });
+	Foo._addInstanceVariables( ['test', 'test1'], null ); // initialized by default to null
+	Foo._addClassInstanceVariables( ['test', 'test1'] ); // initialized by default to null
+	Foo._addClassVariables( ['test', 'test1'] ); // initialized by default to null
 
 This will extend the prototypes. So the new methods will be there
 for subclasses too.
 
-## RESERVED METHOD NAMES
+## RESERVED METHOD NAMES / VARIABLES
 
 # Class side
 - _classPrototype
-- _objectPrototype
+- _instancePrototype
 - _super
+- _newInstance
+
+- _addClassMethods
+- _addInstanceMethods
+- _addInstanceVariables
+- _addClassInstanceVariables
+- _addClassVariables
 
 # Instance side
 - _super
