@@ -4,13 +4,13 @@
 // If this gets too long, split it in multiple files
 // 
 
-Error._addInstanceMethods(
-	signal: function(){ throw this };
-);
+Error._addInstanceMethods({
+	signal: function(){ throw this }
+});
 
 // TODO Float: this should be moved to Number or something... the whole Number-class-hierarchy should be supported in JS
 // For this, the Parser must "find out" which class is instantiated from a number-literal.. Integer/SmallInteger/Floast/etc.
-Float._addInstanceMethods(
+Float._addInstanceMethods({
 	_plus: function(other) { return number(this.num$ + other.num$); },
 	_minus: function(other) { return number(this.num$ - other.num$); },
 	_times: function(other) { return number(this.num$ * other.num$); },
@@ -34,16 +34,16 @@ Float._addInstanceMethods(
 		}
 		return this;
 	}
-);
+});
 
-Point._addInstanceMethods(
+Point._addInstanceMethods({
 	_times: function(aNumber){
 		return (this.x()._times(aNumber))._at(this.y()._times(aNumber));
 	}
-);
+});
 
 var _blockValueFunction_ = function(){ return this.$func.apply(this, arguments); };
-BlockClosure._addInstanceMethods(
+BlockClosure._addInstanceMethods({
 	value: _blockValueFunction_,
 	value_: _blockValueFunction_,
 	value_value_: _blockValueFunction_,
@@ -56,9 +56,9 @@ BlockClosure._addInstanceMethods(
 			anotherBlock.value();
 		}
 	}
-);
+});
 
-_Array._addInstanceMethods(
+_Array._addInstanceMethods({
 	size: function(){
 		return number(this.arr$.length);
 	},
@@ -69,9 +69,9 @@ _Array._addInstanceMethods(
 	at_: function(idx){
 		return this.arr$[idx.num$ - 1];
 	}
-);
-_Array._addClassMethods(
+});
+_Array._addClassMethods({
 	new_: function(size){
 		return new Array(size.num$)
 	}
-);
+});
