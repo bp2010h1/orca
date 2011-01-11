@@ -1,100 +1,128 @@
+var preferWs = true;
 var data = null;
+var webSocket = null;
 var request = null;
-
-function createXmlRequest() {
-	return new XMLHttpRequest();
-}
-
-function poll() {
-	request = createXmlRequest();
-	request.open("GET", "/xml", true);
-	request.onreadystatechange = requestHandler;
-	request.send(null);
-}
-
-function requestHandler() {
-	if (request.readyState == 4) {
-		if (request.status == 200) {
-			var xml = request.responseXML.getElementsByTagName("data")[0].firstChild.data;
-			log(request.status, decodeURIComponent(xml));
-			poll();
-		}
-		else {
-			log(request.status, null);
+var identifier = null;
+	
+	function isWsSupported() {
+		return ("WebSocket" in window);
+	}
+	
+	function useWs() {
+		return (isWsSupported() && preferWs);
+	}
+	
+	// common functions
+	
+	function connect() {
+		useWs() ? openSocket() : openComet();
+	}
+	
+	function send() {
+		data = document.getElementById("input").value;
+		if (data != "") {
+			useWs() ? sendSocket(data) : sendComet(data);
 		}
 	}
-}
+	
+	function disconnect() {
+		useWs() ? closeSocket() : closeComet();
+	}
 
-function send() {
-	stop();
-	data = document.getElementById("input").value;
-	if (data != "") {
+	// comet functions
+
+	function createXmlRequest() {
+		return new XMLHttpRequest();
+	}
+	
+	function cometUrl() {
+		if (identifier != null) return "/xhr?id=" + identifier;
+		return "/xhr";
+	}
+	
+	function openComet() {
+		if (request == null) poll();
+	}
+		
+	function poll() {
 		request = createXmlRequest();
-		request.open("POST", "/put", true);
+		request.open("GET", cometUrl(), true);
+		request.onreadystatechange = pollResponseHandler;
+		request.send(null);
+	}
+	
+	function pollResponseHandler() {
+		if (request.readyState == 4) {
+			if (request.status == 200) {
+				var content = request.responseText;
+				log(request.status, content);
+				poll();
+			}
+			else if (request.status == 202) {
+				identifier = request.responseText;
+				info("Registered with id " + identifier);
+				poll();
+			}
+			else info("disconnected");
+		}
+	}
+	
+	function sendComet(data) {
+		stop();
+		request = createXmlRequest();
+		request.open("POST", cometUrl(), true);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		request.onreadystatechange = responseHandler;
+		request.onreadystatechange = sendResponseHandler;
 		request.send(encodeURIComponent(data));
 	}
-}
-
-function responseHandler() {
-	if ((request.readyState == 4) && (request.status == 201)) {
-		log(201, data);
-		poll();
-	}
-}
-
-function stop() {
-	if (request != null) {
-		request.abort();
-		request = null;
-	}
-}
-
-function log(httpStatus, content) {
-	if ((httpStatus == 200) || (httpStatus == 201)) {
-		var evaluatedContent;
-		try {
-				evaluatedContent = eval(content);
-			prependRow("green", httpStatus, content, evaluatedContent);
-		}
-		catch(error) {
-			prependRow("red", httpStatus, content, error);
-		}
-	}
-	else if (httpStatus == 204) {
-		prependRow("yellow", httpStatus, "No content", "");
-	}
-	else {
-		prependRow("yellow", httpStatus, "Client aborted", "");
-	} 
-}
 	
-function prependRow(cssClass, httpStatus, logText, evalText) {
-	var tbody = document.getElementsByTagName("tbody")[0];
-	var firstRow = tbody.getElementsByTagName("tr")[0];
-	var newRow = row(cssClass, httpStatus, logText, evalText);
-	tbody.insertBefore(newRow, firstRow);
-}
-
-function row(cssClass, httpStatus, logText, evalText) {
-	var row = document.createElement("tr");
-	row.setAttribute("class", cssClass);
-	var httpData = document.createElement("td");
-	httpData.innerHTML = httpStatus;
-	row.appendChild(httpData);
-	var logData = document.createElement("td");
-	logData.innerHTML = logText;
-	row.appendChild(logData);
-	var evalData = document.createElement("td");
-	evalData.innerHTML = evalText;
-	row.appendChild(evalData);
-	return row;
-}
-
-function clearLog() {
-	var tbody = document.getElementsByTagName("tbody")[0];
-	while (tbody.childNodes.length > 0) {
-		tbody.removeChild(tbody.childNodes[0]);
+	function sendResponseHandler() {	
+		if ((request.readyState == 4) && (request.status == 201)) {
+			log(201, data);
+			poll();
+		}
 	}
-}
+	
+	function closeComet() {
+		if (request != null) {
+			request.abort();
+			request = null;
+		}
+	}
+	
+	// WebSocket
+	
+	function openSocket() {
+		webSocket = new WebSocket("ws://localhost:8887/ws");
+		
+		webSocket.onopen = function(event) {
+			info("Successfully opened WebSocket.");
+		}
+		
+		webSocket.onerror = function(event) {
+			log("WebSocket failed.");
+		}
+		
+		webSocket.onmessage = function(event) {
+			log(200, event.data)
+		}
+		
+		webSocket.onclose = function() {
+			info("WebSocket received close event.");
+		}
+	}
+	
+	function sendSocket(message) {
+		if (webSocket != null) {
+			webSocket.send(message);
+			log(200, message);
+		}
+	}
+
+	function closeSocket() {
+		if (webSocket != null) {
+			info("WebSocket closed by client.");
+			webSocket.close();
+			webSocket = null;
+		}
+	}
