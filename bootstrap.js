@@ -19,8 +19,8 @@ Function.prototype._new = function(){
 
 
 // instead of bool(true) and bool(false) (which would be the equivalent to string(""), number(2) etc.)
-var _true = True.newInstance();
-var _false = False.newInstance();
+var _true = True._newInstance();
+var _false = False._newInstance();
 
 
 // 
@@ -53,31 +53,31 @@ var bool = function(aBool) {
 
 // (cannot name it char)
 var character = function(aString) {
-  resultCharacter = Character.newInstance();
+  resultCharacter = Character._newInstance();
   resultCharacter.character$ = aString;
   return resultCharacter;
 }
 
 var string = function(aString) {
-  resultString = ByteString.newInstance();
+  resultString = ByteString._newInstance();
   resultString.string$ = aString;
   return resultString;
 }
 
 var number = function(number) {
-  resultNumber = Float.newInstance();
+  resultNumber = Float._newInstance();
   resultNumber.num$ = number;
   return resultNumber;
 }
 
 var array = function(anArray) {
-  resultArray = Array.newInstance();
+  resultArray = Array._newInstance();
   resultArray.arr$ = anArray;
   return resultArray;
 }
 
 var block = function(func, that) {
-	b = BlockClosure.newInstance();
+	b = BlockClosure._newInstance();
 	b.$creationContext = arguments.callee.caller;
 	
 	b.$func = function() {
