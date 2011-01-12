@@ -1,7 +1,7 @@
 var SERVER = {
 	
-	_waitingForResponse: null;
-	_result: null;
+	_waitingForResponse: null,
+	_result: null,
 	
 	performOnServer : function (classname, selector, args) {
 		// Object >> perform: selector withArguments: argArray
@@ -11,7 +11,7 @@ var SERVER = {
 			// busy wait
 		}
 		return _result;
-	}
+	},
 	
 	callback : function(result) {
 		// response handled through comet or sockets will
