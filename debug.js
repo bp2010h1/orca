@@ -1,9 +1,9 @@
 function log(text) {
-	prependRow("green", text, null);
+	//prependRow("green", text, null);
 }
 
 function info(text) {
-	prependRow("blue", null, text, null);
+	//prependRow("blue", null, text, null);
 }
 
 function log(httpStatus, content) {
@@ -11,17 +11,17 @@ function log(httpStatus, content) {
 		var evaluatedContent;
 		try {
 			evaluatedContent = eval(content);
-			prependRow("green", httpStatus, content, evaluatedContent);
+			//prependRow("green", httpStatus, content, evaluatedContent);
 		}
 		catch(error) {
-			prependRow("red", httpStatus, content, error);
+			//prependRow("red", httpStatus, content, error);
 		}
 	}
 	else if (httpStatus == 204) {
-		prependRow("yellow", httpStatus, "No content", "");
+		//prependRow("yellow", httpStatus, "No content", "");
 	}
 	else {
-		prependRow("yellow", httpStatus, "Client aborted", "");
+		//prependRow("yellow", httpStatus, "Client aborted", "");
 	} 
 }
 	
