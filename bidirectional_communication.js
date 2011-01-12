@@ -36,8 +36,8 @@ var identifier = null;
 	}
 	
 	function cometUrl() {
-		if (identifier != null) return "/xhr?id=" + identifier;
-		return "/xhr";
+		if (identifier != null) return document.location.href + "/xhr?id=" + identifier;
+		return document.location.href+"/xhr";
 	}
 	
 	function openComet() {
@@ -93,7 +93,8 @@ var identifier = null;
 	// WebSocket
 	
 	function openSocket() {
-		webSocket = new WebSocket("ws://localhost:8887/ws");
+		
+		webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 		
 		webSocket.onopen = function(event) {
 			info("Successfully opened WebSocket.");
