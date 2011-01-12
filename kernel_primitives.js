@@ -8,8 +8,19 @@ Error._addInstanceMethods({
 	signal: function(){ throw this }
 });
 
-// TODO Float: this should be moved to Number or something... the whole Number-class-hierarchy should be supported in JS
-// For this, the Parser must "find out" which class is instantiated from a number-literal.. Integer/SmallInteger/Floast/etc.
+ProtoObject._addClassMethods({
+	basicNew: function() { return this._newInstance(); },
+	_new: function(){ return this.basicNew().initialize(); }
+});
+
+_Object._addInstanceMethods({
+	_class: function() { return this.__class; }
+});
+
+Error._addInstanceMethods({
+	signal: function(){ throw this }
+});
+
 Float._addInstanceMethods({
 	_plus: function(other) { return number(this.num$ + other.num$); },
 	_minus: function(other) { return number(this.num$ - other.num$); },
@@ -24,6 +35,9 @@ Float._addInstanceMethods({
 	},
 	_less_equals: function(other) {
 		return bool(this.num$ <= other.num$);
+	},
+	_greater_equals: function(other) {
+		return bool(this.num$ >= other.num$);
 	},
 	_equals: function(other) {
 		return bool(this.num$ == other.num$);
@@ -52,7 +66,7 @@ BlockClosure._addInstanceMethods({
 	
 	whileTrue_: function(anotherBlock) {
 		// TODO implement whileTrue: for real
-		while(this.value() == _true) {
+		while(this.value() === _true) {
 			anotherBlock.value();
 		}
 	}
@@ -72,6 +86,17 @@ _Array._addInstanceMethods({
 });
 _Array._addClassMethods({
 	new_: function(size){
-		return new Array(size.num$)
+		return array([]);
 	}
 });
+
+
+
+
+
+
+// TODO TODO this does not belong here, but disturbs the _addInstance/ClassMethods -methods, as it adds an additional slot 
+// to each parameter ({...}-object) passed in these methods and thus overwrites the js-methods of the classes.
+Object.prototype.js = function() {
+  return this;
+}

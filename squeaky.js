@@ -1,11 +1,12 @@
+var OBJECT_NUM = 0;
 
 // Helper-functions are inside the Class-function to not declare them globally
-Class = function(attrs) {
+var Class = function(attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
 		var createMethod = function(receiver, methodName, method) {
 			receiver.prototype[methodName] = WithNonLocalReturn(method);
-			receiver.prototype[methodName].isMethod = true;
+			receiver.prototype[methodName].methodName = methodName;
 		}
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
@@ -44,7 +45,7 @@ Class = function(attrs) {
 		// copy supermethods to new objects
 		for(method in superPrototype) {
 			// filter instance methods only
-			if(typeof superPrototype[method] == 'function' && superPrototype[method].isMethod != undefined) {
+			if(typeof superPrototype[method] == 'function' && superPrototype[method].methodName != undefined) {
 				wrapperFunction = function() {
 					return superPrototype[arguments.callee.wrappedMethodName].apply(newInstance, arguments);
 				}
@@ -68,6 +69,7 @@ Class = function(attrs) {
 				createSuperSlots(attrs.superclass._classPrototype.prototype, this);
 			};
 			newInstancePrototype = function() {
+				OBJECT_NUM = OBJECT_NUM + 1;
 				createSuperSlots(attrs.superclass._instancePrototype.prototype, this);
 			};
 			
@@ -93,7 +95,7 @@ Class = function(attrs) {
 				return new newClass._instancePrototype();
 			}
 		});
-		newClass._addInstanceVariables(['_class'], newClass);
+		newClass._addInstanceVariables(['__class'], newClass);
 		
 		return newClass;
 	}
