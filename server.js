@@ -1,7 +1,7 @@
-var SERVER = function(){
+var SERVER = {
 	
-	var _waitingForResponse;
-	var _result;
+	_waitingForResponse: null;
+	_result: null;
 	
 	performOnServer : function (classname, selector, args) {
 		// Object >> perform: selector withArguments: argArray
@@ -13,7 +13,7 @@ var SERVER = function(){
 		return _result;
 	}
 	
-	var callback = function(result) {
+	callback : function(result) {
 		// response handled through comet or sockets will
 		// contain as result a function call like "callback(result)"
 		_result = result;
