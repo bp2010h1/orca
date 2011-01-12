@@ -3,7 +3,7 @@ var SERVER = function(){
 	var _waitingForResponse;
 	var _result;
 	
-	var performOnServer = function(classname, selector, args) {
+	performOnServer : function (classname, selector, args) {
 		// Object >> perform: selector withArguments: argArray
 		CONNECTION.send(classname + "." + selector + "." + args);
 		_waitingForResponse = true;
