@@ -4,10 +4,6 @@
 // If this gets too long, split it in multiple files
 // 
 
-Error._addInstanceMethods({
-	signal: function(){ throw this }
-});
-
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
 	_new: function(){ return this.basicNew().initialize(); }
@@ -56,7 +52,7 @@ Point._addInstanceMethods({
 	}
 });
 
-var _blockValueFunction_ = function(){ return this.$func.apply(this, arguments); };
+var _blockValueFunction_ = function(){ return this.func$.apply(this, arguments); };
 BlockClosure._addInstanceMethods({
 	value: _blockValueFunction_,
 	value_: _blockValueFunction_,
@@ -89,9 +85,6 @@ _Array._addClassMethods({
 		return array([]);
 	}
 });
-
-
-
 
 
 

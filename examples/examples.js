@@ -62,7 +62,7 @@ Pirate = Class({
 	}
 });
 
-jack = Pirate._newInstance();
+jack = Pirate.basicNew();
 jack.setName("Captain Jack Sparrow");
 
 alert(jack.makeNoise());

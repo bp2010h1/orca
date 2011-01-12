@@ -126,7 +126,6 @@ var identifier = null;
 			webSocket.close();
 			webSocket = null;
 		}
-<<<<<<< HEAD
 	}
 	
 	function info(message) {
@@ -135,7 +134,4 @@ var identifier = null;
 	function log(message) {
 		alert(message);
 	}
-=======
-	}
 	
->>>>>>> master
