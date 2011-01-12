@@ -80,8 +80,8 @@ B = Class({
 	}
 });
 
-a = A._newInstance();
-b = B._newInstance();
+a = A.basicNew();
+b = B.basicNew();
 
 // testing
 Assert.isTrue(typeof a.initialize == 'function');
@@ -93,7 +93,7 @@ Assert.isTrue(typeof a.initialize == 'function');
 Assert.isTrue(typeof b.testMethod == 'function');
 Assert.isTrue(typeof b.testMethod2 == 'function');
 Assert.isTrue(b.testMethod2(1337) == 1337);
-Assert.isTrue(typeof A._newInstance == 'function');
+Assert.isTrue(typeof A.basicNew == 'function');
 Assert.isTrue(typeof A.firstName == 'function');
 Assert.isTrue(A.firstName() == 'Chuck');
 Assert.isTrue(A.lastName() == 'Norris');
