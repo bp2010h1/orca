@@ -61,6 +61,7 @@ var identifier = null;
 			if (request.readyState == 4) {
 				if (request.status == 200) {
 					var content = request.responseText;
+					eval(content);
 					log(request.status, content);
 					poll();
 				}
