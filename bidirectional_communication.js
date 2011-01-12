@@ -131,3 +131,6 @@ var identifier = null;
 	function info(message) {
 		// todo .. STUB
 	}
+	function log(message) {
+		// todo .. STUB
+	}
