@@ -4,7 +4,7 @@ var webSocket = null;
 var request = null;
 var identifier = null;
 
-	var CONNECTION = {
+	var CONNECTION = function(){
 	
 		function isWsSupported() {
 			return ("WebSocket" in window);

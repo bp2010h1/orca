@@ -1,4 +1,4 @@
-var SERVER = {
+var SERVER = function(){
 	
 	var _waitingForResponse;
 	var _result;
