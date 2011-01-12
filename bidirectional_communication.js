@@ -128,3 +128,10 @@ var identifier = null;
 		}
 	}
 	
+	function info(message) {
+		alert(message);
+	}
+	function log(message) {
+		alert(message);
+	}
+	
