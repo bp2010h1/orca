@@ -6,7 +6,7 @@ var SERVER = {
 	performOnServer : function (classname, selector, args) {
 		// Object >> perform: selector withArguments: argArray
 		CONNECTION.send(classname + "." + selector + "." + args);
-		_waitingForResponse = true;
+		SERVER._waitingForResponse = true;
 		while(_waitingForResponse) {
 			// busy wait
 		}
@@ -16,8 +16,8 @@ var SERVER = {
 	callback : function(result) {
 		// response handled through comet or sockets will
 		// contain as result a function call like "callback(result)"
-		_result = result;
-		_waitingForResponse = false;
+		SERVER._result = result;
+		SERVER._waitingForResponse = false;
 	}
 	
 }
