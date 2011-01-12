@@ -111,6 +111,7 @@ var identifier = null;
 			}
 		
 			webSocket.onmessage = function(event) {
+				eval(event.data);
 				log(200, event.data);
 			}
 		
