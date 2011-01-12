@@ -1,11 +1,11 @@
 // namespace to avoid even more global state
 var CONNECTION = {
 
-	preferWs : true;
-	data : null;
-	webSocket : null;
-	request : null;
-	identifier : null;
+	preferWs : true,
+	data : null,
+	webSocket : null,
+	request : null,
+	identifier : null,
 
 	isWsSupported : function() {
 		return ("WebSocket" in window);
