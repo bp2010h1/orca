@@ -105,7 +105,7 @@ var identifier = null;
 		}
 		
 		webSocket.onmessage = function(event) {
-			log(200, event.data)
+			log(200, event.data);
 		}
 		
 		webSocket.onclose = function() {
