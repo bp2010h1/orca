@@ -16,7 +16,7 @@ var primitiveDeclaration = function(){ alert("Primitive has been called!!! The c
 // instead of bool(true) and bool(false) (which would be the equivalent to string(""), number(2) etc.)
 var _true = True._newInstance();
 var _false = False._newInstance();
-var nil = null; //UndefinedObject._newInstance();
+var nil = UndefinedObject._newInstance();
 
 // 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
