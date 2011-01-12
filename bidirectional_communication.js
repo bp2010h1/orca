@@ -126,3 +126,7 @@ var identifier = null;
 			webSocket = null;
 		}
 	}
+	
+	function info(message) {
+		// todo .. STUB
+	}
