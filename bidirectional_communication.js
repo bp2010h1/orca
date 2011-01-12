@@ -133,13 +133,5 @@ var identifier = null;
 				webSocket = null;
 			}
 		}
-	
-		function performOnServer(receiver, message) {
-			send("" + receiver + " " + message);
-		}
-		
-		function getClasses() {
-			performOnServer("Smalltalk", "allClasses");
-		}
 		
 	}
