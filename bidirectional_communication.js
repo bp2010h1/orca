@@ -129,8 +129,8 @@ var identifier = null;
 	}
 	
 	function info(message) {
-		// todo .. STUB
+		alert(message);
 	}
 	function log(message) {
-		// todo .. STUB
+		alert(message);
 	}
