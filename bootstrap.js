@@ -19,10 +19,9 @@ var _true = True._newInstance();
 var _false = False._newInstance();
 var nil = UndefinedObject._newInstance();
 
+// Now, that nil is available, initialize all instance-variables of all classes to nil
 for (aClass in ALL_CLASSES) {
-	for (field in aClass) {
-		
-	}
+	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
 // Smalltalk objects and Javascript objects both implement #isSmalltalkObject to determine the origin conveniently

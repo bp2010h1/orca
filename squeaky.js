@@ -11,7 +11,7 @@ var Class = function(attrs) {
 			receiver.prototype[methodName].methodName = methodName;
 		}
 		
-		var initializeVariables(aPrototype, newInitialValue) {
+		var initializeVariables = function(aPrototype, newInitialValue) {
 			for (instVar in aPrototype) {
 				if (aPrototype[instVar] == null) {
 					aPrototype[instVar] = newInitialValue;
@@ -20,7 +20,7 @@ var Class = function(attrs) {
 		}
 		
 		// Initialize all fields, that are null to the given value
-		newClassPrototype.prototype._initializeInstanceVariables(newInitialValue) {
+		newClassPrototype.prototype._initializeInstanceVariables = function(newInitialValue) {
 			initializeVariables(this._instancePrototype.prototype, newInitialValue);
 			initializeVariables(this._classPrototype.prototype, newInitialValue);
 		}
@@ -143,7 +143,7 @@ var Class = function(attrs) {
 	addVariables(newClass);
 	addMethods(newClass);
 	
-	ALL_CLASSES[ALL_CLASSES.length].add(newClass);
+	ALL_CLASSES[ALL_CLASSES.length] = newClass;
 	return newClass;
 };
 
