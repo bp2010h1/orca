@@ -18,6 +18,13 @@ var _true = True._newInstance();
 var _false = False._newInstance();
 var nil = UndefinedObject._newInstance();
 
+
+// Smalltalk objects and Javascript objects both implement #isSmalltalkObject to determine the origin conveniently
+Object.prototype.isSmalltalkObject = function() {
+	return _false;
+};
+
+
 // 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
 // their Squeak-wrapper-objects. As short as possible, as it is called on every argument of js-library-calls.
