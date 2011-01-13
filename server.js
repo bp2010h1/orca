@@ -10,7 +10,7 @@ var SERVER = {
 		while(_waitingForResponse) {
 			// busy wait
 		}
-		return _result;
+		return SERVER._result;
 	},
 	
 	callback : function(result) {
