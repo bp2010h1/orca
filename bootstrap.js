@@ -4,6 +4,7 @@
 var JsGlobal = this;
 
 // Each function can be instantiated like a Squeak-object. This feels kind of like a hack... TODO Is there a cleaner way?
+// TODO This will soon become obsolete through new syntax 'Abc jsNew: {1}' -> 'new Abc(1)'
 Function.prototype._new = function(){
  var obj = {};
  this.apply(obj, arguments);
@@ -18,12 +19,16 @@ var _true = True._newInstance();
 var _false = False._newInstance();
 var nil = UndefinedObject._newInstance();
 
+for (aClass in ALL_CLASSES) {
+	for (field in aClass) {
+		
+	}
+}
 
 // Smalltalk objects and Javascript objects both implement #isSmalltalkObject to determine the origin conveniently
 Object.prototype.isSmalltalkObject = function() {
 	return _false;
 };
-
 
 // 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
@@ -34,12 +39,12 @@ _Object._addInstanceMethods( { js: function() {
 	alert("Trying to pass a Squeak-object into a javascript-library-call! " + this); } } );
 False._addInstanceMethods( { js: function() { return false; } } );
 True._addInstanceMethods( { js: function() { return true; } } );
+UndefinedObject._addInstanceMethods( { js: function() { return null; } } );
 ByteString._addInstanceMethods( { js: function() { return this.string$; } } );
 _Number._addInstanceMethods( { js: function() { return this.num$; } } );
 Character._addInstanceMethods( { js: function() { return this.character$; } } );
 _Array._addInstanceMethods( { js: function() { return this.arr$; } } );
-BlockClosure._addInstanceMethods( { js: function() { 
-	return this.func$; } } );
+BlockClosure._addInstanceMethods( { js: function() { return this.func$; } } );
 
 // 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
