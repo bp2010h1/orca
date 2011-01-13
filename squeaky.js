@@ -1,4 +1,6 @@
-var OBJECT_NUM = 0;
+
+// Every class is added here. Needed to initialize their instance-variables later.
+var ALL_CLASSES = [];
 
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(attrs) {
@@ -7,6 +9,20 @@ var Class = function(attrs) {
 		var createMethod = function(receiver, methodName, method) {
 			receiver.prototype[methodName] = WithNonLocalReturn(method);
 			receiver.prototype[methodName].methodName = methodName;
+		}
+		
+		var initializeVariables(aPrototype, newInitialValue) {
+			for (instVar in aPrototype) {
+				if (aPrototype[instVar] == null) {
+					aPrototype[instVar] = newInitialValue;
+				}
+			}
+		}
+		
+		// Initialize all fields, that are null to the given value
+		newClassPrototype.prototype._initializeInstanceVariables(newInitialValue) {
+			initializeVariables(this._instancePrototype.prototype, newInitialValue);
+			initializeVariables(this._classPrototype.prototype, newInitialValue);
 		}
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
@@ -69,7 +85,6 @@ var Class = function(attrs) {
 				createSuperSlots(attrs.superclass._classPrototype.prototype, this);
 			};
 			newInstancePrototype = function() {
-				OBJECT_NUM = OBJECT_NUM + 1;
 				createSuperSlots(attrs.superclass._instancePrototype.prototype, this);
 			};
 			
@@ -128,6 +143,7 @@ var Class = function(attrs) {
 	addVariables(newClass);
 	addMethods(newClass);
 	
+	ALL_CLASSES[ALL_CLASSES.length].add(newClass);
 	return newClass;
 };
 
