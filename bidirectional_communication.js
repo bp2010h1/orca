@@ -52,7 +52,7 @@ var CONNECTION = {
 	},
 	
 	poll : function() {
-		CONNECTION.request = createXmlRequest();
+		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("GET", CONNECTION.cometUrl(), true);
 		CONNECTION.request.onreadystatechange = CONNECTION.pollResponseHandler;
 		CONNECTION.request.send(null);
@@ -77,7 +77,7 @@ var CONNECTION = {
 
 	sendComet : function(data) {
 		CONNECTION.stop();
-		CONNECTION.request = createXmlRequest();
+		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("POST", CONNECTION.cometUrl(), true);
 		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
