@@ -11,10 +11,20 @@ ProtoObject._addClassMethods({
 
 _Object._addInstanceMethods({
 	_class: function() { return this.__class; }
+    _equals_equals: function(anObject) { if(this === anObject){return _true;}else{return _false;} }
 });
 
 Error._addInstanceMethods({
 	signal: function(){ throw this }
+});
+
+String._addInstanceMethods({
+	// This is not actually a primitive function, but behaves in the same way the #, method does
+	_comma: function(anotherString) { return string(this.string$ + anotherString.string$)}
+});
+
+_Number._addInstanceMethods({
+	printString: function() { return string(this.num$.toString()); }
 });
 
 Float._addInstanceMethods({
