@@ -5,7 +5,11 @@ var SERVER = {
 	
 	performOnServer : function (classname, selector, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
-		CONNECTION.send("INVOKE: " + classname + "." + selector + "." + stringArgument);
+		var command = "INVOKE: " + classname + "." + selector;		
+		if (stringArgument) {
+		  command = command + "." + stringArgument;
+		}
+		CONNECTION.send(command);
 		SERVER._waitingForResponse = true;
 		while(SERVER._waitingForResponse) {
 			// busy wait
