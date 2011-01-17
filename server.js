@@ -3,9 +3,9 @@ var SERVER = {
 	_waitingForResponse: null,
 	_result: null,
 	
-	performOnServer : function (classname, selector, args) {
+	performOnServer : function (classname, selector, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
-		CONNECTION.send("INVOKE " + classname + "." + selector + "." + args);
+		CONNECTION.send("INVOKE: " + classname + "." + selector + "." + stringArgument);
 		SERVER._waitingForResponse = true;
 		while(_waitingForResponse) {
 			// busy wait
