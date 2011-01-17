@@ -6,7 +6,7 @@ var SERVER = {
 	performOnServer : function (classname, selector, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
 		var command = "INVOKE: " + classname + "." + selector;		
-		if (stringArgument) {
+		if (arguments.length == 3) {
 		  command = command + "." + stringArgument;
 		}
 		CONNECTION.send(command);
