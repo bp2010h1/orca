@@ -80,7 +80,7 @@ var CONNECTION = {
 	},
 
 	sendComet : function(data) {
-		CONNECTION.stop();
+		CONNECTION.closeComet();
 		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("POST", CONNECTION.cometUrl(), false);
 		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
