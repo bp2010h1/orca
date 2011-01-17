@@ -3,6 +3,9 @@
 // Not really needed... !? TODO this object should be accessible through a js-keyword or something, parse it directly instead of JsGlobal
 var JsGlobal = this;
 
+// TODO Delete if new syntax has been implemented (#new Option: {'abc'}    ->     new Option("abc"))
+JsGlobal.newOptionFor = function(aCaption, aValue, defaultSelected, selected) { return new Option(aCaption, aValue, defaultSelected, selected); };
+
 // Each function can be instantiated like a Squeak-object. This feels kind of like a hack... TODO Is there a cleaner way?
 // TODO This will soon become obsolete through new syntax 'Abc jsNew: {1}' -> 'new Abc(1)'
 Function.prototype._new = function(){

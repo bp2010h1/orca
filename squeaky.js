@@ -156,10 +156,13 @@ var WithNonLocalReturn = function(method) {
 			return arguments.callee.originalMethod.apply(this, arguments);
 		}
 		catch(e) {
-			if(e == method)
+			if (e == method)
 				return e.nonLocalReturnValue;
-			else
+			else {
+				if (typeof e == "function")
+					alert("Caught exception, that is not related to non-local-return-dispatch: " + e);
 				throw e;
+			}
 		}
 	};
 	

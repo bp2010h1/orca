@@ -96,8 +96,6 @@ _Array._addClassMethods({
 	}
 });
 
-
-
 // TODO TODO this does not belong here, but disturbs the bootstrapping with _addInstance/ClassMethods -methods, as it adds an additional slot 
 // to each parameter ({...}-object) passed in these methods and thus overwrites the js-methods of the classes.
 Object.prototype.js = function() {
