@@ -11,9 +11,9 @@ var SERVER = {
 		}
 		CONNECTION.send(command);
 		SERVER._waitingForResponse = true;
-		while(SERVER._waitingForResponse) {
+		/*while(SERVER._waitingForResponse) {
 			// busy wait
-		}
+		}*/
 		return SERVER._result;
 	},
 	
