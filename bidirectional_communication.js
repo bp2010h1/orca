@@ -106,14 +106,13 @@ var CONNECTION = {
 	
 		CONNECTION.webSocket.onopen = function(event) {
 			info("Successfully opened WebSocket.");
-		}
+		};
 	
 		CONNECTION.webSocket.onerror = function(event) {
 			log("WebSocket failed.");
-		}
+		};
 	
-		CONNECTION.webSocket.onmessage = function(event) {
-			
+		CONNECTION.webSocket.onmessage = function(event) {			
 			if (event.data.startsWith:'Result: '){
 			  SERVER._callback(event.data);
 			}
@@ -123,11 +122,11 @@ var CONNECTION = {
 			   //log(200, event.data);
 			   //eval(event.data);
 			}
-		}
+		};
 	
 		CONNECTION.webSocket.onclose = function() {
 			info("WebSocket received close event.");
-		}
+		};
 	},
 
 	sendSocket : function(message) {
