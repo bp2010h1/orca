@@ -86,6 +86,7 @@ var CONNECTION = {
 		//CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		//CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
 		CONNECTION.request.send(encodeURIComponent(data));
+		alert("sending" + encodeURIComponent(data));
 		return CONNCETION.request.responseText;
 	},
 
@@ -141,7 +142,7 @@ var CONNECTION = {
 		}
 	},
 
-	closeSocket	: function() {
+	closeSocket : function() {
 		if (CONNECTION.webSocket != null) {
 			info("WebSocket closed by client.");
 			CONNECTION.webSocket.close();
