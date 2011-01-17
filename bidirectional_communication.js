@@ -114,7 +114,7 @@ var CONNECTION = {
 	
 		CONNECTION.webSocket.onmessage = function(event) {			
 			if (event.data.indexOf('Result: ')==0){
-			  SERVER._callback(event.data);
+			  SERVER.callback(event.data);
 			}
 			else {
 			  // no result of a invocation
