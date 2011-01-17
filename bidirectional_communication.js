@@ -83,10 +83,10 @@ var CONNECTION = {
 		CONNECTION.closeComet();
 		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("POST", CONNECTION.methodCallUrl(), false);
-		//CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		//CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
+		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
+		info("sending" + encodeURIComponent(data));
 		CONNECTION.request.send(encodeURIComponent(data));
-		alert("sending" + encodeURIComponent(data));
 		return CONNCETION.request.responseText;
 	},
 
@@ -150,3 +150,7 @@ var CONNECTION = {
 		}
 	}
 }
+
+
+// DEBUG
+info = alert;
