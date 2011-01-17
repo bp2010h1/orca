@@ -113,8 +113,16 @@ var CONNECTION = {
 		}
 	
 		CONNECTION.webSocket.onmessage = function(event) {
-			eval(event.data);
-			log(200, event.data);
+			
+			if (event.data.startsWith:'Result: '){
+			  SERVER._callback(event.data);
+			}
+			else {
+			  // no result of a invocation
+			  
+			   //log(200, event.data);
+			   //eval(event.data);
+			}
 		}
 	
 		CONNECTION.webSocket.onclose = function() {
