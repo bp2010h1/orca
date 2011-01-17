@@ -105,7 +105,7 @@ var CONNECTION = {
 		CONNECTION.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 	
 		CONNECTION.webSocket.onopen = function(event) {
-			info("Successfully opened WebSocket.");
+			alert("Successfully opened WebSocket.");
 		};
 	
 		CONNECTION.webSocket.onerror = function(event) {
@@ -113,6 +113,7 @@ var CONNECTION = {
 		};
 	
 		CONNECTION.webSocket.onmessage = function(event) {			
+			alert(event);
 			if (event.data.indexOf('Result: ')==0){
 			  SERVER.callback(event.data);
 			}
