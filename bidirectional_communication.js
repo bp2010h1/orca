@@ -23,7 +23,7 @@ var CONNECTION = {
 
 	send : function(data) {
 		if (data != "") {
-			CONNECTION.useWs() ? CONNECTION.sendSocket(data) : CONNECTION.sendComet(data);
+			return CONNECTION.sendComet(data);
 		}
 	},
 	
@@ -49,6 +49,10 @@ var CONNECTION = {
 
 	openComet : function() {
 		if (CONNECTION.request == null) CONNECTION.poll();
+	},
+	
+	methodCallUrl : function() {
+		return document.location.href+"/mcc";
 	},
 	
 	poll : function() {
@@ -78,7 +82,7 @@ var CONNECTION = {
 	sendComet : function(data) {
 		CONNECTION.stop();
 		CONNECTION.request = CONNECTION.createXmlRequest();
-		CONNECTION.request.open("POST", CONNECTION.cometUrl(), true);
+		CONNECTION.request.open("POST", CONNECTION.cometUrl(), false);
 		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
 		CONNECTION.request.send(encodeURIComponent(data));
