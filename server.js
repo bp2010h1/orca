@@ -31,7 +31,7 @@ var SERVER = {
 var waitFor = function( params )
   {
       var condition  = params.condition;
-      var callback   = params.callback || ;
+      var callback   = params.callback;
       var interval   = params.interval || 100;
       var maxTries   = params.maxTries || 100;
       var currentTry = params._currentTry || 0; // private
