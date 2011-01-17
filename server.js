@@ -3,11 +3,13 @@ var SERVER = {
 	_waitingForResponse: null,
 	_result: null,
 	
-	performOnServer : function (classname, selector, stringArgument) {
+	performOnServer : function (classname, method, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
-		var command = "INVOKE: " + classname + "." + selector;		
+		var command = "class=" 	+ classname + "&" +
+					  "method=" + method;		
 		if (arguments.length == 3) {
-		  command = command + "." + stringArgument;
+		  command = command + "&" + 
+		  			"argument=" + stringArgument;
 		}
 		
 		SERVER._result = CONNECTION.send(command);
