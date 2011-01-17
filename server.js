@@ -7,7 +7,7 @@ var SERVER = {
 		// Object >> perform: selector withArguments: argArray
 		CONNECTION.send("INVOKE: " + classname + "." + selector + "." + stringArgument);
 		SERVER._waitingForResponse = true;
-		while(_waitingForResponse) {
+		while(SERVER._waitingForResponse) {
 			// busy wait
 		}
 		return SERVER._result;
