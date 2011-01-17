@@ -20,6 +20,7 @@ var SERVER = {
 	callback : function(result) {
 		// response handled through comet or sockets will
 		// contain as result a function call like "callback(result)"
+		alert(result);
 		SERVER._result = result;
 		SERVER._waitingForResponse = false;
 	}
