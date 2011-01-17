@@ -23,7 +23,7 @@ var CONNECTION = {
 
 	send : function(data) {
 		if (data != "") {
-			CONNECTION.useWs() ? CONNECTION.sendSocket(data) : CONNECTION.sendComet(data);
+			return CONNECTION.sendComet(data);
 		}
 	},
 	
@@ -51,6 +51,10 @@ var CONNECTION = {
 		if (CONNECTION.request == null) CONNECTION.poll();
 	},
 	
+	methodCallUrl : function() {
+		return document.location.href+"/mcc";
+	},
+	
 	poll : function() {
 		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("GET", CONNECTION.cometUrl(), true);
@@ -76,12 +80,13 @@ var CONNECTION = {
 	},
 
 	sendComet : function(data) {
-		CONNECTION.stop();
+		CONNECTION.closeComet();
 		CONNECTION.request = CONNECTION.createXmlRequest();
-		CONNECTION.request.open("POST", CONNECTION.cometUrl(), true);
-		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
+		CONNECTION.request.open("POST", CONNECTION.methodCallUrl(), false);
+		//CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		//CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
 		CONNECTION.request.send(encodeURIComponent(data));
+		return CONNCETION.request.responseText;
 	},
 
 	sendResponseHandler : function() {	
@@ -106,20 +111,27 @@ var CONNECTION = {
 	
 		CONNECTION.webSocket.onopen = function(event) {
 			info("Successfully opened WebSocket.");
-		}
+		};
 	
 		CONNECTION.webSocket.onerror = function(event) {
 			log("WebSocket failed.");
-		}
+		};
 	
-		CONNECTION.webSocket.onmessage = function(event) {
-			eval(event.data);
-			log(200, event.data);
-		}
+		CONNECTION.webSocket.onmessage = function(event) {			
+			if (event.data.indexOf('Result: ')==0){
+			  SERVER.callback(event.data);
+			}
+			else {
+			  // no result of a invocation
+			  
+			   //log(200, event.data);
+			   //eval(event.data);
+			}
+		};
 	
 		CONNECTION.webSocket.onclose = function() {
 			info("WebSocket received close event.");
-		}
+		};
 	},
 
 	sendSocket : function(message) {
