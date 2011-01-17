@@ -12,7 +12,8 @@ var SERVER = {
 		CONNECTION.send(command);
 		SERVER._waitingForResponse = true;
 		
-		waitFor(SERVER._waitingForResponse == false)
+		waitFor( function() {
+		  return SERVER._waitingForResponse == false } )
 		
 		return SERVER._result;
 	},
@@ -20,7 +21,6 @@ var SERVER = {
 	callback : function(result) {
 		// response handled through comet or sockets will
 		// contain as result a function call like "callback(result)"
-		alert(result);
 		SERVER._result = result;
 		SERVER._waitingForResponse = false;
 	}

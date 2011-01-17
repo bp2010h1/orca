@@ -113,7 +113,6 @@ var CONNECTION = {
 		};
 	
 		CONNECTION.webSocket.onmessage = function(event) {			
-			alert(event);
 			if (event.data.indexOf('Result: ')==0){
 			  SERVER.callback(event.data);
 			}
