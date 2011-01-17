@@ -87,7 +87,7 @@ var CONNECTION = {
 		CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
 		info("sending" + encodeURIComponent(data));
 		CONNECTION.request.send(encodeURIComponent(data));
-		return CONNCETION.request.responseText;
+		return CONNECTION.request.responseText;
 	},
 
 	sendResponseHandler : function() {	
