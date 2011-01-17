@@ -152,4 +152,4 @@ var CONNECTION = {
 
 
 // DEBUG
-info = alert;
+//info = alert;
