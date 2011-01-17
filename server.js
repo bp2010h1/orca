@@ -12,9 +12,6 @@ var SERVER = {
 		CONNECTION.send(command);
 		SERVER._waitingForResponse = true;
 		
-		/*while(SERVER._waitingForResponse) {
-			// busy wait
-		}*/
 		waitFor(SERVER._waitingForResponse == false)
 		
 		return SERVER._result;
@@ -34,14 +31,15 @@ var SERVER = {
 var waitFor = function( params )
   {
       var condition  = params.condition;
-      var callback   = params.callback;
+      var callback   = params.callback || ;
       var interval   = params.interval || 100;
-      var maxTries   = params.maxTries || 7;
+      var maxTries   = params.maxTries || 100;
       var currentTry = params._currentTry || 0; // private
 
       // If condition passes, run the code
       if ( condition() === true )
-          return callback();
+          //return callback();
+	  return;
 
       // Limit the # of attempts
       if ( currentTry < maxTries )
