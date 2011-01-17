@@ -11,9 +11,12 @@ var SERVER = {
 		}
 		CONNECTION.send(command);
 		SERVER._waitingForResponse = true;
+		
 		/*while(SERVER._waitingForResponse) {
 			// busy wait
 		}*/
+		waitFor(SERVER._waitingForResponse == false)
+		
 		return SERVER._result;
 	},
 	
@@ -26,3 +29,34 @@ var SERVER = {
 	}
 	
 }
+
+
+var waitFor = function( params )
+  {
+      var condition  = params.condition;
+      var callback   = params.callback;
+      var interval   = params.interval || 100;
+      var maxTries   = params.maxTries || 7;
+      var currentTry = params._currentTry || 0; // private
+
+      // If condition passes, run the code
+      if ( condition() === true )
+          return callback();
+
+      // Limit the # of attempts
+      if ( currentTry < maxTries )
+      {
+          // Increment the attempt #
+          params._currentTry = currentTry+1;
+
+          // Create the recursive call
+          var f = function() { return waitFor( params ); }
+
+          // Wait for one interval and execute
+          setTimeout( f, interval );
+      }
+      else
+      {
+          // alert( 'Maximum tries used for waitFor()...quitting' );
+      }
+  };
