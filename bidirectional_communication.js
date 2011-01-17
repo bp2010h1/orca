@@ -85,7 +85,8 @@ var CONNECTION = {
 		CONNECTION.request.open("POST", CONNECTION.methodCallUrl(), false);
 		//CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		//CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
-		return CONNECTION.request.send(encodeURIComponent(data));
+		alert(CONNECTION.request.send(encodeURIComponent(data)));
+		return true;
 	},
 
 	sendResponseHandler : function() {	
