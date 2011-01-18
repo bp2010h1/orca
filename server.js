@@ -14,7 +14,7 @@ var S2JServer = {
 		
 		S2JServer._result = S2JConnection.send(command);
 		
-		return S2JServer._result;
+		return eval(S2JServer._result);
 	}
 	
 }
