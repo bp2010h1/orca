@@ -85,7 +85,7 @@ var array = function(anArray) {
   return resultArray;
 }
 
-var block = function(func) {
+var block = function(func, that) {
 	var b = BlockClosure._newInstance();
   func.nonLocalReturnException = CALL_STACK.peek(); 
   var that = CALL_STACK.peek().currentThis;
