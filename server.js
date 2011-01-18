@@ -1,9 +1,9 @@
-var Server = {
+var S2JServer = {
 	
 	_waitingForResponse: null,
 	_result: null,
 	
-	performOnServer : function (classname, method, stringArgument) {
+	performOnS2JServer : function (classname, method, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
 		var command = "class=" 	+ classname + "&" +
 					  "method=" + method;		
@@ -12,9 +12,9 @@ var Server = {
 		  			"argument=" + stringArgument;
 		}
 		
-		Server._result = Connection.send(command);
+		S2JServer._result = S2JConnection.send(command);
 		
-		return Server._result;
+		return S2JServer._result;
 	}
 	
 }
