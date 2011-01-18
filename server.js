@@ -1,4 +1,4 @@
-var SERVER = {
+var Server = {
 	
 	_waitingForResponse: null,
 	_result: null,
@@ -12,9 +12,9 @@ var SERVER = {
 		  			"argument=" + stringArgument;
 		}
 		
-		SERVER._result = CONNECTION.send(command);
+		Server._result = Connection.send(command);
 		
-		return SERVER._result;
+		return Server._result;
 	}
 	
 }
