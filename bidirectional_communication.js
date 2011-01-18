@@ -83,11 +83,12 @@ var CONNECTION = {
 		CONNECTION.closeComet();
 		CONNECTION.request = CONNECTION.createXmlRequest();
 		CONNECTION.request.open("POST", CONNECTION.methodCallUrl(), false);
-		//CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		//CONNECTION.request.onreadystatechange = CONNECTION.sendResponseHandler;
-		CONNECTION.request.send(encodeURIComponent(data));
-		alert("sending" + encodeURIComponent(data));
-		return CONNCETION.request.responseText;
+		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		CONNECTION.request.send(data);
+		var result = CONNECTION.request.responseText;
+		CONNECTION.request=null;
+		CONNECTION.openComet();
+		return result;
 	},
 
 	sendResponseHandler : function() {	
@@ -103,7 +104,7 @@ var CONNECTION = {
 			CONNECTION.request = null;
 		}
 	},
-
+	
 	// WebSocket
 
 	openSocket : function() {
@@ -119,15 +120,8 @@ var CONNECTION = {
 		};
 	
 		CONNECTION.webSocket.onmessage = function(event) {			
-			if (event.data.indexOf('Result: ')==0){
-			  SERVER.callback(event.data);
-			}
-			else {
-			  // no result of a invocation
-			  
-			   //log(200, event.data);
-			   //eval(event.data);
-			}
+			   log(200, event.data);
+			   eval(event.data);
 		};
 	
 		CONNECTION.webSocket.onclose = function() {
@@ -150,3 +144,7 @@ var CONNECTION = {
 		}
 	}
 }
+
+
+// DEBUG
+//info = alert;
