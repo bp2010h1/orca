@@ -9,10 +9,12 @@ ProtoObject._addClassMethods({
 	_new: function() { return this.basicNew().initialize(); }
 	name: function() { return this._classname; }
 });
+ProtoObject._addInstanceMethods({
+	_equals_equals: function(anObject) { if (this === anObject) {return _true; } else { return _false; } }
+});
 
 _Object._addInstanceMethods({
 	_class: function() { return this.__class; },
-    _equals_equals: function(anObject) { if(this === anObject){return _true;}else{return _false;} }
 });
 
 Error._addInstanceMethods({
