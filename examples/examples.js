@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-Person = Class({
+Class('Person', {
 	instanceVariables: ['name'],
 	instanceMethods: {
 		setName: function(aName) {
@@ -35,13 +35,13 @@ Person = Class({
 	}
 });
 
-Pirate = Class({
+Class('Pirate', {
 	// inherits from Person
 	superclass: Person,
 	instanceMethods: {
 		makeNoise: function() {
 			// access makeNoise method from superclass (doesn't need parameters)
-			return this._super.makeNoise() + this._class.noise();
+			return this._super.makeNoise() + this.__class.noise();
 		}
 	},
 	classMethods: {
@@ -62,7 +62,7 @@ Pirate = Class({
 	}
 });
 
-jack = Pirate.basicNew();
+jack = Pirate._newInstance();
 jack.setName("Captain Jack Sparrow");
 
 alert(jack.makeNoise());
