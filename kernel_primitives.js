@@ -75,7 +75,7 @@ BlockClosure._addInstanceMethods({
 	
 	whileTrue_: function(anotherBlock) {
 		// TODO implement whileTrue: for real
-		while(this.value() === _true) {
+		while (this.value() === _true) {
 			anotherBlock.value();
 		}
 	}
