@@ -3,17 +3,6 @@
 // Not really needed... !? TODO this object should be accessible through a js-keyword or something, parse it directly instead of JsGlobal
 var JsGlobal = this;
 
-// TODO Delete if new syntax has been implemented (#new Option: {'abc'}    ->     new Option("abc"))
-JsGlobal.newOptionFor = function(aCaption, aValue, defaultSelected, selected) { return new Option(aCaption, aValue, defaultSelected, selected); };
-
-// Each function can be instantiated like a Squeak-object. This feels kind of like a hack... TODO Is there a cleaner way?
-// TODO This will soon become obsolete through new syntax 'Abc jsNew: {1}' -> 'new Abc(1)'
-Function.prototype._new = function(){
- var obj = {};
- this.apply(obj, arguments);
- return obj;
-};
-
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function(){ alert("Primitive has been called!!! The code is: \n\n" + arguments.callee.caller) };
 
@@ -27,10 +16,14 @@ for (aClass in ALL_CLASSES) {
 	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-// Smalltalk objects and Javascript objects both implement #isSmalltalkObject to determine the origin conveniently
-Object.prototype.isSmalltalkObject = function() {
-	return _false;
-};
+// This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
+// Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
+JsGlobal.AddJsFunctionToAllObjects = function() {
+	Object.prototype.js = function() {
+		return this;
+	}
+	JsGlobal.AddJsFunctionToAllObjects = undefined;
+}
 
 // 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
