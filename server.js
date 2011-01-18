@@ -3,7 +3,7 @@ var S2JServer = {
 	_waitingForResponse: null,
 	_result: null,
 	
-	performOnS2JServer : function (classname, method, stringArgument) {
+	performOnServer : function (classname, method, stringArgument) {
 		// Object >> perform: selector withArguments: argArray
 		var command = "class=" 	+ classname + "&" +
 					  "method=" + method;		
