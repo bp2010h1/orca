@@ -87,9 +87,11 @@ var array = function(anArray) {
 
 var block = function(func) {
 	var b = BlockClosure._newInstance();
-	b.func$ = function() {
+  func.nonLocalReturnException = CALL_STACK.peek(); 
+  var that = CALL_STACK.peek().currentThis;
+  b.func$ = function() {
 		// Use the CALL_STACK to get the object, this block should be executed in
-		return func.apply(CALL_STACK.peek().currentThis, arguments);
+		return func.apply(that, arguments);
 	}
 	return b;
 }
