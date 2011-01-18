@@ -156,19 +156,22 @@ var Class = function(classname, attrs) {
 };
 
 // A wrapper to enable several debugging-functionalities
+// global
 var WithDebugging = function(method) {
-	
 	if (DEBUG) {
 		return function() {
 			try {
 				if (DEBUG_INFINITE_RECURSION) {
-					// This must be the 
-					console.log(arguments.callee.methodName);
+					if (this.__class == undefined) {
+						console.log(this._classname + "." + arguments.callee.methodName);
+					} else {
+						console.log(this.__class._classname + "." + arguments.callee.methodName);
+					}
 				}
 				return method.apply(this, arguments);
 			} catch (e) {
 				if (typeof e != "function") {
-					   debugger;
+					debugger;
 				} else {
 					throw e;
 				}
@@ -178,7 +181,6 @@ var WithDebugging = function(method) {
 	} else {
 		return method;
 	}
-	
 }
 
 // hide real method behind a wrapper method which catches exceptions

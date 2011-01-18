@@ -6,7 +6,8 @@
 
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
-	_new: function(){ return this.basicNew().initialize(); }
+	_new: function() { return this.basicNew().initialize(); }
+	name: function() { return this._classname; }
 });
 
 _Object._addInstanceMethods({
