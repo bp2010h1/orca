@@ -6,12 +6,15 @@
 
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
-	_new: function(){ return this.basicNew().initialize(); }
+	_new: function() { return this.basicNew().initialize(); },
+	name: function() { return this._classname; }
+});
+ProtoObject._addInstanceMethods({
+	_equals_equals: function(anObject) { if (this === anObject) {return _true; } else { return _false; } }
 });
 
 _Object._addInstanceMethods({
-	_class: function() { return this.__class; },
-    _equals_equals: function(anObject) { if(this === anObject){return _true;}else{return _false;} }
+	_class: function() { return this.__class; }
 });
 
 Error._addInstanceMethods({
@@ -96,8 +99,6 @@ _Array._addClassMethods({
 	}
 });
 
-// TODO TODO this does not belong here, but disturbs the bootstrapping with _addInstance/ClassMethods -methods, as it adds an additional slot 
-// to each parameter ({...}-object) passed in these methods and thus overwrites the js-methods of the classes.
-Object.prototype.js = function() {
-  return this;
-}
+
+// Defined in bootstrap.js. Must be called after primitives-initialization.
+JsGlobal.AddJsFunctionToAllObjects();
