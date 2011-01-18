@@ -78,31 +78,11 @@ var array = function(anArray) {
   return resultArray;
 }
 
-var block = function(func, that) {
+var block = function(func) {
 	var b = BlockClosure._newInstance();
-	b.creationContext$ = arguments.callee.caller;
-	
 	b.func$ = function() {
-		try {
-			ret = func.apply(that, arguments);
-			if (ret != undefined) {
-			  if(ret.creationContext$ == func) {
-				  ret.creationContext$ = this.creationContext$;
-			  }
-		  }
-			return ret;
-		}
-		catch(e) {
-			if(e == func) {
-				this.creationContext$.nonLocalReturnValue = e.nonLocalReturnValue;
-				throw this.creationContext$;
-			} 
-			else {
-				throw e;
-			}
-		}
+		// Use the CALL_STACK to get the object, this block should be executed in
+		return func.apply(CALL_STACK.peek().currentThis, arguments);
 	}
-	b.func$.creationContext$ = arguments.callee.caller;
-	
 	return b;
 };

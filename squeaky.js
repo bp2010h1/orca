@@ -149,11 +149,15 @@ var Class = function(classname, attrs) {
 	var newClass = createClassAndLinkPrototypes();
 	addVariables(newClass);
 	addMethods(newClass);
+
 	this[classname] = newClass;
-	
 	ALL_CLASSES[ALL_CLASSES.length] = newClass;
+
 	return newClass;
 };
+
+// global
+var NonLocalReturnException = function(){ this.DontDebug = true };
 
 // A wrapper to enable several debugging-functionalities
 // global
@@ -162,9 +166,8 @@ var WithDebugging = function(method) {
 		return function() {
 			try {
 				if (DEBUG_INFINITE_RECURSION) {
-					WithDebugging.callstackCounter++;
 					var indent = "";
-					for (var i = 0; i < WithDebugging.callstackCounter; i++) {
+					for (var i = 0; i < CALL_STACK.length; i++) {
 						indent += "  ";
 					}
 					if (this.__class == undefined) {
@@ -174,18 +177,12 @@ var WithDebugging = function(method) {
 					}
 				}
 				var result = method.apply(this, arguments);
-				if (DEBUG_INFINITE_RECURSION) {
-					WithDebugging.callstackCounter--;
-				}
 				return result;
 			} catch (e) {
-				if (DEBUG_INFINITE_RECURSION) {
-					WithDebugging.callstackCounter--;
-				}
-				if (typeof e != "function") {
-					debugger;
-				} else {
+				if (e.DontDebug == e) {
 					throw e;
+				} else {
+					debugger;
 				}
 			}
 		}
@@ -193,20 +190,31 @@ var WithDebugging = function(method) {
 		return method;
 	}
 }
-WithDebugging.callstackCounter = 0;
+
+// global, also used in bootstrap.js -> block()
+// Each element has the slot 'currentThis' set, that represents the object, the execution is currently in
+// The element itself is a unique instance, that is used to enable the non-local-return-functionality.
+var CALL_STACK = [];
+CALL_STACK.peek = function() { return CALL_STACK[CALL_STACK.length - 1]; };
 
 // hide real method behind a wrapper method which catches exceptions
 // global
 var WithNonLocalReturn = function(method) {
 	// this is a wrapper for method invocation
 	return function() {
+		var lastCallee = new NonLocalReturnException;
+		lastCallee.currentThis = this;
+		CALL_STACK.push(lastCallee);
 		try {
-			return method.apply(this, arguments);
+			var ret =  method.apply(this, arguments);
+			CALL_STACK.pop();
+			return ret;
 		}
-		catch(e) {
-			if (e == method)
+		catch( e ) {
+			CALL_STACK.pop();
+			if ( e == lastCallee ) {
 				return e.nonLocalReturnValue;
-			else {
+			} else {
 				throw e;
 			}
 		}
@@ -214,7 +222,8 @@ var WithNonLocalReturn = function(method) {
 }
 
 // global
-var nonLocalReturn = function(v) {
-	arguments.callee.caller.nonLocalReturnValue = v;
-	throw arguments.callee.caller;
+var nonLocalReturn = function(value) {
+	var lastCallee = CALL_STACK.peek();
+	lastCallee.nonLocalReturnValue = value;
+	throw lastCallee;
 }
