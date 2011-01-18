@@ -1,15 +1,18 @@
 // Every class is added here. Needed to initialize their instance-variables later.
 var ALL_CLASSES = [];
 
+// If true, additional debugging functionality will be enabled.
+var DEBUG = true;
+
 // If set to true, every method-call will be printed to console.
 var DEBUG_INFINITE_RECURSION = true;
 
 // Helper-functions are inside the Class-function to not declare them globally
-var Class = function(attrs) {
+var Class = function(classname, attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
 		var createMethod = function(receiver, methodName, method) {
-			receiver.prototype[methodName] = WithNonLocalReturn(method);
+			receiver.prototype[methodName] = WithDebugging(WithNonLocalReturn(method));
 			receiver.prototype[methodName].methodName = methodName;
 			receiver.prototype[methodName].originalMethod = method;
 		}
@@ -114,6 +117,7 @@ var Class = function(attrs) {
 			}
 		});
 		newClass._addInstanceVariables(['__class'], newClass);
+		newClass._classname = classname;
 		
 		return newClass;
 	}
@@ -145,10 +149,37 @@ var Class = function(attrs) {
 	var newClass = createClassAndLinkPrototypes();
 	addVariables(newClass);
 	addMethods(newClass);
+	this[classname] = newClass;
 	
 	ALL_CLASSES[ALL_CLASSES.length] = newClass;
 	return newClass;
 };
+
+// A wrapper to enable several debugging-functionalities
+var WithDebugging = function(method) {
+	
+	if (DEBUG) {
+		return function() {
+			try {
+				if (DEBUG_INFINITE_RECURSION) {
+					// This must be the 
+					console.log(arguments.callee.methodName);
+				}
+				return method.apply(this, arguments);
+			} catch (e) {
+				if (typeof e != "function") {
+					   debugger;
+				} else {
+					throw e;
+				}
+			}
+			
+		}
+	} else {
+		return method;
+	}
+	
+}
 
 // hide real method behind a wrapper method which catches exceptions
 // global
@@ -156,18 +187,12 @@ var WithNonLocalReturn = function(method) {
 	// this is a wrapper for method invocation
 	return function() {
 		try {
-			if (DEBUG_INFINITE_RECURSION) {
-				console.log(arguments.callee.methodName);
-			}
 			return method.apply(this, arguments);
 		}
 		catch(e) {
 			if (e == method)
 				return e.nonLocalReturnValue;
 			else {
-				if (typeof e != "function") 
-				    debugger;
-				
 				throw e;
 			}
 		}
