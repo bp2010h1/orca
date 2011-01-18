@@ -162,26 +162,38 @@ var WithDebugging = function(method) {
 		return function() {
 			try {
 				if (DEBUG_INFINITE_RECURSION) {
+					WithDebugging.callstackCounter++;
+					var indent = "";
+					for (var i = 0; i < WithDebugging.callstackCounter; i++) {
+						indent += "  ";
+					}
 					if (this.__class == undefined) {
-						console.log(this._classname + "." + arguments.callee.methodName);
+						console.log(indent + this._classname + "." + arguments.callee.methodName);
 					} else {
-						console.log(this.__class._classname + "." + arguments.callee.methodName);
+						console.log(indent + this.__class._classname + "." + arguments.callee.methodName);
 					}
 				}
-				return method.apply(this, arguments);
+				var result = method.apply(this, arguments);
+				if (DEBUG_INFINITE_RECURSION) {
+					WithDebugging.callstackCounter--;
+				}
+				return result;
 			} catch (e) {
+				if (DEBUG_INFINITE_RECURSION) {
+					WithDebugging.callstackCounter--;
+				}
 				if (typeof e != "function") {
 					debugger;
 				} else {
 					throw e;
 				}
 			}
-			
 		}
 	} else {
 		return method;
 	}
 }
+WithDebugging.callstackCounter = 0;
 
 // hide real method behind a wrapper method which catches exceptions
 // global
