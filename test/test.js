@@ -20,7 +20,7 @@
 
 // setup
 
-A = Class({
+Class('A', {
 	instanceVariables: ['foo'],
 	instanceMethods: {
 		initialize: function() {
@@ -52,7 +52,7 @@ A = Class({
 	}
 });
 
-B = Class({
+Class('B', {
 	superclass: A,
 	instanceMethods: {
 		testMethod2: function(num) { 
@@ -62,7 +62,7 @@ B = Class({
 			return this._super.setTest(num);
 		},
 		lastName: function() {
-			return this._class.lastName();
+			return this.__class.lastName();
 		}
 	},
 	classVariables: ['size'],
@@ -80,8 +80,8 @@ B = Class({
 	}
 });
 
-a = A.basicNew();
-b = B.basicNew();
+a = A._newInstance();
+b = B._newInstance();
 
 // testing
 Assert.isTrue(typeof a.initialize == 'function');
@@ -93,7 +93,7 @@ Assert.isTrue(typeof a.initialize == 'function');
 Assert.isTrue(typeof b.testMethod == 'function');
 Assert.isTrue(typeof b.testMethod2 == 'function');
 Assert.isTrue(b.testMethod2(1337) == 1337);
-Assert.isTrue(typeof A.basicNew == 'function');
+Assert.isTrue(typeof A._newInstance == 'function');
 Assert.isTrue(typeof A.firstName == 'function');
 Assert.isTrue(A.firstName() == 'Chuck');
 Assert.isTrue(A.lastName() == 'Norris');

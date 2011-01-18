@@ -149,9 +149,10 @@ var Class = function(classname, attrs) {
 	var newClass = createClassAndLinkPrototypes();
 	addVariables(newClass);
 	addMethods(newClass);
+
 	this[classname] = newClass;
-	
 	ALL_CLASSES[ALL_CLASSES.length] = newClass;
+
 	return newClass;
 };
 
