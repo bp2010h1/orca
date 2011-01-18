@@ -85,4 +85,4 @@ var block = function(func) {
 		return func.apply(CALL_STACK.peek().currentThis, arguments);
 	}
 	return b;
-};
+}
