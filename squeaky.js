@@ -1,6 +1,9 @@
 // Every class is added here. Needed to initialize their instance-variables later.
 var ALL_CLASSES = [];
 
+// If set to true, every method-call will be printed to console.
+var DEBUG_INFINITE_RECURSION = true;
+
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(attrs) {
 	
@@ -8,6 +11,7 @@ var Class = function(attrs) {
 		var createMethod = function(receiver, methodName, method) {
 			receiver.prototype[methodName] = WithNonLocalReturn(method);
 			receiver.prototype[methodName].methodName = methodName;
+			receiver.prototype[methodName].originalMethod = method;
 		}
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
@@ -150,9 +154,12 @@ var Class = function(attrs) {
 // global
 var WithNonLocalReturn = function(method) {
 	// this is a wrapper for method invocation
-	methodWithNonLocalReturn = function() {
+	return function() {
 		try {
-			return arguments.callee.originalMethod.apply(this, arguments);
+			if (DEBUG_INFINITE_RECURSION) {
+				console.log(arguments.callee.methodName);
+			}
+			return method.apply(this, arguments);
 		}
 		catch(e) {
 			if (e == method)
@@ -165,9 +172,6 @@ var WithNonLocalReturn = function(method) {
 			}
 		}
 	};
-	
-	methodWithNonLocalReturn.originalMethod = method;
-	return methodWithNonLocalReturn;
 }
 
 // global
