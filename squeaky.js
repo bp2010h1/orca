@@ -155,6 +155,9 @@ var Class = function(classname, attrs) {
 	return newClass;
 };
 
+// global
+var NonLocalReturnException = function(){};
+
 // A wrapper to enable several debugging-functionalities
 // global
 var WithDebugging = function(method) {
@@ -170,10 +173,10 @@ var WithDebugging = function(method) {
 				}
 				return method.apply(this, arguments);
 			} catch (e) {
-				if (typeof e != "function") {
-					debugger;
-				} else {
+				if (e instanceof NonLocalReturnException) {
 					throw e;
+				} else {
+          debugger;
 				}
 			}
 			
@@ -183,18 +186,25 @@ var WithDebugging = function(method) {
 	}
 }
 
+// global
+var calleeStack = [];
+
 // hide real method behind a wrapper method which catches exceptions
 // global
 var WithNonLocalReturn = function(method) {
 	// this is a wrapper for method invocation
 	return function() {
+		var lastCallee = new NonLocalReturnException;
 		try {
-			return method.apply(this, arguments);
+		  calleeStack.push(lastCallee);
+			var ret =  method.apply(this, arguments);
+			calleeStack.pop();
+			return ret;
 		}
-		catch(e) {
-			if (e == method)
+		catch( e ) {
+			if (e == lastCallee) {
 				return e.nonLocalReturnValue;
-			else {
+			} else {
 				throw e;
 			}
 		}
@@ -202,7 +212,8 @@ var WithNonLocalReturn = function(method) {
 }
 
 // global
-var nonLocalReturn = function(v) {
-	arguments.callee.caller.nonLocalReturnValue = v;
-	throw arguments.callee.caller;
+var nonLocalReturn = function(value) {
+  var lastCallee = calleeStack.pop();
+  lastCallee.nonLocalReturnValue = value;
+	throw lastCallee;
 }
