@@ -16,6 +16,13 @@ for (aClass in ALL_CLASSES) {
 	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
+// TODO this should be fully replaces by some kind of syntax, that evaluated to 'new ABC()'
+Function.prototype._new = function() {
+	var newObject = {};
+	this.apply(newObject, arguments);
+	return newObject;
+}
+
 // This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
 // Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
 JsGlobal.AddJsFunctionToAllObjects = function() {
@@ -78,31 +85,11 @@ var array = function(anArray) {
   return resultArray;
 }
 
-var block = function(func, that) {
+var block = function(func) {
 	var b = BlockClosure._newInstance();
-	b.creationContext$ = arguments.callee.caller;
-	
 	b.func$ = function() {
-		try {
-			ret = func.apply(that, arguments);
-			if (ret != undefined) {
-			  if(ret.creationContext$ == func) {
-				  ret.creationContext$ = this.creationContext$;
-			  }
-		  }
-			return ret;
-		}
-		catch(e) {
-			if(e == func) {
-				this.creationContext$.nonLocalReturnValue = e.nonLocalReturnValue;
-				throw this.creationContext$;
-			} 
-			else {
-				throw e;
-			}
-		}
+		// Use the CALL_STACK to get the object, this block should be executed in
+		return func.apply(CALL_STACK.peek().currentThis, arguments);
 	}
-	b.func$.creationContext$ = arguments.callee.caller;
-	
 	return b;
-};
+}

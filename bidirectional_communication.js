@@ -51,8 +51,8 @@ var S2JConnection = {
 		if (S2JConnection.request == null) S2JConnection.poll();
 	},
 	
-	methodCallUrl : function() {
-		return document.location.href+"/mcc";
+	methodInvocationUrl : function() {
+		return document.location.href+"/mi";
 	},
 	
 	poll : function() {
@@ -82,7 +82,7 @@ var S2JConnection = {
 	sendComet : function(data) {
 		S2JConnection.closeComet();
 		S2JConnection.request = S2JConnection.createXmlRequest();
-		S2JConnection.request.open("POST", S2JConnection.methodCallUrl(), false);
+		S2JConnection.request.open("POST", S2JConnection.methodInvocationUrl(), false);
 		S2JConnection.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		S2JConnection.request.send(data);
 		var result = S2JConnection.request.responseText;
