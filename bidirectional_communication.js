@@ -1,5 +1,5 @@
 // namespace to avoid even more global state
-var CONNECTION = {
+var S2JConnection = {
 
 	preferWs : true,
 	data : null,
@@ -12,28 +12,28 @@ var CONNECTION = {
 	},
 
 	useWs : function() {
-		return (CONNECTION.isWsSupported() && CONNECTION.preferWs);
+		return (S2JConnection.isWsSupported() && S2JConnection.preferWs);
 	},
 
 	// common functions
 
 	connect : function() {
-		CONNECTION.useWs() ? CONNECTION.openSocket() : CONNECTION.openComet();
+		S2JConnection.useWs() ? S2JConnection.openSocket() : S2JConnection.openComet();
 	},
 
 	send : function(data) {
 		if (data != "") {
-			return CONNECTION.sendComet(data);
+			return S2JConnection.sendComet(data);
 		}
 	},
 	
 	sendCodeInput : function() {
-		CONNECTION.data = document.getElementById("input").value;
-		CONNECTION.send(CONNECTION.data);
+		S2JConnection.data = document.getElementById("input").value;
+		S2JConnection.send(S2JConnection.data);
 	},
 
 	disconnect : function() {
-		CONNECTION.useWs() ? CONNECTION.closeSocket() : CONNECTION.closeComet();
+		S2JConnection.useWs() ? S2JConnection.closeSocket() : S2JConnection.closeComet();
 	},
 
 	// comet functions
@@ -43,12 +43,12 @@ var CONNECTION = {
 	},
 
 	cometUrl : function() {
-		if (CONNECTION.identifier != null) return document.location.href + "/xhr?id=" + CONNECTION.identifier;
+		if (S2JConnection.identifier != null) return document.location.href + "/xhr?id=" + S2JConnection.identifier;
 		return document.location.href+"/xhr";
 	},
 
 	openComet : function() {
-		if (CONNECTION.request == null) CONNECTION.poll();
+		if (S2JConnection.request == null) S2JConnection.poll();
 	},
 	
 	methodCallUrl : function() {
@@ -56,52 +56,52 @@ var CONNECTION = {
 	},
 	
 	poll : function() {
-		CONNECTION.request = CONNECTION.createXmlRequest();
-		CONNECTION.request.open("GET", CONNECTION.cometUrl(), true);
-		CONNECTION.request.onreadystatechange = CONNECTION.pollResponseHandler;
-		CONNECTION.request.send(null);
+		S2JConnection.request = S2JConnection.createXmlRequest();
+		S2JConnection.request.open("GET", S2JConnection.cometUrl(), true);
+		S2JConnection.request.onreadystatechange = S2JConnection.pollResponseHandler;
+		S2JConnection.request.send(null);
 	},
 
 	pollResponseHandler : function() {
-		if (CONNECTION.request.readyState == 4) {
-			if (CONNECTION.request.status == 200) {
-				var content = CONNECTION.request.responseText;
+		if (S2JConnection.request.readyState == 4) {
+			if (S2JConnection.request.status == 200) {
+				var content = S2JConnection.request.responseText;
 				eval(content);
-				log(CONNECTION.request.status, content);
-				CONNECTION.poll();
+				log(S2JConnection.request.status, content);
+				S2JConnection.poll();
 			}
-			else if (CONNECTION.request.status == 202) {
-				CONNECTION.identifier = CONNECTION.request.responseText;
-				info("Registered with id " + CONNECTION.identifier);
-				CONNECTION.poll();
+			else if (S2JConnection.request.status == 202) {
+				S2JConnection.identifier = S2JConnection.request.responseText;
+				info("Registered with id " + S2JConnection.identifier);
+				S2JConnection.poll();
 			}
 			else info("disconnected");
 		}
 	},
 
 	sendComet : function(data) {
-		CONNECTION.closeComet();
-		CONNECTION.request = CONNECTION.createXmlRequest();
-		CONNECTION.request.open("POST", CONNECTION.methodCallUrl(), false);
-		CONNECTION.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		CONNECTION.request.send(data);
-		var result = CONNECTION.request.responseText;
-		CONNECTION.request=null;
-		CONNECTION.openComet();
+		S2JConnection.closeComet();
+		S2JConnection.request = S2JConnection.createXmlRequest();
+		S2JConnection.request.open("POST", S2JConnection.methodCallUrl(), false);
+		S2JConnection.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		S2JConnection.request.send(data);
+		var result = S2JConnection.request.responseText;
+		S2JConnection.request=null;
+		S2JConnection.openComet();
 		return result;
 	},
 
 	sendResponseHandler : function() {	
-		if ((CONNECTION.request.readyState == 4) && (CONNECTION.request.status == 201)) {
+		if ((S2JConnection.request.readyState == 4) && (S2JConnection.request.status == 201)) {
 			log(201, data);
-			CONNECTION.poll();
+			S2JConnection.poll();
 		}
 	},
 
 	closeComet : function() {
-		if (CONNECTION.request != null) {
-			CONNECTION.request.abort();
-			CONNECTION.request = null;
+		if (S2JConnection.request != null) {
+			S2JConnection.request.abort();
+			S2JConnection.request = null;
 		}
 	},
 	
@@ -109,38 +109,38 @@ var CONNECTION = {
 
 	openSocket : function() {
 	
-		CONNECTION.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
+		S2JConnection.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 	
-		CONNECTION.webSocket.onopen = function(event) {
+		S2JConnection.webSocket.onopen = function(event) {
 			info("Successfully opened WebSocket.");
 		};
 	
-		CONNECTION.webSocket.onerror = function(event) {
+		S2JConnection.webSocket.onerror = function(event) {
 			log("WebSocket failed.");
 		};
 	
-		CONNECTION.webSocket.onmessage = function(event) {			
+		S2JConnection.webSocket.onmessage = function(event) {			
 			   log(200, event.data);
 			   eval(event.data);
 		};
 	
-		CONNECTION.webSocket.onclose = function() {
+		S2JConnection.webSocket.onclose = function() {
 			info("WebSocket received close event.");
 		};
 	},
 
 	sendSocket : function(message) {
-		if (CONNECTION.webSocket != null) {
-			CONNECTION.webSocket.send(message);
+		if (S2JConnection.webSocket != null) {
+			S2JConnection.webSocket.send(message);
 			log(200, message);
 		}
 	},
 
 	closeSocket : function() {
-		if (CONNECTION.webSocket != null) {
+		if (S2JConnection.webSocket != null) {
 			info("WebSocket closed by client.");
-			CONNECTION.webSocket.close();
-			CONNECTION.webSocket = null;
+			S2JConnection.webSocket.close();
+			S2JConnection.webSocket = null;
 		}
 	}
 }
