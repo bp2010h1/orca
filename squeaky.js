@@ -5,7 +5,7 @@ var ALL_CLASSES = [];
 var DEBUG = true;
 
 // If set to true, every method-call will be printed to console.
-var DEBUG_INFINITE_RECURSION = true;
+var DEBUG_INFINITE_RECURSION = false;
 
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
@@ -179,7 +179,7 @@ var WithDebugging = function(method) {
 				var result = method.apply(this, arguments);
 				return result;
 			} catch (e) {
-				if (e.DontDebug == e) {
+				if (e.DontDebug == true) {
 					throw e;
 				} else {
 					debugger;
@@ -223,7 +223,8 @@ var WithNonLocalReturn = function(method) {
 
 // global
 var nonLocalReturn = function(value) {
-	var lastCallee = CALL_STACK.peek();
-	lastCallee.nonLocalReturnValue = value;
-	throw lastCallee;
+	var blockFunction = arguments.callee.caller;
+  var e = blockFunction.nonLocalReturnException;
+	e.nonLocalReturnValue = value;
+	throw e;
 }
