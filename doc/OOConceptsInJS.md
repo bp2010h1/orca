@@ -1,14 +1,14 @@
-= Implementation of Object-oriented Concepts in JavaScript
+# Implementation of Object-oriented Concepts in JavaScript
 
-== Introduction
+## Introduction
 
 JavaScript is an object-oriented language with no support for classes and other concepts you may be familiar with. JavaScript supports OOP on its own way – with prototypes. Prototypes come with the benefits that they are compact and flexible. You can use them to implement other object-oriented concepts easily.
 
-== Note
+## Note
 
 In this paper I will use words from the OOP vocabulary like classes, methods or attributes in a JavaScript context. Those things have actually nothing to do with JavaScript. I just want to try to avoid expressions like “the class-like object” for not to confuse you.
 
-== Classes and Instanciation
+## Classes and Instanciation
 
 Functions in JavaScript are nothing less than objects. That means that variables can be set to functions which can be applied later in a context of your choice. With new you can instantiate objects from a constructor function. The constructor function will be called with the context of the new object.
 
@@ -21,7 +21,7 @@ Functions in JavaScript are nothing less than objects. That means that variables
 
 In this example an object is instantiated from the class SimpleClass and foo is set to “bar”. So we can use functions for defining sth. like a class. The function itself can be used as a constructor for new objects.
 
-== Inheritance
+## Inheritance
 
 For implementing inheritance we can make use of the JavaScript native prototype concept. Every object has a prototype slot. Objects in this slot are copied to every instance on instantiation.
 
@@ -36,7 +36,7 @@ For inheritance we can set the prototype of our child class to an instance of th
 	anObject = new SecondClass();
 	anObject.foo();
 
-== Overwriting methods and accessing super methods
+## Overwriting methods and accessing super methods
 
 The next problem is the access to methods from super classes in case you have overwritten them in you inherited class. In Squeak you would simply do sth. like this:
 
