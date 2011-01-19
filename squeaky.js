@@ -181,7 +181,7 @@ var WithDebugging = function(method) {
 			} catch (e) {
 				if (e.DontDebug == true) {
 					throw e;
-				} else {
+				} else if (DEBUG) {
 					debugger;
 				}
 			}
@@ -224,7 +224,7 @@ var WithNonLocalReturn = function(method) {
 // global
 var nonLocalReturn = function(value) {
 	var blockFunction = arguments.callee.caller;
-  var e = blockFunction.nonLocalReturnException;
+	var e = blockFunction.nonLocalReturnException;
 	e.nonLocalReturnValue = value;
 	throw e;
 }
