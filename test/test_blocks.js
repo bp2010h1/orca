@@ -247,7 +247,8 @@ Class("Tester", {
 		otherTester.instVar = "otherInstVar";
 		var _block = block(function(){
 			var inner = block(function(){ 
-				var innerinner = block(function(){ return this.instVar; });
+				var innerinner = block(function(){
+				  return this.instVar; });
 				return innerinner.value(); });
 			return inner.value(); });
 		Assert.isTrue("instVar" == otherTester.evaluateBlock(_block));

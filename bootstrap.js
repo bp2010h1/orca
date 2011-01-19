@@ -92,8 +92,8 @@ var block = function(func) {
 	if (currentThis == undefined) {
 		// We are in the most-outer block of a method. The 'current this' is the top of the call-stack.
 		currentThis = CALL_STACK.peek().currentThis;
-		func.originalThis = currentThis;
 	}
+	func.originalThis = currentThis;
 	b.func$ = function() {
 		// Use the CALL_STACK to get the object, this block should be executed in
 		return func.apply(currentThis, arguments);
