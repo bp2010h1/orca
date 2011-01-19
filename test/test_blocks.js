@@ -202,7 +202,7 @@ Class("Tester", {
 	test21: function() {
 		// Cascade in block
 		var result = block(function(){
-			(function() {
+			return (function() {
 				return this.instanceVar;
 			}).apply(this);
 		}).value();
@@ -213,7 +213,7 @@ Class("Tester", {
 		var lokalouter = "Outer";
 		var result = block(function(arg1, arg2){
 			var lokal = "Inner";
-			(function() {
+			return (function() {
 				return this.instanceVar + arg1 + arg2 + lokal + lokalouter;
 			}).apply(this);
 		}).value("First", "Second");
