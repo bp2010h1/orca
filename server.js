@@ -18,6 +18,8 @@ var S2JServer = {
 		}
 		S2JServer._result = S2JConnection.send(command);
 		
+		alert(S2JServer._result);
+		
 		return eval(S2JServer._result);
 	}
 	
