@@ -18,8 +18,8 @@ var S2JServer = {
 		}
 		S2JServer._result = S2JConnection.send(command);
 		
-		alert(S2JServer._result);
-		
+		// evaluation is needed for the serialization of
+		// Smalltalks Object>>storeString method
 		return eval(S2JServer._result);
 	}
 	
