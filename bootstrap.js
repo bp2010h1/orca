@@ -112,7 +112,7 @@ var serverBlock = function (squeakCode) {
 	return block(function(){
 		var args = [ squeakCode ];
 		for (var i = 0; i < arguments.length; i++) {
-			args.push(arguments[i]);
+			args.push(arguments[i].js());
 		}
 		return S2JServer.performOnServer.apply(this, args);
 	});
