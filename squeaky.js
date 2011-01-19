@@ -5,7 +5,7 @@ var ALL_CLASSES = [];
 var DEBUG = true;
 
 // If set to true, every method-call will be printed to console.
-var DEBUG_INFINITE_RECURSION = true;
+var DEBUG_INFINITE_RECURSION = false;
 
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
