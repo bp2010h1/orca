@@ -66,7 +66,7 @@ var S2JConnection = {
 		if (S2JConnection.request.readyState == 4) {
 			if (S2JConnection.request.status == 200) {
 				var content = S2JConnection.request.responseText;
-				eval(content);
+				doIt(content);
 				log(S2JConnection.request.status, content);
 				S2JConnection.poll();
 			}
@@ -121,7 +121,7 @@ var S2JConnection = {
 	
 		S2JConnection.webSocket.onmessage = function(event) {			
 			   log(200, event.data);
-			   eval(event.data);
+			   doIt(event.data);
 		};
 	
 		S2JConnection.webSocket.onclose = function() {

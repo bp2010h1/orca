@@ -54,44 +54,53 @@ BlockClosure._addInstanceMethods( { js: function() { return this.func$; } } );
 
 // the compiled code does not use this (uses _true/_false) directly. Can use this in kernel_primitives.js etc.
 var bool = function(aBool) {
-  if (aBool) {
-	return _true;
-  } else {
-	return _false;
-  }
+	if (aBool) {
+		return _true;
+	} else {
+		return _false;
+	}
 }
 
 var character = function(aString) {
-  var resultCharacter = Character._newInstance();
-  resultCharacter.character$ = aString;
-  return resultCharacter;
+	var resultCharacter = Character._newInstance();
+	resultCharacter.character$ = aString;
+	return resultCharacter;
 }
 
 var string = function(aString) {
-  var resultString = ByteString._newInstance();
-  resultString.string$ = aString;
-  return resultString;
+	var resultString = ByteString._newInstance();
+	resultString.string$ = aString;
+	return resultString;
 }
 
 var number = function(number) {
-  var resultNumber = Float._newInstance();
-  resultNumber.num$ = number;
-  return resultNumber;
+	var resultNumber = Float._newInstance();
+	resultNumber.num$ = number;
+	return resultNumber;
 }
 
 var array = function(anArray) {
-  var resultArray = _Array._newInstance();
-  resultArray.arr$ = anArray;
-  return resultArray;
+	var resultArray = _Array._newInstance();
+	resultArray.arr$ = anArray;
+	return resultArray;
 }
 
 var block = function(func) {
 	var b = BlockClosure._newInstance();
-  func.nonLocalReturnException = CALL_STACK.peek(); 
-  var that = CALL_STACK.peek().currentThis;
-  b.func$ = function() {
+	func.nonLocalReturnException = CALL_STACK.peek();
+	var currentThis = arguments.callee.caller.originalThis;
+	if (currentThis == undefined) {
+		// We are in the most-outer block of a method. The 'current this' is the top of the call-stack.
+		currentThis = CALL_STACK.peek().currentThis;
+	}
+	func.originalThis = currentThis;
+	b.func$ = function() {
 		// Use the CALL_STACK to get the object, this block should be executed in
-		return func.apply(that, arguments);
+		return func.apply(currentThis, arguments);
 	}
 	return b;
+}
+
+var doIt = function(source) {
+  return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
 }
