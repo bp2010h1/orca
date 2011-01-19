@@ -9,7 +9,7 @@ var S2JServer = {
 			args += "&arg" + (i - 1) + "=" + arguments[i];
 		}
 		var result = S2JConnection.send("code=" + squeakCode + args);
-		result = doIt(result);
+		result = eval(result);
 		return result;
 	}
 	
