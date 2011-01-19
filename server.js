@@ -8,7 +8,9 @@ var S2JServer = {
 		for (var i = 1; i < arguments.length; i++) {
 			args += "&arg" + (i - 1) + "=" + arguments[i];
 		}
-		return doIt(S2JConnection.send("code=" + squeakCode + args));
+		var result = S2JConnection.send("code=" + squeakCode + args);
+		result = doIt(result);
+		return result;
 	}
 	
 }
