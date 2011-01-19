@@ -9,8 +9,8 @@ Class("Tester", {
 	},
 	test2: function() {
 		var _block = block(function(){
-			var a = v; // Random stuff in here
-			var _block = 1;
+			var a = "c"; // Random stuff in here
+			var _block = 1; // shadow the variable...
 			return _block; });
 		Assert.isTrue(_block.value() == 1);
 	},
@@ -44,12 +44,12 @@ Class("Tester", {
 	},
 	test6: function() {
 		var _block = block(function(arg1, arg2){
-			var inner = _block(function(arg1, arg2){
+			var inner = block(function(arg1, arg2){
 				return arg2 + "d";
 			});
 			return inner.value_value_(2, arg1);
 		});
-		Assert.isTrue(block.value_value_("abc", "def") == "abcd");
+		Assert.isTrue(_block.value_value_("abc", "def") == "abcd");
 	},
 	test5: function() {
 		var local = "outer";
@@ -65,7 +65,7 @@ Class("Tester", {
 	},
 	test8: function() {
 		var _block = block(function(){
-			var inner = _block(function() {
+			var inner = block(function() {
 				return 1;
 			});
 			nonLocalReturn(inner.value()); });
@@ -116,7 +116,7 @@ Class("Tester", {
 		Assert.isTrue(this.counterBack == 0); // !!
 	},
 	blockEvaluater: function() {
-		var _block = block(function() { nonLocalLeturn("abc"); });
+		var _block = block(function() { nonLocalReturn("abc"); });
 		var result = this.innerBlockEvaluater(_block);
 		this.counter = 100; // Should also not happen
 	},
