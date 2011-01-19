@@ -104,3 +104,16 @@ var block = function(func) {
 var doIt = function(source) {
   return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
 }
+
+var serverBlock = function (squeakCode) {
+	// Will be evaluated directly on the server
+	// evaluation is needed for the serialization of
+	// Smalltalks Object>>storeString method
+	return block(function(){
+		var args = [ squeakCode ];
+		for (var i = 0; i < arguments.length; i++) {
+			args.push(arguments[i]);
+		}
+		return S2JServer.performOnServer.apply(this, args);
+	});
+}
