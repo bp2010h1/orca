@@ -287,3 +287,4 @@ tester().test21();
 tester().test22();
 tester().test23();
 tester().test24();
+tester().test25();
