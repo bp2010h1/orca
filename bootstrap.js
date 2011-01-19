@@ -100,3 +100,7 @@ var block = function(func) {
 	}
 	return b;
 }
+
+var doIt = function(source) {
+  return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
+}
