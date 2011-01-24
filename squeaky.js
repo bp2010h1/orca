@@ -7,6 +7,8 @@ var DEBUG = true;
 // If set to true, every method-call will be printed to console.
 var DEBUG_INFINITE_RECURSION = false;
 
+var AAA = 0;
+
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
 	
@@ -15,6 +17,7 @@ var Class = function(classname, attrs) {
 			receiver.prototype[methodName] = WithDebugging(WithNonLocalReturn(method));
 			receiver.prototype[methodName].methodName = methodName;
 			receiver.prototype[methodName].originalMethod = method;
+			method.methodHome = receiver.prototype; // This is the object, that actually contains this method
 		}
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
@@ -62,25 +65,16 @@ var Class = function(classname, attrs) {
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
-		var newInstancePrototype = function(){};
+		var newInstancePrototype = function(){ AAA = AAA + 1; };
 		var newClass;
 		
 		if ('superclass' in attrs) {
-		    newClassPrototype = function(){ 
-		        this._superPrototype = attrs.superclass._classPrototype.prototype;
-		    };
-    		newInstancePrototype = function(){
-    		    this._superPrototype = attrs.superclass._instancePrototype.prototype;
-    		};
-		    
 			// By creating new instances of the constructor-functions sotred in the superclass, the new class (and instances of it) inherits all variables/methods
 			newClassPrototype.prototype = new attrs.superclass._classPrototype();
 			newInstancePrototype.prototype = new attrs.superclass._instancePrototype();
 		}
 		else {
 			// If we don't have a superclass, create the helper-methods to create variables/methods
-			newClassPrototype = function(){};
-    		newInstancePrototype = function(){};
 			createHelpers(newClassPrototype);
 		}
 		
@@ -178,8 +172,14 @@ CALL_STACK.peek = function() { return CALL_STACK[CALL_STACK.length - 1]; };
 
 var _super = function(methodName) {
     return function() {
-        var currentThis = CALL_STACK.peek().currentThis;
-        return currentThis._superPrototype[methodName].apply(currentThis, arguments);
+		var currentContext = CALL_STACK.peek();
+        var currentThis = currentContext.currentThis;
+		
+		// Accessing .prototype here brings us one step higher in the class-hierarchy
+		// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
+		var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
+		
+        return invokedMethod.apply(currentThis, arguments);
     }
 }
 
@@ -190,6 +190,7 @@ var WithNonLocalReturn = function(method) {
 	return function() {
 		var lastCallee = new NonLocalReturnException;
 		lastCallee.currentThis = this;
+		lastCallee.currentMethod = method;
 		CALL_STACK.push(lastCallee);
 		try {
 			var ret =  method.apply(this, arguments);
