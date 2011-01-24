@@ -10,7 +10,7 @@ Class("Tester", {
 	// Basic, multiple blocks, instance var
 	test1: function() {
 		var _block = block(function(){ return 1; });
-		assert(_block.value() != 1, "test1 failed");
+		assert(_block.value() == 1);
 	},
 	test2: function() {
 		var _block = block(function(){

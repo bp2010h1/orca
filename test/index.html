@@ -5,9 +5,9 @@
 
 	<script type="text/javascript" src="resources/assert.js"></script>
 	
-	<!-- script type="text/javascript">DEBUG = false</script> -->
 	<!-- disable debug-output after squeaky.js is loaded and before any classes are created. " -->
 	<script type="text/javascript" src="../squeaky.js"></script>
+	<script type="text/javascript">DEBUG = false</script>
 	
 	<!-- this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'" -->
 	<script type="text/javascript" src="resources/compiled_classes.js"></script> 
@@ -22,8 +22,7 @@
 </head>
 <body>
 	<script type="text/javascript">
-    	testResults = document.createElement("ul");
-    	document.getElementsByTagName("body")[0].appendChild(testResults);
+		initTestRunner();
 
 		runSqueakyJSTests();
 		runBlockTests();

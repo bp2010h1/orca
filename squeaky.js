@@ -60,40 +60,19 @@ var Class = function(classname, attrs) {
 		}
 	}
 	
-	var createSuperSlots = function(superPrototype, newInstance) {
-		newInstance._super = {}
-		// TODO _super will not work, if the superclass is modified after the subclass is created (just copying...)
-		
-		// copy supermethods to new objects
-		for(method in superPrototype) {
-			// filter instance methods only
-			if(typeof superPrototype[method] == 'function' && superPrototype[method].methodName != undefined) {
-				wrapperFunction = function() {
-					return superPrototype[arguments.callee.wrappedMethodName].apply(newInstance, arguments);
-				}
-				
-				// local variable 'method' has to be stored explicitely because the variable is not bound inside
-				// the wrapper function when the loop continues
-				wrapperFunction.wrappedMethodName = method;
-				newInstance._super[method] = wrapperFunction;
-			}
-		}
-	}
-	
 	var createClassAndLinkPrototypes = function() {
-		var newClassPrototype;
-		var newInstancePrototype;
+		var newClassPrototype = function(){};
+		var newInstancePrototype = function(){};
 		var newClass;
 		
 		if ('superclass' in attrs) {
-			// If we have a superclass, create slot _super and link the prototypes to enable prototypical inheritance
-			newClassPrototype = function() {
-				createSuperSlots(attrs.superclass._classPrototype.prototype, this);
-			};
-			newInstancePrototype = function() {
-				createSuperSlots(attrs.superclass._instancePrototype.prototype, this);
-			};
-			
+		    newClassPrototype = function(){ 
+		        this._superPrototype = attrs.superclass._classPrototype.prototype;
+		    };
+    		newInstancePrototype = function(){
+    		    this._superPrototype = attrs.superclass._instancePrototype.prototype;
+    		};
+		    
 			// By creating new instances of the constructor-functions sotred in the superclass, the new class (and instances of it) inherits all variables/methods
 			newClassPrototype.prototype = new attrs.superclass._classPrototype();
 			newInstancePrototype.prototype = new attrs.superclass._instancePrototype();
@@ -101,7 +80,7 @@ var Class = function(classname, attrs) {
 		else {
 			// If we don't have a superclass, create the helper-methods to create variables/methods
 			newClassPrototype = function(){};
-			newInstancePrototype = function(){};
+    		newInstancePrototype = function(){};
 			createHelpers(newClassPrototype);
 		}
 		
@@ -196,6 +175,13 @@ var WithDebugging = function(method) {
 // The element itself is a unique instance, that is used to enable the non-local-return-functionality.
 var CALL_STACK = [];
 CALL_STACK.peek = function() { return CALL_STACK[CALL_STACK.length - 1]; };
+
+var _super = function(methodName) {
+    return function() {
+        var currentThis = CALL_STACK.peek().currentThis;
+        return currentThis._superPrototype[methodName].apply(currentThis, arguments);
+    }
+}
 
 // hide real method behind a wrapper method which catches exceptions
 // global

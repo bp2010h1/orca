@@ -34,7 +34,7 @@ runSqueakyJSTests = function() {
                 this.test = num;
             }
         },
-        classVariables: ['age'],
+        classInstanceVariables: ['age'],
         classMethods: {
             myAge: function() {
                 return this.age;
@@ -61,23 +61,23 @@ runSqueakyJSTests = function() {
                 return num; 
             },
             setTest: function(num) {
-                return this._super.setTest(num);
+                return _super('setTest')(num);
             },
             lastName: function() {
                 return this.__class.lastName();
             }
         },
-        classVariables: ['size'],
+        classInstanceVariables: ['size'],
         classMethods: {
             myAge: function() {
-                return this._super.myAge();
+                return _super('myAge')();
             },
             lastName: function() {
                 return 'Skywalker';
             },
             married: function() {
                 // for non-local return testing
-                return this._super.married();
+                return _super('married')();
             }
         }
     });
