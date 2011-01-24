@@ -1,6 +1,6 @@
 
-Assert.orig_isTrue = Assert.isTrue;
-Assert.isTrue = function(aBool) { Assert.orig_isTrue(aBool); console.log(aBool); if (!aBool) { console.log(arguments.callee.caller); } };
+orig_assert = assert;
+assert = function(aBool) { orig_assert(aBool); console.log(aBool); if (!aBool) { console.log(arguments.callee.caller); } };
 
 Class("Tester", {
 	instanceMethods: {
@@ -10,20 +10,20 @@ Class("Tester", {
 	// Basic, multiple blocks, instance var
 	test1: function() {
 		var _block = block(function(){ return 1; });
-		Assert.isTrue(_block.value() == 1);
+		assert(_block.value() == 1);
 	},
 	test2: function() {
 		var _block = block(function(){
 			var a = "c"; // Random stuff in here
 			var _block = 1; // shadow the variable...
 			return _block; });
-		Assert.isTrue(_block.value() == 1);
+		assert(_block.value() == 1);
 	},
 	test3: function() {
 		var _block = block(function(){
 			var inner = block(function(){ return "inner"; });
 			return inner.value(); });
-		Assert.isTrue(_block.value() == "inner");
+		assert(_block.value() == "inner");
 	},
 	test4: function() {
 		var _block = block(function(){
@@ -31,21 +31,21 @@ Class("Tester", {
 				var innerinner = block(function(){ return "innerinner"; });
 				return innerinner.value(); });
 			return inner.value(); });
-		Assert.isTrue(_block.value() == "innerinner");
+		assert(_block.value() == "innerinner");
 	},
 	test5: function() {
 		var _block = block(function(){ return this.instVar; });
-		Assert.isTrue(_block.value() == "instVar");
+		assert(_block.value() == "instVar");
 	},
 	test6: function() {
 		var _block = block(function(){ return this.instMethod(); });
-		Assert.isTrue(_block.value() == "methodRes");
+		assert(_block.value() == "methodRes");
 	},
 	
 	// Parameters
 	test7: function() {
 		var _block = block(function(arg1, arg2){ return arg1 + "22"; });
-		Assert.isTrue(_block.value_value_("abc", "def") == "abc22");
+		assert(_block.value_value_("abc", "def") == "abc22");
 	},
 	test8: function() {
 		var _block = block(function(arg1, arg2){
@@ -54,24 +54,24 @@ Class("Tester", {
 			});
 			return inner.value_value_(2, arg1);
 		});
-		Assert.isTrue(_block.value_value_("abc", "def") == "abcd");
+		assert(_block.value_value_("abc", "def") == "abcd");
 	},
 	test9: function() {
 		var local = "outer";
 		var local1 = "outer1";
 		var _block = block(function(local1, arg2){ var local = "inner"; return local1 + local; });
-		Assert.isTrue(_block.value_value_("abc", "def") == "abcinner");
+		assert(_block.value_value_("abc", "def") == "abcinner");
 	},
 	
 	// non local return
 	test10: function() {
-		Assert.isTrue(this.helper10() == 2);
+		assert(this.helper10() == 2);
 	},
 	helper10: function() {
 		return block(function(){ nonLocalReturn(2); }).value();
 	},
 	test11: function() {
-		Assert.isTrue(this.helper11() == 1);
+		assert(this.helper11() == 1);
 	},
 	helper11: function() {
 		return block(function(){
@@ -82,7 +82,7 @@ Class("Tester", {
 			return 100; }).value();
 	},
 	test12: function() {
-		Assert.isTrue(this.helper12() == 1);
+		assert(this.helper12() == 1);
 	},
 	helper12: function() {
 		return block(function(){
@@ -94,7 +94,7 @@ Class("Tester", {
 			return 200; }).value();
 	},
 	test13: function() {
-		Assert.isTrue(this.helper13() == "instVarmethodRes");
+		assert(this.helper13() == "instVarmethodRes");
 	},
 	helper13: function() {
 		return block(function(){ nonLocalReturn(this.instVar + this.instMethod()); }).value();
@@ -108,16 +108,17 @@ Class("Tester", {
 		} catch (e) {
 			error = e;
 		}
-		Assert.isFalse(error == "no Error");
-		Assert.isTrue(result == "before");
+		
+		assert(error != "no Error");
+		assert(result == "before");
 	},
 	blockSource: function(){ return block(function() { nonLocalReturn("This should cause an error."); }); },
 	test15: function() {
 		this.counter = 0;
 		this.counterBack = 0;
-		Assert.isTrue(this.helper15() == "returned");
-		Assert.isTrue(this.counter == 3);
-		Assert.isTrue(this.counterBack == 3);
+		assert(this.helper15() == "returned");
+		assert(this.counter == 3);
+		assert(this.counterBack == 3);
 	},
 	helper15: function() {
 		var result = "unreturned";
@@ -136,8 +137,8 @@ Class("Tester", {
 		this.counter = 0;
 		this.counterBack = 0;
 		this.helper16();
-		Assert.isTrue(this.counter == 3);
-		Assert.isTrue(this.counterBack == 0); // !!
+		assert(this.counter == 3);
+		assert(this.counterBack == 0); // !!
 	},
 	helper16: function() {
 		var _block = block(function() { nonLocalReturn("abc"); });
@@ -158,8 +159,8 @@ Class("Tester", {
 		this.counter = 0;
 		this.counterBack = 0;
 		this.helper17();
-		Assert.isTrue(this.counter == 3);
-		Assert.isTrue(this.counterBack == 0); // !!
+		assert(this.counter == 3);
+		assert(this.counterBack == 0); // !!
 	},
 	helper17: function() {
 		if (this.blockVar == undefined) {
@@ -179,7 +180,7 @@ Class("Tester", {
 		var result = (function(){
 			return 1;
 		}).apply(this);
-		Assert.isTrue(result == 1);
+		assert(result == 1);
 	},
 	test19: function() {
 		var local = "Lokal";
@@ -188,7 +189,7 @@ Class("Tester", {
 			receiver = receiver + this.instanceVar;
 			return receiver + local;
 		}).apply(this);
-		Assert.isTrue(result == "AbInsLokal"); // ^^
+		assert(result == "AbInsLokal"); // ^^
 	},
 	test20: function() {
 		// Block in cascade
@@ -197,7 +198,7 @@ Class("Tester", {
 				return this.instanceVar;
 			}).value();
 		}).apply(this);
-		Assert.isTrue(result == "Ins");
+		assert(result == "Ins");
 	},
 	test21: function() {
 		// Cascade in block
@@ -206,7 +207,7 @@ Class("Tester", {
 				return this.instanceVar;
 			}).apply(this);
 		}).value();
-		Assert.isTrue(result == "Ins");
+		assert(result == "Ins");
 	},
 	test22: function() {
 		// cascade in Block with arguments
@@ -217,7 +218,7 @@ Class("Tester", {
 				return this.instanceVar + arg1 + arg2 + lokal + lokalouter;
 			}).apply(this);
 		}).value("First", "Second");
-		Assert.isTrue(result == "InsFirstSecondInnerOuter");
+		assert(result == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
 		// Block with arguments in cascade
@@ -230,14 +231,14 @@ Class("Tester", {
 				return this.instanceVar + arg1 + arg2 + outer + inner;
 			}).value(outerParam, innerParam);
 		}).apply(this);
-		Assert.isTrue(result == "InsOuterParamInnerParamOuterInner");
+		assert(result == "InsOuterParamInnerParamOuterInner");
 	},
 	
 	test24: function() {
 		var _block = block( function() { return this.instVar; } );
 		var otherTester = Tester._newInstance();
 		otherTester.instVar = "otherInstVar";
-		Assert.isTrue("instVar" == otherTester.evaluateBlock(_block));
+		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 	evaluateBlock: function(aBlock) {
 		return aBlock.value();
@@ -251,7 +252,7 @@ Class("Tester", {
 				  return this.instVar; });
 				return innerinner.value(); });
 			return inner.value(); });
-		Assert.isTrue("instVar" == otherTester.evaluateBlock(_block));
+		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 }});
 
@@ -264,28 +265,30 @@ var tester = function() {
 	return testerInst;
 }
 
-tester().test1();
-tester().test2();
-tester().test3();
-tester().test4();
-tester().test5();
-tester().test6();
-tester().test7();
-tester().test8();
-tester().test9();
-tester().test10();
-tester().test11();
-tester().test12();
-tester().test13();
-tester().test14();
-tester().test15();
-tester().test16();
-tester().test17();
-tester().test18();
-tester().test19();
-tester().test20();
-tester().test21();
-tester().test22();
-tester().test23();
-tester().test24();
-tester().test25();
+runBlockTests = function() {
+    tester().test1();
+    tester().test2();
+    tester().test3();
+    tester().test4();
+    tester().test5();
+    tester().test6();
+    tester().test7();
+    tester().test8();
+    tester().test9();
+    tester().test10();
+    tester().test11();
+    tester().test12();
+    tester().test13();
+    tester().test14();
+    tester().test15();
+    tester().test16();
+    tester().test17();
+    tester().test18();
+    tester().test19();
+    tester().test20();
+    tester().test21();
+    tester().test22();
+    tester().test23();
+    tester().test24();
+    tester().test25();
+}
