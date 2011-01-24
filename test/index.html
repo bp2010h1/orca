@@ -4,11 +4,15 @@
 	<link rel="stylesheet" type="text/css" href="resources/results.css" />
 
 	<script type="text/javascript" src="resources/assert.js"></script>
+	
 	<!-- script type="text/javascript">DEBUG = false</script> -->
 	<!-- disable debug-output after squeaky.js is loaded and before any classes are created. " -->
 	<script type="text/javascript" src="../squeaky.js"></script>
+	
 	<!-- this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'" -->
 	<script type="text/javascript" src="resources/compiled_classes.js"></script> 
+
+	<script type="text/javascript" src="../bidirectional_communication.js"></script>
 	
 	<script type="text/javascript" src="../bootstrap.js"></script>
 	<script type="text/javascript" src="../kernel_primitives.js"></script>
@@ -23,6 +27,10 @@
 
 		runSqueakyJSTests();
 		runBlockTests();
+		
+		S2JConnection.connect();
+		S2JConnection.send(TEST_RESULTS.red.length);
+		S2JConnection.disconnect();
 	</script>
 </body>
 </html>
