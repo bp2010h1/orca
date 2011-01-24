@@ -66,10 +66,21 @@ var string = function(aString) {
 	return resultString;
 }
 
+var Pool = function(){
+	var a = new Array();
+	for(var i = -256; i < 256; i++){//MaxInt = 2^53 = 9 007 199 254 740 992
+		a[i] = Float._newInstance();
+		a[i].num$ = i;
+	};
+	return a;
+}();
 var number = function(number) {
-	var resultNumber = Float._newInstance();
-	resultNumber.num$ = number;
-	return resultNumber;
+	if(Pool[number])
+		return Pool[number]
+	else {
+		var resultNumber = Float._newInstance();
+		resultNumber.num$ = number;
+		return resultNumber;}
 }
 
 var array = function(anArray) {
