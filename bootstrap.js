@@ -16,13 +16,6 @@ for (aClass in ALL_CLASSES) {
 	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-// TODO this should be fully replaces by some kind of syntax, that evaluated to 'new ABC()'
-Function.prototype._new = function() {
-	var newObject = {};
-	this.apply(newObject, arguments);
-	return newObject;
-}
-
 // This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
 // Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
 JsGlobal.AddJsFunctionToAllObjects = function() {
