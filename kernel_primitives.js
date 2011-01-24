@@ -78,6 +78,10 @@ BlockClosure._addInstanceMethods({
 		while (this.value() === _true) {
 			anotherBlock.value();
 		}
+	},
+	
+	onServer: function() {
+		
 	}
 });
 

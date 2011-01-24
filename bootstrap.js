@@ -16,13 +16,6 @@ for (aClass in ALL_CLASSES) {
 	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-// TODO this should be fully replaces by some kind of syntax, that evaluated to 'new ABC()'
-Function.prototype._new = function() {
-	var newObject = {};
-	this.apply(newObject, arguments);
-	return newObject;
-}
-
 // This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
 // Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
 JsGlobal.AddJsFunctionToAllObjects = function() {
@@ -103,4 +96,17 @@ var block = function(func) {
 
 var doIt = function(source) {
   return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
+}
+
+var serverBlock = function (squeakCode) {
+	// Will be evaluated directly on the server
+	// evaluation is needed for the serialization of
+	// Smalltalks Object>>storeString method
+	return block(function(){
+		var args = [ squeakCode ];
+		for (var i = 0; i < arguments.length; i++) {
+			args.push(arguments[i].js());
+		}
+		return S2JServer.performOnServer.apply(this, args);
+	});
 }
