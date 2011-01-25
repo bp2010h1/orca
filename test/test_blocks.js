@@ -1,6 +1,6 @@
 
-// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
-loadScript("resources/compiled_classes.js");
+// This scripts uses blocks, which require Squeak-classes
+setupSqueakEnvironment();
 
 Class("Tester", {
 	instanceMethods: {

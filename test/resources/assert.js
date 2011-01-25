@@ -38,7 +38,8 @@ loadScript(scriptName) {
 }
 
 setupSqueakEnvironment() {
-	loadScript("../compiled_classes.js");
+	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
+	loadScript("resources/compiled_classes.js");
 	loadScript("../bootstrap.js");
 	loadScript("../kernel_primitives.js");
 }
