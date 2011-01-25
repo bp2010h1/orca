@@ -30,14 +30,20 @@ assert = function(condition, exception_message) {
     testResults.appendChild(result);
 }
 
-loadScript(scriptName) {
+loadScript = function(scriptName) {
+	$('head').load(scriptName, function() {
+		alert('Loaded: ' + scriptName);
+	});
+	
+	/*
 	var scriptTag = document.createElement("script");
-	result.setAttribute("src", scriptName);
-	result.setAttribute("type", "text/javascript");
+	scriptTag.setAttribute("src", scriptName);
+	scriptTag.setAttribute("type", "text/javascript");
 	document.getElementsByTagName("head")[0].appendChild(scriptTag);
+	*/
 }
 
-setupSqueakEnvironment() {
+setupSqueakEnvironment = function() {
 	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
 	loadScript("resources/compiled_classes.js");
 	loadScript("../bootstrap.js");
