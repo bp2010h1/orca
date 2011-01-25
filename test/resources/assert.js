@@ -31,13 +31,27 @@ assert = function(condition, exception_message) {
     testResults.appendChild(result);
 }
 
-loadScript = function(scriptName) {
-	var scriptTag = document.createElement("script");
-	scriptTag.setAttribute("src", loadScript.jsBaseUrl + scriptName);
-	scriptTag.setAttribute("type", "text/javascript");
-	document.getElementsByTagName("head")[0].appendChild(scriptTag);
+GET = function(path) {
+	var req = new XMLHttpRequest();
+	req.open("GET", path, false);
+	req.send(null);
+	if (req.status == 200) {
+		return req.responseText;
+	} else {
+		throw "Could not load script: " + path;
+	}
 }
-loadScript.jsBaseUrl = "https://github.com/bp2010h1/squeakyJS/raw/fixingTests/";
+
+loadScript = function(scriptName) {
+	var result;
+	try {
+		var script = GET("test/file/" + scriptName);
+		result = eval(script);
+	} catch (e) {
+		debugger;
+	}
+	return result;
+}
 
 setupSqueakEnvironment = function() {
 	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"

@@ -6,7 +6,7 @@ var S2JConnection = {
 	webSocket : null,
 	request : null,
 	identifier : null,
-
+	
 	doIt: function(code) {
 		return eval(code);
 	},
