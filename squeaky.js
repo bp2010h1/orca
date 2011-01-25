@@ -7,17 +7,18 @@ var DEBUG = true;
 // If set to true, every method-call will be printed to console.
 var DEBUG_INFINITE_RECURSION = false;
 
-var AAA = 0;
+// Each time an object (excluding classes) is created, this is incremented
+var INSTANCE_COUNT = 0;
 
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
-		var createMethod = function(receiver, methodName, method) {
-			receiver.prototype[methodName] = WithDebugging(WithNonLocalReturn(method));
-			receiver.prototype[methodName].methodName = methodName;
-			receiver.prototype[methodName].originalMethod = method;
-			method.methodHome = receiver.prototype; // This is the object, that actually contains this method
+		var createMethod = function(aPrototype, methodName, method) {
+			aPrototype.prototype[methodName] = WithDebugging(WithNonLocalReturn(method));
+			aPrototype.prototype[methodName].methodName = methodName;
+			aPrototype.prototype[methodName].originalMethod = method;
+			method.methodHome = aPrototype; // This is the object, that actually contains this method
 		}
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
@@ -36,13 +37,13 @@ var Class = function(classname, attrs) {
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
 			for(methodName in methodTable) {
-				createMethod(this._instancePrototype, methodName, methodTable[methodName]);
+				createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
 			}
 		}
 		
 		newClassPrototype.prototype._addClassMethods = function(methodTable) {
 			for(methodName in methodTable) {
-				createMethod(this._classPrototype, methodName, methodTable[methodName]);
+				createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
 			}
 		}
 		
@@ -65,7 +66,7 @@ var Class = function(classname, attrs) {
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
-		var newInstancePrototype = function(){ AAA = AAA + 1; };
+		var newInstancePrototype = function(){ INSTANCE_COUNT = INSTANCE_COUNT + 1; };
 		var newClass;
 		
 		if ('superclass' in attrs) {
@@ -175,7 +176,7 @@ var _super = function(methodName) {
 		var currentContext = CALL_STACK.peek();
         var currentThis = currentContext.currentThis;
 		
-		// Accessing .prototype here brings us one step higher in the class-hierarchy
+		// Accessing .__proto__ here brings us one step higher in the class-hierarchy
 		// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
 		var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
 		
