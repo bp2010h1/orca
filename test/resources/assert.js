@@ -31,8 +31,8 @@ assert = function(condition, exception_message) {
 }
 
 loadScript = function(scriptName) {
-	$('head').load(scriptName, function() {
-		alert('Loaded: ' + scriptName);
+	$.getScript(scriptName, function() {
+		alert("Loaded: " + scriptName);
 	});
 	
 	/*
