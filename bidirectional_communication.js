@@ -9,7 +9,7 @@ var S2JConnection = {
 
 	doIt: function(code) {
 		return eval(code);
-	}
+	},
 
 	isWsSupported : function() {
 		return ("WebSocket" in window);
