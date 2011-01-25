@@ -31,16 +31,7 @@ assert = function(condition, exception_message) {
 }
 
 loadScript = function(scriptName) {
-	$.getScript(scriptName, function(data, success) {
-		alert("Loaded: " + scriptName + ". Success: " + success + ", Data: " + data);
-	});
-	
-	/*
-	var scriptTag = document.createElement("script");
-	scriptTag.setAttribute("src", scriptName);
-	scriptTag.setAttribute("type", "text/javascript");
-	document.getElementsByTagName("head")[0].appendChild(scriptTag);
-	*/
+	$.getScript(scriptName);
 }
 
 setupSqueakEnvironment = function() {
