@@ -15,9 +15,9 @@ var Class = function(classname, attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
 		var createMethod = function(aPrototype, methodName, method) {
-			aPrototype.prototype[methodName] = WithDebugging(WithNonLocalReturn(method));
-			aPrototype.prototype[methodName].methodName = methodName;
-			aPrototype.prototype[methodName].originalMethod = method;
+			aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
+			aPrototype[methodName].methodName = methodName;
+			aPrototype[methodName].originalMethod = method;
 			method.methodHome = aPrototype; // This is the object, that actually contains this method
 		}
 		
