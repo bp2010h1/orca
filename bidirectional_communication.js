@@ -7,6 +7,10 @@ var S2JConnection = {
 	request : null,
 	identifier : null,
 
+	doIt: function(code) {
+		return eval(code);
+	}
+
 	isWsSupported : function() {
 		return ("WebSocket" in window);
 	},
@@ -144,7 +148,3 @@ var S2JConnection = {
 		}
 	}
 }
-
-
-// DEBUG
-//info = alert;
