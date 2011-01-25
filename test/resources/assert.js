@@ -1,3 +1,4 @@
+
 TEST_RESULTS = {
     green: 0,
     red: new Array()
@@ -31,21 +32,12 @@ assert = function(condition, exception_message) {
 }
 
 loadScript = function(scriptName) {
-	$.getScript(scriptName);
-	
-	/*
-	, function(data, success) {
-		alert("Loaded: " + scriptName + ". Success: " + success + ", Data: " + data);
-	}
-	*/
-	
-	/*
 	var scriptTag = document.createElement("script");
-	scriptTag.setAttribute("src", scriptName);
+	scriptTag.setAttribute("src", loadScript.jsBaseUrl + scriptName);
 	scriptTag.setAttribute("type", "text/javascript");
 	document.getElementsByTagName("head")[0].appendChild(scriptTag);
-	*/
 }
+loadScript.jsBaseUrl = "https://github.com/bp2010h1/squeakyJS/raw/fixingTests/";
 
 setupSqueakEnvironment = function() {
 	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
