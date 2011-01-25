@@ -55,7 +55,9 @@ loadScript = function(scriptName) {
 
 setupSqueakEnvironment = function() {
 	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
-	loadScript("test/resources/compiled_classes.js");
+	// Work around (?) to get the compiled classes from server, that are not stored into a file.
+	var scripts = S2JServer.invokeMethodOnServer("S2JTestApp codeForRequiredClasses");
+	eval(scripts);
 	loadScript("bootstrap.js");
 	loadScript("kernel_primitives.js");
 }
