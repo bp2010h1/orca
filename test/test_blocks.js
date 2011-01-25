@@ -1,6 +1,6 @@
 
-orig_assert = assert;
-assert = function(aBool) { orig_assert(aBool); console.log(aBool); if (!aBool) { console.log(arguments.callee.caller); } };
+// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
+loadScript("resources/compiled_classes.js");
 
 Class("Tester", {
 	instanceMethods: {
@@ -265,30 +265,28 @@ var tester = function() {
 	return testerInst;
 }
 
-runBlockTests = function() {
-    tester().test1();
-    tester().test2();
-    tester().test3();
-    tester().test4();
-    tester().test5();
-    tester().test6();
-    tester().test7();
-    tester().test8();
-    tester().test9();
-    tester().test10();
-    tester().test11();
-    tester().test12();
-    tester().test13();
-    tester().test14();
-    tester().test15();
-    tester().test16();
-    tester().test17();
-    tester().test18();
-    tester().test19();
-    tester().test20();
-    tester().test21();
-    tester().test22();
-    tester().test23();
-    tester().test24();
-    tester().test25();
-}
+tester().test1();
+tester().test2();
+tester().test3();
+tester().test4();
+tester().test5();
+tester().test6();
+tester().test7();
+tester().test8();
+tester().test9();
+tester().test10();
+tester().test11();
+tester().test12();
+tester().test13();
+tester().test14();
+tester().test15();
+tester().test16();
+tester().test17();
+tester().test18();
+tester().test19();
+tester().test20();
+tester().test21();
+tester().test22();
+tester().test23();
+tester().test24();
+tester().test25();
