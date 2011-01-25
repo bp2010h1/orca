@@ -6,9 +6,10 @@ var S2JServer = {
 		var length = arguments.length;
 		var args = "";
 		for (var i = 1; i < arguments.length; i++) {
-			args += "&arg" + (i - 1) + "=" + arguments[i];
+		  // to make sure the arguments and code get sent properly we must url-encode them by escape
+			args += "&arg" + (i - 1) + "=" + escape(arguments[i]);
 		}
-		var result = S2JConnection.send("code=" + squeakCode + args);
+		var result = S2JConnection.send("code=" + escape(squeakCode) + args);
 		result = eval(result);
 		return result;
 	}
