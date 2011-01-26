@@ -16,6 +16,6 @@ var S2JServer = {
 			debugger;
 		}
 		return result;
-	},
+	}
 	
 }
