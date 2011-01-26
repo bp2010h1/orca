@@ -5,10 +5,10 @@ S2JTests.setupSqueakEnvironment();
 Class("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {
-		testerInst.instVar = "instVar";
-		testerInst.instanceVar = "Ins";
-		testerInst.counter = 0;
-		testerInst.counterBack = 0;
+		this.instVar = "instVar";
+		this.instanceVar = "Ins";
+		this.counter = 0;
+		this.counterBack = 0;
 	},
 	
 	instMethod: function() { return "methodRes"; },

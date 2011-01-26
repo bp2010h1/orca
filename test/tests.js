@@ -4,6 +4,7 @@ DEBUG = false;
 
 var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js" ];
 
+// Everything here is executed directly from this S2JTests-object. So we can use this to access other methods in this "namespace".
 var S2JTests = {
 
 	// This determines which application is used to load the js-scripts and compiled classes
@@ -137,11 +138,11 @@ var S2JTests = {
 
 		// Send the results to the server
 		S2JConnection.connect();
-		S2JConnection.send(this.TEST_RESULTS.red.length);
+		S2JConnection.send(this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
 		S2JConnection.disconnect();
 	}
 
 }
 
-// For shorter test-code
+// For shorter test-code. Must apply the method in the context of the namespace.
 var assert = function() { S2JTests.assert.apply(S2JTests, arguments) };
