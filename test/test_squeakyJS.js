@@ -1,6 +1,3 @@
-
-// setup
-
 Class('A', {
 	instanceVariables: ['foo'],
 	instanceMethods: {
@@ -51,35 +48,39 @@ Class('B', {
 	}
 });
 
-a = A._newInstance();
-b = B._newInstance();
+{
+	test1: function() {
+		a = A._newInstance();
+		b = B._newInstance();
 
-// testing
-assert(typeof a.initialize == 'function', "is initialize a function?");
-assert(typeof a.foo != 'undefined');
-assert(typeof b.foo != 'undefined');
-assert(b.foo == null);
-assert(typeof a.bar == 'undefined');
-assert(typeof a.initialize == 'function');
-assert(typeof b.testMethod == 'function');
-assert(typeof b.testMethod2 == 'function');
-assert(b.testMethod2(1337) == 1337);
-assert(typeof A._newInstance == 'function');
-assert(typeof A.firstName == 'function');
-assert(A.firstName() == 'Chuck');
-assert(A.lastName() == 'Norris');
-assert(typeof B.firstName == 'function');
-assert(B.firstName() == 'Chuck');
-assert(B.lastName() == 'Skywalker');
+		// testing
+		assert(typeof a.initialize == 'function', "is initialize a function?");
+		assert(typeof a.foo != 'undefined');
+		assert(typeof b.foo != 'undefined');
+		assert(b.foo == null);
+		assert(typeof a.bar == 'undefined');
+		assert(typeof a.initialize == 'function');
+		assert(typeof b.testMethod == 'function');
+		assert(typeof b.testMethod2 == 'function');
+		assert(b.testMethod2(1337) == 1337);
+		assert(typeof A._newInstance == 'function');
+		assert(typeof A.firstName == 'function');
+		assert(A.firstName() == 'Chuck');
+		assert(A.lastName() == 'Norris');
+		assert(typeof B.firstName == 'function');
+		assert(B.firstName() == 'Chuck');
+		assert(B.lastName() == 'Skywalker');
 
-a.setTest(3);
-assert(a.test == 3);
-assert(b.test != 3);
+		a.setTest(3);
+		assert(a.test == 3);
+		assert(b.test != 3);
 
-b.setTest(4);
-assert(a.test == 3);
-assert(b.test == 4);
+		b.setTest(4);
+		assert(a.test == 3);
+		assert(b.test == 4);
 
-B.age = 100;
-assert(B.myAge() == 100);
-assert(b.lastName() == B.lastName());
+		B.age = 100;
+		assert(B.myAge() == 100);
+		assert(b.lastName() == B.lastName());
+	}
+};

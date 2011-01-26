@@ -26,7 +26,7 @@ var S2JTests = {
 
 	assert: function(condition, exception_message) {
 		var result = document.createElement("li");
-		
+
 		if(condition) {
 			result.setAttribute("class", "green");
 			result.innerHTML = "OK";
@@ -41,8 +41,9 @@ var S2JTests = {
 			} else {
 				S2JTests.TEST_RESULTS.red.push("AssertionError");            
 			}
+			console.log("Assert-error. Message: " + exception_message);
 		}
-		
+
 		S2JTests.RESULT_CONTAINER.appendChild(result);
 	},
 
@@ -65,9 +66,10 @@ var S2JTests = {
 	runTestScript: function(scriptName) {
 		var tester = null;
 		try {
+			S2JTests.APP_NAME = "test";
 			tester = S2JTests.loadScript("test/" + scriptName);
 		} catch (e) {
-			S2JTests.assert(false, "Could not load and evaluate test-script: " + scriptName);
+			S2JTests.assert(false, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
 		}
 		if (tester != null) {
 			if (tester.testedApp != undefined) {
@@ -89,7 +91,7 @@ var S2JTests = {
 
 	loadFile: function(fileName) {
 		var script = S2JTests.GET(fileName);
-		return eval(script);
+		return eval(script, fileName);
 	},
 
 	loadClasses: function() {
@@ -112,7 +114,7 @@ var S2JTests = {
 
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
-			S2JTests.runTestScript(testScript);
+			S2JTests.runTestScript(S2JTestScripts[testScript]);
 		}
 
 		// Send the results to the server

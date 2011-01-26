@@ -1,9 +1,16 @@
 
 // This scripts uses blocks, which require Squeak-classes
-setupSqueakEnvironment();
+S2JTests.setupSqueakEnvironment();
 
 Class("Tester", {
 	instanceMethods: {
+	
+	setUp: function() {
+		testerInst.instVar = "instVar";
+		testerInst.instanceVar = "Ins";
+		testerInst.counter = 0;
+		testerInst.counterBack = 0;
+	}
 	
 	instMethod: function() { return "methodRes"; },
 	
@@ -256,37 +263,4 @@ Class("Tester", {
 	},
 }});
 
-var tester = function() { 
-	var testerInst = Tester._newInstance();
-	testerInst.instVar = "instVar";
-	testerInst.instanceVar = "Ins";
-	testerInst.counter = 0;
-	testerInst.counterBack = 0;
-	return testerInst;
-}
-
-tester().test1();
-tester().test2();
-tester().test3();
-tester().test4();
-tester().test5();
-tester().test6();
-tester().test7();
-tester().test8();
-tester().test9();
-tester().test10();
-tester().test11();
-tester().test12();
-tester().test13();
-tester().test14();
-tester().test15();
-tester().test16();
-tester().test17();
-tester().test18();
-tester().test19();
-tester().test20();
-tester().test21();
-tester().test22();
-tester().test23();
-tester().test24();
-tester().test25();
+Tester._newInstance();
