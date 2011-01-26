@@ -91,7 +91,14 @@ var S2JTests = {
 
 	loadFile: function(fileName) {
 		var script = S2JTests.GET(fileName);
+		script = S2JTests.flattenScript(script);
 		return eval(script, fileName);
+	},
+
+	flattenScript: function(script) {
+		script = script.replace( new RegExp( "\r", "g" ), "\\\r" );
+		script = script.replace( new RegExp( "\n", "g" ), "\\\n" );
+		return script;
 	},
 
 	loadClasses: function() {
