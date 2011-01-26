@@ -9,7 +9,7 @@ var S2JServer = {
 		  // to make sure the arguments and code get sent properly we must url-encode them by escape
 			args += "&arg" + (i - 1) + "=" + escape(arguments[i]);
 		}
-		var result = S2JConnection.send("code=" + squeakCode + args);
+		var result = S2JConnection.send("code=" + escape(squeakCode) + args);
 		try {
 			result = eval(result);
 		} catch (e) {
