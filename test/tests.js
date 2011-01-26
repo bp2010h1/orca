@@ -10,7 +10,7 @@ var S2JTests = {
 	APP_NAME: null,
 
 	// This will be the html-element, that contains the test-results
-	RESULT_CONTAINER: null;
+	RESULT_CONTAINER: null,
 
 	getAppName: function() {
 		if (S2JTests.APP_NAME === null) {
