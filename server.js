@@ -18,8 +18,4 @@ var S2JServer = {
 		return result;
 	},
 	
-	invokeMethodOnServer: function(squeakCode) {
-		return S2JServer.performOnServer("[" + squeakCode + "]");
-	}
-	
 }

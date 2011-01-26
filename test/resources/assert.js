@@ -42,22 +42,29 @@ GET = function(path) {
 	}
 }
 
-loadScript = function(scriptName) {
-	var result;
+// This loads a script and evaluates it. The script must be thought of as a big function returning one object.
+// The returned object is iterated and each function-slot starting with test* is executed as test-case.
+runTestScript = function(scriptName) {
+	var tester = null;
 	try {
-		var script = GET("test/file/" + scriptName);
-		result = eval(script);
+		tester = loadScript(scriptName);
 	} catch (e) {
-		debugger;
+		assert(false, "Could not load and evaluate test-script: " + scriptName);
 	}
-	return result;
+	if (tester != null) {
+		for (mt in tester) {
+			if (mt 
+		}
+	}
+}
+
+loadScript = function(scriptName) {
+	var script = GET("test/file/" + scriptName);
+	return eval(script);
 }
 
 setupSqueakEnvironment = function() {
-	// this must be printed from the image using "S2JApp writeClassesToFile: 'the/current/dir/classes.js'"
-	// Work around (?) to get the compiled classes from server, that are not stored into a file.
-	var scripts = S2JServer.invokeMethodOnServer("S2JTestApp codeForRequiredClasses");
-	eval(scripts);
+	loadScript("test/classes");
 	loadScript("bootstrap.js");
 	loadScript("kernel_primitives.js");
 }
