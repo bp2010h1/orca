@@ -2,7 +2,7 @@
 // This script must be loaded after squeaky.js to apply this switch-setting!
 DEBUG = false;
 
-var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js" ];
+var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js" ];
 
 var S2JTests = {
 
@@ -71,7 +71,7 @@ var S2JTests = {
 		} catch (e) {
 			S2JTests.assert(false, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
 		}
-		if (tester != null) {
+		if (tester) {
 			if (tester.testedApp != undefined) {
 				S2JTests.APP_NAME = tester.testedApplication;
 			} else {
@@ -81,9 +81,17 @@ var S2JTests = {
 			for (mt in tester) {
 				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
 					if (setup != undefined) {
-						setup();
+						try {
+							setup();
+						} catch (e) {
+							assert(false, "SetUp failed in script " + scriptName + " before running test-case " + mt + ". Exception: " + e);
+						}
 					}
-					tester[mt]();
+					try {
+						tester[mt]();
+					} catch (e) {
+						assert(false, "Test failed in script " + scriptName + ": " + mt + ". Exception: " + e);
+					}
 				}
 			}
 		}
@@ -91,7 +99,7 @@ var S2JTests = {
 
 	loadFile: function(fileName) {
 		var script = S2JTests.GET(fileName);
-		return eval(script, fileName);
+		return window.eval(script); // The scripts need global context
 	},
 
 	loadClasses: function() {
