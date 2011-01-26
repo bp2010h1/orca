@@ -13,38 +13,48 @@ var S2JTests = {
 	RESULT_CONTAINER: null,
 
 	getAppName: function() {
-		if (S2JTests.APP_NAME === null) {
+		if (this.APP_NAME === null) {
 			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
 		}
-		return S2JTests.APP_NAME;
+		return this.APP_NAME;
 	},
 
 	TEST_RESULTS: {
-		green: 0,
-		red: new Array()
+		ok: 0,
+		fail: new Array(),
+		error: new Array()
+	},
+
+	logError: function(errorArray, exception_message, error_type) {
+		if(exception_message) {
+			errorArray.push(exception_message);
+		} else {
+			errorArray.push(error_type);
+		}
+		console.log(error_type + ". Message: " + exception_message);
+	},
+
+	showResult: function(colorClass, message) {
+		var result = document.createElement("li");
+		result.setAttribute("class", colorClass);
+		result.innerHTML = message;
+		this.RESULT_CONTAINER.appendChild(result);
 	},
 
 	assert: function(condition, exception_message) {
-		var result = document.createElement("li");
-
-		if(condition) {
-			result.setAttribute("class", "green");
-			result.innerHTML = "OK";
-			
-			S2JTests.TEST_RESULTS.green++;
+		if (condition === this) {
+			// Using this as marker to notice exceptions (ERRORs) in tests
+			this.showResult("red", "ERROR");
+			this.logError(this.TEST_RESULTS.error, exception_message, "Could not run test");
+		}
+		else if (!condition) {
+			this.showResult("yellow", "FAIL");
+			this.logError(this.TEST_RESULTS.fail, exception_message, "Assertion failed");
 		}
 		else {
-			result.setAttribute("class", "red");
-			result.innerHTML = "FAIL";
-			if(exception_message) {
-				S2JTests.TEST_RESULTS.red.push(exception_message);            
-			} else {
-				S2JTests.TEST_RESULTS.red.push("AssertionError");            
-			}
-			console.log("Assert-error. Message: " + exception_message);
+			this.showResult("green", "OK");
+			this.TEST_RESULTS.ok++;
 		}
-
-		S2JTests.RESULT_CONTAINER.appendChild(result);
 	},
 
 	GET: function(path) {
@@ -66,16 +76,16 @@ var S2JTests = {
 	runTestScript: function(scriptName) {
 		var tester = null;
 		try {
-			S2JTests.APP_NAME = "test";
-			tester = S2JTests.loadScript("test/" + scriptName);
+			this.APP_NAME = "test";
+			tester = this.loadScript("test/" + scriptName);
 		} catch (e) {
-			S2JTests.assert(false, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
+			this.assert(this, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
 		}
 		if (tester) {
 			if (tester.testedApp != undefined) {
-				S2JTests.APP_NAME = tester.testedApplication;
+				this.APP_NAME = tester.testedApplication;
 			} else {
-				S2JTests.APP_NAME = "test";
+				this.APP_NAME = "test";
 			}
 			var setup = tester.setUp;
 			for (mt in tester) {
@@ -84,13 +94,13 @@ var S2JTests = {
 						try {
 							setup();
 						} catch (e) {
-							assert(false, "SetUp failed in script " + scriptName + " before running test-case " + mt + ". Exception: " + e);
+							assert(this, "SetUp failed in script " + scriptName + " before running test-case " + mt + ". Exception: " + e);
 						}
 					}
 					try {
 						tester[mt]();
 					} catch (e) {
-						assert(false, "Test failed in script " + scriptName + ": " + mt + ". Exception: " + e);
+						assert(this, "Test failed in script " + scriptName + ": " + mt + ". Exception: " + e);
 					}
 				}
 			}
@@ -98,40 +108,40 @@ var S2JTests = {
 	},
 
 	loadFile: function(fileName) {
-		var script = S2JTests.GET(fileName);
+		var script = this.GET(fileName);
 		return window.eval(script); // The scripts need global context
 	},
 
 	loadClasses: function() {
-		return S2JTests.loadFile(S2JTests.getAppName() + "/classes");
+		return this.loadFile(this.getAppName() + "/classes");
 	},
 
 	loadScript: function(scriptName) {
-		return S2JTests.loadFile(S2JTests.getAppName() + "/file/" + scriptName);
+		return this.loadFile(this.getAppName() + "/file/" + scriptName);
 	},
 
 	setupSqueakEnvironment: function() {
-		S2JTests.loadClasses();
-		S2JTests.loadScript("bootstrap.js");
-		S2JTests.loadScript("kernel_primitives.js");
+		this.loadClasses();
+		this.loadScript("bootstrap.js");
+		this.loadScript("kernel_primitives.js");
 	},
 
 	runTests: function(){
-		S2JTests.RESULT_CONTAINER = document.createElement("ul");
-		document.getElementsByTagName("body")[0].appendChild(S2JTests.RESULT_CONTAINER);
+		this.RESULT_CONTAINER = document.createElement("ul");
+		document.getElementsByTagName("body")[0].appendChild(this.RESULT_CONTAINER);
 
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
-			S2JTests.runTestScript(S2JTestScripts[testScript]);
+			this.runTestScript(S2JTestScripts[testScript]);
 		}
 
 		// Send the results to the server
 		S2JConnection.connect();
-		S2JConnection.send(S2JTests.TEST_RESULTS.red.length);
+		S2JConnection.send(this.TEST_RESULTS.red.length);
 		S2JConnection.disconnect();
 	}
 
 }
 
 // For shorter test-code
-var assert = S2JTests.assert;
+var assert = function() { S2JTests.assert.apply(S2JTests, arguments) };
