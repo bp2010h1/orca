@@ -1,3 +1,6 @@
+
+
+
 Class('A', {
 	instanceVariables: ['foo'],
 	instanceMethods: {
@@ -48,7 +51,8 @@ Class('B', {
 	}
 });
 
-{
+
+tester = {
 	test1: function() {
 		a = A._newInstance();
 		b = B._newInstance();
@@ -84,3 +88,5 @@ Class('B', {
 		assert(b.lastName() == B.lastName());
 	}
 };
+
+tester
