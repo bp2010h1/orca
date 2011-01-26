@@ -13,6 +13,10 @@ var S2JTests = {
 	// This will be the html-element, that contains the test-results
 	RESULT_CONTAINER: null,
 
+	// Remember the currently run script and test
+	currentScript: null,
+	currentTest: null,
+
 	getAppName: function() {
 		if (this.APP_NAME === null) {
 			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
@@ -27,6 +31,7 @@ var S2JTests = {
 	},
 
 	logError: function(errorArray, exception_message, error_type) {
+		error_type = this.currentScript + "/" + this.currentTest + ": " + error_type;
 		if(exception_message) {
 			errorArray.push(exception_message);
 		} else {
@@ -46,11 +51,11 @@ var S2JTests = {
 		if (condition === this) {
 			// Using this as marker to notice exceptions (ERRORs) in tests
 			this.showResult("red", "ERROR");
-			this.logError(this.TEST_RESULTS.error, exception_message, "Could not run test");
+			this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
 		}
 		else if (!condition) {
 			this.showResult("yellow", "FAIL");
-			this.logError(this.TEST_RESULTS.fail, exception_message, "Assertion failed");
+			this.logError(this.TEST_RESULTS.fail, exception_message,  "Assertion failed");
 		}
 		else {
 			this.showResult("green", "OK");
@@ -75,12 +80,14 @@ var S2JTests = {
 	// If the slot/function setUp is present, it is called before each test*-function.
 	// If the slot (string) testedApp is present, the named application is used to load scripts (instead of default test).
 	runTestScript: function(scriptName) {
+		this.currentScript = scriptName;
+		this.currentTest = "(?)";
 		var tester = null;
 		try {
 			this.APP_NAME = "test";
 			tester = this.loadScript("test/" + scriptName);
 		} catch (e) {
-			this.assert(this, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
+			this.assert(this, "Could not load and evaluate script. " + e);
 		}
 		if (tester) {
 			if (tester.testedApp != undefined) {
@@ -91,17 +98,18 @@ var S2JTests = {
 			var setup = tester.setUp;
 			for (mt in tester) {
 				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
+					this.currentTest = mt;
 					if (setup != undefined) {
 						try {
 							setup();
 						} catch (e) {
-							assert(this, "SetUp failed in script " + scriptName + " before running test-case " + mt + ". Exception: " + e);
+							assert(this, "SetUp failed. " + e);
 						}
 					}
 					try {
 						tester[mt]();
 					} catch (e) {
-						assert(this, "Test failed in script " + scriptName + ": " + mt + ". Exception: " + e);
+						assert(this, e);
 					}
 				}
 			}
