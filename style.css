@@ -1,0 +1,53 @@
+body {
+	font-family: Verdana;
+	margin: 0px;
+	padding: 0px;
+}
+	
+#container {
+	width: 80%;
+	margin: 0px auto;
+}
+	
+textarea {
+	width: 100%;
+	background-color: #F9F7ED;
+	border: 1px solid #4096EE;
+}
+	
+table {
+	width: 100%;
+}
+	
+th {
+	text-align: left;
+	width: 40%;
+}
+
+tr th:nth-child(1), tr th:nth-child(2){
+	width: 10%;	
+}
+	
+.red {
+	background-color: #D15600;
+}
+	
+.yellow {
+	background-color: #FFFF88;
+}
+	
+.green {
+	background-color: #6BBA70;
+}
+	
+.blue {
+	background-color: #C3D9FF;
+}
+
+.vertical {
+	border: 5px dashed black;
+}
+
+.horizontal {
+	border: 5px dotted black;
+}
