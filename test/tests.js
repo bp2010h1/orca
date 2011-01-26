@@ -17,6 +17,9 @@ var S2JTests = {
 	currentScript: null,
 	currentTest: null,
 
+	// Exception-object to signalize assert-fails
+	ASSERT_FAIL: function(message) { this.IS_ASSERT_FAIL = true; this.message = message; },
+
 	getAppName: function() {
 		if (this.APP_NAME === null) {
 			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
@@ -48,19 +51,14 @@ var S2JTests = {
 	},
 
 	assert: function(condition, exception_message) {
-		if (condition === this) {
-			// Using this as marker to notice exceptions (ERRORs) in tests
-			this.showResult("red", "ERROR");
-			this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
+		if (!condition) {
+			throw new this.ASSERT_FAIL(exception_message);
 		}
-		else if (!condition) {
-			this.showResult("yellow", "FAIL");
-			this.logError(this.TEST_RESULTS.fail, exception_message,  "Assertion failed");
-		}
-		else {
-			this.showResult("green", "OK");
-			this.TEST_RESULTS.ok++;
-		}
+	},
+
+	testFailed: function(exception_message) {
+		this.showResult("red", "ERROR");
+		this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
 	},
 
 	GET: function(path) {
@@ -87,7 +85,7 @@ var S2JTests = {
 			this.APP_NAME = "test";
 			tester = this.loadScript("test/" + scriptName);
 		} catch (e) {
-			this.assert(this, "Could not load and evaluate script. " + e);
+			this.testFailed("Could not load and evaluate script. " + e);
 		}
 		if (tester) {
 			if (tester.testedApp != undefined) {
@@ -103,13 +101,20 @@ var S2JTests = {
 						try {
 							setup();
 						} catch (e) {
-							assert(this, "SetUp failed. " + e);
+							this.testFailed("SetUp failed. " + e);
 						}
 					}
 					try {
-						tester[mt]();
+						tester[mt].apply(tester);
+						this.showResult("green", "OK");
+						this.TEST_RESULTS.ok++;
 					} catch (e) {
-						assert(this, e);
+						if (e.IS_ASSERT_FAIL === true) {
+							this.showResult("yellow", "FAIL");
+							this.logError(this.TEST_RESULTS.fail, e.message,  "Assertion failed");
+						} else {
+							this.testFailed(e);
+						}
 					}
 				}
 			}
