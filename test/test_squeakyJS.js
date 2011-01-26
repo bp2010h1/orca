@@ -1,6 +1,4 @@
 
-
-
 Class('A', {
 	instanceVariables: ['foo'],
 	instanceMethods: {
