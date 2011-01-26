@@ -23,7 +23,9 @@ Error._addInstanceMethods({
 
 String._addInstanceMethods({
 	// This is not actually a primitive function, but behaves in the same way the #, method does
-	_comma: function(anotherString) { return string(this.string$ + anotherString.string$)}
+	_comma: function(anotherString) { return string(this.string$ + anotherString.string$) },
+	_equals: function(anotherString) { return bool(this.string$ == anotherString.string$) },
+	isEmpty: function() { return bool(this.string$.length == 0) }
 });
 
 _Number._addInstanceMethods({
@@ -95,6 +97,9 @@ _Array._addInstanceMethods({
 	},
 	at_: function(idx){
 		return this.arr$[idx.num$ - 1];
+	},
+	isEmpty: function(){
+    return (this.arr$.length == 0);
 	}
 });
 _Array._addClassMethods({
