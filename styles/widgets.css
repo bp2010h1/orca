@@ -1,0 +1,12 @@
+.vertical > * {
+	display: block;
+}
+
+
+.horizontal {
+	display: table;
+}
+
+.horizontal > * {
+	float: left;
+}
