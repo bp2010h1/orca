@@ -62,7 +62,7 @@ var S2JTests = {
 	runTestScript: function(scriptName) {
 		var tester = null;
 		try {
-			tester = loadScript("test/" + scriptName);
+			tester = S2JTests.loadScript("test/" + scriptName);
 		} catch (e) {
 			S2JTests.assert(false, "Could not load and evaluate test-script: " + scriptName);
 		}
@@ -85,22 +85,22 @@ var S2JTests = {
 	},
 
 	loadFile: function(fileName) {
-		var script = S2JTester.GET(fileName);
+		var script = S2JTests.GET(fileName);
 		return eval(script);
 	},
 
 	loadClasses: function() {
-		return loadFile(S2JTests.getAppName() + "/classes");
+		return S2JTests.loadFile(S2JTests.getAppName() + "/classes");
 	},
 
 	loadScript: function(scriptName) {
-		return loadFile(S2JTests.getAppName() + "/file/" + scriptName);
+		return S2JTests.loadFile(S2JTests.getAppName() + "/file/" + scriptName);
 	},
 
 	setupSqueakEnvironment: function() {
-		loadClasses();
-		loadScript("bootstrap.js");
-		loadScript("kernel_primitives.js");
+		S2JTests.loadClasses();
+		S2JTests.loadScript("bootstrap.js");
+		S2JTests.loadScript("kernel_primitives.js");
 	},
 
 	runTests: function(){
@@ -108,7 +108,7 @@ var S2JTests = {
 		
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
-			S2JTester.runTestScript(testScript);
+			S2JTests.runTestScript(testScript);
 		}
 		
 		// Send the results to the server
