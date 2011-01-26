@@ -2,7 +2,7 @@
 // This scripts uses blocks, which require Squeak-classes
 S2JTests.setupSqueakEnvironment();
 
-Class("Tester", {
+Class("BlocksTester", {
 	instanceMethods: {
 	
 	setUp: function() {
@@ -243,7 +243,7 @@ Class("Tester", {
 	
 	test24: function() {
 		var _block = block( function() { return this.instVar; } );
-		var otherTester = Tester._newInstance();
+		var otherTester = BlocksTester._newInstance();
 		otherTester.instVar = "otherInstVar";
 		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
@@ -251,7 +251,7 @@ Class("Tester", {
 		return aBlock.value();
 	},
 	test25: function() {
-		var otherTester = Tester._newInstance();
+		var otherTester = BlocksTester._newInstance();
 		otherTester.instVar = "otherInstVar";
 		var _block = block(function(){
 			var inner = block(function(){ 
@@ -263,4 +263,4 @@ Class("Tester", {
 	},
 }});
 
-Tester._newInstance();
+BlocksTester._newInstance();
