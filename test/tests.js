@@ -9,6 +9,9 @@ var S2JTests = {
 	// This determines which application is used to load the js-scripts and compiled classes
 	APP_NAME: null,
 
+	// This will be the html-element, that contains the test-results
+	RESULT_CONTAINER: null;
+
 	getAppName: function() {
 		if (S2JTests.APP_NAME === null) {
 			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
@@ -40,7 +43,7 @@ var S2JTests = {
 			}
 		}
 		
-		testResults.appendChild(result);
+		S2JTests.RESULT_CONTAINER.appendChild(result);
 	},
 
 	GET: function(path) {
@@ -104,13 +107,14 @@ var S2JTests = {
 	},
 
 	runTests: function(){
-		document.getElementsByTagName("body")[0].appendChild(document.createElement("ul"));
-		
+		S2JTests.RESULT_CONTAINER = document.createElement("ul");
+		document.getElementsByTagName("body")[0].appendChild(S2JTests.RESULT_CONTAINER);
+
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
 			S2JTests.runTestScript(testScript);
 		}
-		
+
 		// Send the results to the server
 		S2JConnection.connect();
 		S2JConnection.send(S2JTests.TEST_RESULTS.red.length);
