@@ -6,7 +6,7 @@ var S2JConnection = {
 	webSocket : null,
 	request : null,
 	identifier : null,
-	
+
 	doIt: function(code) {
 		return eval(code);
 	},
@@ -16,28 +16,28 @@ var S2JConnection = {
 	},
 
 	useWs : function() {
-		return (S2JConnection.isWsSupported() && S2JConnection.preferWs);
+		return (this.isWsSupported() && this.preferWs);
 	},
 
 	// common functions
 
 	connect : function() {
-		S2JConnection.useWs() ? S2JConnection.openSocket() : S2JConnection.openComet();
+		this.useWs() ? this.openSocket() : this.openComet();
 	},
 
 	send : function(data) {
 		if (data != "") {
-			return S2JConnection.sendComet(data);
+			return this.sendComet(data);
 		}
 	},
 	
 	sendCodeInput : function() {
-		S2JConnection.data = document.getElementById("input").value;
-		S2JConnection.send(S2JConnection.data);
+		this.data = document.getElementById("input").value;
+		this.send(this.data);
 	},
 
 	disconnect : function() {
-		S2JConnection.useWs() ? S2JConnection.closeSocket() : S2JConnection.closeComet();
+		this.useWs() ? this.closeSocket() : this.closeComet();
 	},
 
 	// comet functions
@@ -47,12 +47,12 @@ var S2JConnection = {
 	},
 
 	cometUrl : function() {
-		if (S2JConnection.identifier != null) return document.location.href + "/xhr?id=" + S2JConnection.identifier;
+		if (this.identifier != null) return document.location.href + "/xhr?id=" + this.identifier;
 		return document.location.href+"/xhr";
 	},
 
 	openComet : function() {
-		if (S2JConnection.request == null) S2JConnection.poll();
+		if (this.request == null) this.poll();
 	},
 	
 	methodInvocationUrl : function() {
@@ -60,52 +60,54 @@ var S2JConnection = {
 	},
 	
 	poll : function() {
-		S2JConnection.request = S2JConnection.createXmlRequest();
-		S2JConnection.request.open("GET", S2JConnection.cometUrl(), true);
-		S2JConnection.request.onreadystatechange = S2JConnection.pollResponseHandler;
-		S2JConnection.request.send(null);
+		this.request = this.createXmlRequest();
+		this.request.open("GET", this.cometUrl(), true);
+		this.request.onreadystatechange = this.pollResponseHandler;
+		this.request.send(null);
 	},
 
 	pollResponseHandler : function() {
-		if (S2JConnection.request.readyState == 4) {
-			if (S2JConnection.request.status == 200) {
-				var content = S2JConnection.request.responseText;
-				S2JConnection.doIt(content);
-				log(S2JConnection.request.status, content);
-				S2JConnection.poll();
+		if (this.request.readyState == 4) {
+			if (this.request.status == 200) {
+				var content = this.request.responseText;
+				this.doIt(content);
+				log(this.request.status, content);
+				this.poll();
 			}
-			else if (S2JConnection.request.status == 202) {
-				S2JConnection.identifier = S2JConnection.request.responseText;
-				info("Registered with id " + S2JConnection.identifier);
-				S2JConnection.poll();
+			else if (this.request.status == 202) {
+				this.identifier = this.request.responseText;
+				info("Registered with id " + this.identifier);
+				this.poll();
 			}
 			else info("disconnected");
 		}
 	},
 
 	sendComet : function(data) {
-		S2JConnection.closeComet();
-		S2JConnection.request = S2JConnection.createXmlRequest();
-		S2JConnection.request.open("POST", S2JConnection.methodInvocationUrl(), false);
-		S2JConnection.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		S2JConnection.request.send(data);
-		var result = S2JConnection.request.responseText;
-		S2JConnection.request=null;
-		S2JConnection.openComet();
+		if (this.request) {
+			this.closeComet();
+		}
+		this.request = this.createXmlRequest();
+		this.request.open("POST", this.methodInvocationUrl(), false);
+		this.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		this.request.send(data);
+		var result = this.request.responseText;
+		this.request=null;
+		this.openComet();
 		return result;
 	},
 
 	sendResponseHandler : function() {	
-		if ((S2JConnection.request.readyState == 4) && (S2JConnection.request.status == 201)) {
+		if ((this.request.readyState == 4) && (this.request.status == 201)) {
 			log(201, data);
-			S2JConnection.poll();
+			this.poll();
 		}
 	},
 
 	closeComet : function() {
-		if (S2JConnection.request != null) {
-			S2JConnection.request.abort();
-			S2JConnection.request = null;
+		if (this.request) {
+			this.request.abort();
+			this.request = null;
 		}
 	},
 	
@@ -113,38 +115,38 @@ var S2JConnection = {
 
 	openSocket : function() {
 	
-		S2JConnection.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
+		this.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 	
-		S2JConnection.webSocket.onopen = function(event) {
+		this.webSocket.onopen = function(event) {
 			info("Successfully opened WebSocket.");
 		};
 	
-		S2JConnection.webSocket.onerror = function(event) {
+		this.webSocket.onerror = function(event) {
 			log("WebSocket failed.");
 		};
 	
-		S2JConnection.webSocket.onmessage = function(event) {			
+		this.webSocket.onmessage = function(event) {			
 			   log(200, event.data);
-			   S2JConnection.doIt(event.data);
+			   this.doIt(event.data);
 		};
 	
-		S2JConnection.webSocket.onclose = function() {
+		this.webSocket.onclose = function() {
 			info("WebSocket received close event.");
 		};
 	},
 
 	sendSocket : function(message) {
-		if (S2JConnection.webSocket != null) {
-			S2JConnection.webSocket.send(message);
+		if (this.webSocket != null) {
+			this.webSocket.send(message);
 			log(200, message);
 		}
 	},
 
 	closeSocket : function() {
-		if (S2JConnection.webSocket != null) {
+		if (this.webSocket != null) {
 			info("WebSocket closed by client.");
-			S2JConnection.webSocket.close();
-			S2JConnection.webSocket = null;
+			this.webSocket.close();
+			this.webSocket = null;
 		}
 	}
 }
