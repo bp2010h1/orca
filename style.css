@@ -5,12 +5,12 @@ body {
 }
 	
 #container {
-	width: 80%;
+	#width: 80%;
 	margin: 0px auto;
 }
 	
 textarea {
-	width: 100%;
+	#width: 100%;
 	background-color: #F9F7ED;
 	border: 1px solid #4096EE;
 }
@@ -44,10 +44,15 @@ tr th:nth-child(1), tr th:nth-child(2){
 	background-color: #C3D9FF;
 }
 
-.vertical {
-	border: 5px dashed black;
+.vertical > * {
+	display: block;
 }
 
+
 .horizontal {
-	border: 5px dotted black;
+	display: table;
+}
+
+.horizontal > * {
+	float: left;
 }

@@ -1,7 +1,7 @@
 // namespace to avoid even more global state
 var S2JConnection = {
 
-	preferWs : true,
+	preferWs : false,
 	data : null,
 	webSocket : null,
 	request : null,
