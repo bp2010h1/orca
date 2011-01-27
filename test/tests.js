@@ -167,12 +167,10 @@ var S2JTests = {
 		}
 
 		// Send the results to the server
-		S2JConnection.connect();
-		S2JConnection.send(this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
-		S2JConnection.disconnect();
+		S2JServer.performOnServer("[ :result | S2JJavascriptTest reportJSResults: result ]", this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
 	}
 
 };
 
 // For shorter test-code. Must apply the method in the context of the namespace.
-var assert = function() { S2JTests.assert.apply(S2JTests, arguments) };
+var assert = function() { S2JTests.assert.apply(S2JTests, arguments); };
