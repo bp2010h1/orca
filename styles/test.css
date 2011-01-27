@@ -24,3 +24,12 @@ li.red {
 li.yellow {
     background-color: #aaaa00;
 }
+
+div.textBox{
+	position: absolute;
+	border: 1px solid black;
+	background-color: white;
+	font-size: 0.8em;
+	padding: 1em;
+	color: black;
+}

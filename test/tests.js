@@ -4,6 +4,30 @@ DEBUG = false;
 
 var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js" ];
 
+//TestResultBox
+var TextBox = function(aNode, aMessage){
+	this.textNode = document.createElement("div");
+	this.textNode.className = "textBox";
+	this.parentNode = aNode;
+	this.textNode.innerHTML = aMessage;
+	return this;
+};
+TextBox.prototype.show = function(event, toggleDurability){
+		if(!this.durable){
+			this.parentNode.appendChild(this.textNode);
+			this.textNode.style.top = event.pageY + 1 + "px";
+			this.textNode.style.left = event.pageX + 1 + "px";
+		}
+		if(toggleDurability){
+			this.durable = !(this.durable || false);
+		}
+};
+TextBox.prototype.hide = function(){
+	if(!this.durable){
+		this.parentNode.removeChild(this.textNode);
+	}
+};
+	
 // Everything here is executed directly from this S2JTests-object. So we can use this to access other methods in this "namespace".
 var S2JTests = {
 
@@ -34,23 +58,29 @@ var S2JTests = {
 		}
 		console.log(error_type + ". Message: " + exception_message);
 	},
-
-	showResult: function(colorClass, message) {
+	
+	showResult: function(colorClass, message, errorMessage) {
 		var result = document.createElement("li");
 		result.setAttribute("class", colorClass);
 		result.innerHTML = message;
+		var textBox = new TextBox(result, errorMessage);
+		if(errorMessage){
+			result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
+			result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
+			result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
+		}
 		this.RESULT_CONTAINER.appendChild(result);
 	},
 
-	assert: function(condition, exception_message) {
+	assert: function(condition, exceptionMessage) {
 		if (condition === this) {
 			// Using this as marker to notice exceptions (ERRORs) in tests
-			this.showResult("red", "ERROR");
-			this.logError(this.TEST_RESULTS.error, exception_message, "Could not run test");
+			this.showResult("red", "ERROR", exceptionMessage);
+			this.logError(this.TEST_RESULTS.error, exceptionMessage, "Could not run test");
 		}
 		else if (!condition) {
-			this.showResult("yellow", "FAIL");
-			this.logError(this.TEST_RESULTS.fail, exception_message, "Assertion failed");
+			this.showResult("yellow", "FAIL", exceptionMessage);
+			this.logError(this.TEST_RESULTS.fail, exceptionMessage, "Assertion failed");
 		}
 		else {
 			this.showResult("green", "OK");
@@ -83,7 +113,7 @@ var S2JTests = {
 			this.assert(this, "Could not load and evaluate test-script: " + scriptName + ". Exception: " + e);
 		}
 		if (tester) {
-			if (tester.testedApp != undefined) {
+			if (tester.testedApp !== undefined) {
 				this.APP_NAME = tester.testedApplication;
 			} else {
 				this.APP_NAME = "test";
@@ -91,7 +121,7 @@ var S2JTests = {
 			var setup = tester.setUp;
 			for (mt in tester) {
 				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
-					if (setup != undefined) {
+					if (setup !== undefined) {
 						try {
 							setup();
 						} catch (e) {
@@ -142,7 +172,7 @@ var S2JTests = {
 		S2JConnection.disconnect();
 	}
 
-}
+};
 
 // For shorter test-code. Must apply the method in the context of the namespace.
 var assert = function() { S2JTests.assert.apply(S2JTests, arguments) };
