@@ -2,7 +2,6 @@
 var S2JConnection = {
 
 	preferWs: true,
-	data: null,
 	webSocket: null,
 	request: null,
 	identifier: null,
@@ -47,8 +46,7 @@ var S2JConnection = {
 	},
 
 	sendCodeInput: function() {
-		this.data = document.getElementById("input").value;
-		this.send(this.data);
+		this.send(document.getElementById("input").value);
 	},
 
 	disconnect: function() {
@@ -109,21 +107,9 @@ var S2JConnection = {
 		return result;
 	},
 
-	sendResponseHandler: function() {	
-		if ((this.request.readyState == 4) && (this.request.status == 201)) {
-			S2JConsole.logStatus(data, 201);
-			this.poll();
-		}
-	},
-
 	closeComet: function() {
 		if (this.request) {
-			try {
-				this.request.abort();
-			} catch (e) {
-				// This will throw an exception
-				debugger;
-			}
+			this.request.abort();
 			this.request = null;
 		}
 	},
