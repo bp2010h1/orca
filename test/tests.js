@@ -8,7 +8,7 @@ var S2JTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.
 	// Only works for the actual test, not the setup or if loading the script fails.
-	DEBUG_ON_ERROR: false,
+	DEBUG_ON_ERROR: true,
 
 	// 
 	// Test API
@@ -21,7 +21,10 @@ var S2JTests = {
 
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
-			this.runTestScript(S2JTestScripts[testScript]);
+			var script = S2JTestScripts[testScript];
+			if (typeof script == "string") {
+				this.runTestScript(script);
+			}
 		}
 
 		// Send the results to the server
@@ -233,3 +236,4 @@ var S2JTests = {
 
 // For shorter test-code. Must apply the method in the context of the namespace.
 var assert = function() { S2JTests.assert.apply(S2JTests, arguments); };
+
