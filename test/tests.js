@@ -180,9 +180,9 @@ var S2JTests = {
 		result.setAttribute("class", colorClass);
 		result.innerHTML = message;
 		var textBox = new this.TextBox(result, errorMessage);
-		result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
-		result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
-		result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
+		result.onclick = function(event) { textBox.show(event, true); };
+		result.onmouseover = function(event) { textBox.show(event, false); };
+		result.onmouseout = function(event) { textBox.hide(); };
 		this.RESULT_CONTAINER.appendChild(result);
 	},
 
