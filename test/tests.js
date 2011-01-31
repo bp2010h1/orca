@@ -8,7 +8,7 @@ var S2JTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.
 	// Only works for the actual test, not the setup or if loading the script fails.
-	DEBUG_ON_ERROR: false
+	DEBUG_ON_ERROR: false,
 
 	// 
 	// Test API
@@ -94,20 +94,20 @@ var S2JTests = {
 					if (setup !== undefined) {
 						this.tryCatch(function() {
 							setup.apply(tester);
+							this.tryCatch(function() {
+								tester[mt].apply(tester);
+								this.testOk();
+							}, function(e) {
+								if (e.S2J_IS_ASSERT_FAIL === true) {
+									this.testFail(e.message);
+								} else {
+									this.testError(e);
+								}
+							});
 						}, function(e) {
 							this.testError("SetUp failed. " + e);
 						});
 					}
-					this.tryCatch(function() {
-						tester[mt].apply(tester);
-						this.testOk();
-					}, function(e) {
-						if (e.S2J_IS_ASSERT_FAIL === true) {
-							this.testFail(e.message);
-						} else {
-							this.testError(e);
-						}
-					});
 				}
 			}
 		}
