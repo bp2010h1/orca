@@ -1,7 +1,7 @@
 // namespace to avoid even more global state
 var S2JConnection = {
 
-	preferWs: false,
+	preferWs: true,
 	data: null,
 	webSocket: null,
 	request: null,
@@ -28,7 +28,21 @@ var S2JConnection = {
 
 	send: function(data) {
 		if (data) {
-			return this.useWs() ? sendSocket(data) : this.sendComet(data);
+			return this.useWs() ? this.sendSocket(data) : this.sendComet(data);
+		}
+	},
+	
+	sendSynchronously: function(data) {
+		if (data) {
+			if (!this.useWs()) this.closeComet();
+			this.request = this.createXmlRequest();
+			this.request.open("POST", this.methodInvocationUrl(), false);
+			this.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			this.request.send(data);
+			var result = this.request.responseText;
+			this.request = null;
+			if (!this.useWs()) this.openComet();
+			return result;
 		}
 	},
 
@@ -63,27 +77,26 @@ var S2JConnection = {
 	poll: function() {
 		this.request = this.createXmlRequest();
 		this.request.open("GET", this.cometUrl(), true);
-		this.request.onreadystatechange = this.pollResponseHandler;
+		this.request.onreadystatechange = function() {
+			// this is S2JConnection.request
+			if (this.readyState == 4) {
+				if (this.status == 200) {
+					var content = this.responseText;
+					S2JConnection.doIt(content);
+					S2JConsole.logStatus(content, this.status);
+					S2JConnection.poll();
+				}
+				else if (this.status == 202) {
+					S2JConnection.identifier = this.responseText;
+					S2JConsole.info("Registered with id " + S2JConnection.identifier);
+					S2JConnection.poll();
+				}
+				else S2JConsole.info("disconnected");
+			}
+		}
 		this.request.send(null);
 	},
-
-	pollResponseHandler: function() {
-		if (this.request && this.request.readyState == 4) {
-			if (this.request.status == 200) {
-				var content = this.request.responseText;
-				this.doIt(content);
-				S2JConsole.logStatus(content, this.request.status);
-				this.poll();
-			}
-			else if (this.request.status == 202) {
-				this.identifier = this.request.responseText;
-				S2JConsole.info("Registered with id " + this.identifier);
-				this.poll();
-			}
-			else S2JConsole.info("disconnected");
-		}
-	},
-
+	
 	sendComet: function(data) {
 		this.closeComet();
 		this.request = this.createXmlRequest();
@@ -129,9 +142,9 @@ var S2JConnection = {
 			S2JConsole.info("WebSocket failed.");
 		};
 	
-		this.webSocket.onmessage = function(event) {			
+		this.webSocket.onmessage = function(event) {
 			   S2JConsole.logStatus(200, event.data);
-			   this.doIt(event.data);
+			   S2JConnection.doIt(event.data);
 		};
 	
 		this.webSocket.onclose = function() {
