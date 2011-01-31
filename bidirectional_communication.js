@@ -5,7 +5,7 @@ var S2JConnection = {
 	// Configuration
 	// 
 	
-	preferWs: true,
+	preferWs: false,
 	
 	// 
 	// Local variables
@@ -116,6 +116,7 @@ var S2JConnection = {
 
 	closeComet: function() {
 		if (this.request) {
+			// TODO this is not pretty: this abort()-call always results in a "Failed to load resource" in the browser...
 			this.request.abort();
 			this.request = null;
 		}
