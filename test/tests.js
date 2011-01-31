@@ -74,7 +74,7 @@ var S2JTests = {
 			this.APP_NAME = "test";
 			tester = this.loadScript("test/" + scriptName);
 		} catch (e) {
-			this.testFailed("Could not load and evaluate script. " + e);
+			this.testError("Could not load and evaluate script. " + e);
 		}
 		if (tester) {
 			if (tester.testedApp !== undefined) {
@@ -90,19 +90,17 @@ var S2JTests = {
 						try {
 							setup();
 						} catch (e) {
-							this.testFailed("SetUp failed. " + e);
+							this.testError("SetUp failed. " + e);
 						}
 					}
 					try {
 						tester[mt].apply(tester);
-						this.showResult("green", "OK");
-						this.TEST_RESULTS.ok++;
+						this.testOk();
 					} catch (e) {
-						if (e.IS_ASSERT_FAIL === true) {
-							this.showResult("yellow", "FAIL", e.message);
-							this.logError(this.TEST_RESULTS.fail, e.message,  "Assertion failed");
+						if (e.S2J_IS_ASSERT_FAIL === true) {
+							this.testFail(e.message);
 						} else {
-							this.testFailed(e);
+							this.testError(e);
 						}
 					}
 				}
@@ -125,7 +123,7 @@ var S2JTests = {
 	currentTest: null,
 
 	// Exception-object to signalize assert-fails
-	ASSERT_FAIL: function(message) { this.IS_ASSERT_FAIL = true; this.message = message; },
+	ASSERT_FAIL: function(message) { this.S2J_IS_ASSERT_FAIL = true; this.message = message; },
 
 	TEST_RESULTS: {
 		ok: 0,
@@ -151,32 +149,41 @@ var S2JTests = {
 		return this.APP_NAME;
 	},
 
+	testError: function(message) {
+		var message = this.logError(this.TEST_RESULTS.error, message, "Error running test");
+		this.showResult("red", "ERROR", message);
+	},
+	
+	testFail: function(message) {
+		var message = this.logError(this.TEST_RESULTS.fail, message, "Assertion failed");
+		this.showResult("yellow", "FAIL", message);
+	},
+	
+	testOk: function() {
+		this.TEST_RESULTS.ok++;
+		this.showResult("green", "OK", this.currentTestName());
+	},
+	
 	logError: function(errorArray, exception_message, error_type) {
-		error_type = this.currentScript + "/" + this.currentTest + ": " + error_type;
-		if(exception_message) {
-			errorArray.push(exception_message);
-		} else {
-			errorArray.push(error_type);
-		}
-		S2JConsole.info(error_type + ". Message: " + exception_message);
+		var message = this.currentTestName() + ": " + error_type + ". Message: " + exception_message;
+		errorArray.push(message);
+		S2JConsole.info(message);
+		return message;
+	},
+
+	currentTestName: function() {
+		return this.currentScript + "/" + this.currentTest;
 	},
 	
 	showResult: function(colorClass, message, errorMessage) {
 		var result = document.createElement("li");
 		result.setAttribute("class", colorClass);
 		result.innerHTML = message;
-		if(errorMessage) {
-			var textBox = new TextBox(result, errorMessage);
-			result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
-			result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
-			result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
-		}
+		var textBox = new this.TextBox(result, errorMessage);
+		result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
+		result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
+		result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
 		this.RESULT_CONTAINER.appendChild(result);
-	},
-	
-	testFailed: function(exception_message) {
-		this.showResult("red", "ERROR");
-		this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
 	},
 
 	// TestResultBox, shown on mouse-hovering of result-labels
