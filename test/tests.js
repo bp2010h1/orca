@@ -8,7 +8,7 @@ var S2JTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.
 	// Only works for the actual test, not the setup or if loading the script fails.
-	DEBUG_ON_ERROR: true,
+	DEBUG_ON_ERROR: false,
 
 	// 
 	// Test API
@@ -46,7 +46,7 @@ var S2JTests = {
 	// Load the resource and evaluate it in global context. Return the evaluated result.
 	loadFile: function(fileName) {
 		var script = this.GET(fileName);
-		return window.eval(script); // The scripts need global context
+		return (function() { return window.eval(script); })(); // The scripts need global context
 	},
 
 	// Load and evaluate the compiled squeak-classes
@@ -87,33 +87,33 @@ var S2JTests = {
 		if (tester) {
 			if (tester.testedApp !== undefined) {
 				this.APP_NAME = tester.testedApplication;
-			} else {
+			} else if (setup !== undefined) {
 				this.APP_NAME = "test";
 			}
 			var setup = tester.setUp;
 			for (mt in tester) {
 				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
-					this.currentTest = mt;
-					if (setup !== undefined) {
-						this.tryCatch(function() {
-							setup.apply(tester);
-							this.tryCatch(function() {
-								tester[mt].apply(tester);
-								this.testOk();
-							}, function(e) {
-								if (e.S2J_IS_ASSERT_FAIL === true) {
-									this.testFail(e.message);
-								} else {
-									this.testError(e);
-								}
-							});
-						}, function(e) {
-							this.testError("SetUp failed. " + e);
-						});
-					}
+				  this.currentTest = mt;
+				  this.tryCatch(function() {
+					  if (setup !== undefined) {
+					    setup.apply(tester);
+					  }
+					  this.tryCatch(function() {
+						  tester[mt].apply(tester);
+						  this.testOk();
+					  }, function(e) {
+						  if (e.S2J_IS_ASSERT_FAIL === true) {
+							   this.testFail(e.message);
+						    } else {
+							    this.testError(e);
+						    }
+					  });
+			    }, function(e) {
+				    this.testError("SetUp failed. " + e);
+			    });
 				}
 			}
-		}
+	  }
 	},
 	
 	// 

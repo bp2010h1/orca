@@ -13,8 +13,8 @@ Class("A", { instanceMethods: { a: function(r) { return "abc" + r; } }});
 // Build up convenience to create instances of the test-classes
 classes = [ "A", "A1", "NoMethodsA1", "A2", "NoMethods1", "B", "NoMethods2", "A3", "NewImplementation", "A4" ];
 for (cl in classes) {
-	JsGlobal[classes[cl]] = (function(clazz) {return function() {
-		return clazz._newInstance() }; })(JsGlobal[classes[cl]]);
+  this[classes[cl]] = (function(clazz) {return function() {
+    return clazz._newInstance() }; })(this[classes[cl]]);
 }
 
 Class("SuperTester", {
@@ -54,3 +54,4 @@ Class("SuperTester", {
 });
 
 SuperTester._newInstance();
+
