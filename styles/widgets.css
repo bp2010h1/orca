@@ -2,11 +2,16 @@
 	display: block;
 }
 
-
 .horizontal {
 	display: table;
 }
 
 .horizontal > * {
 	float: left;
+}
+
+.loader {
+	position: fixed;
+	top: 0px;
+	right: 0px;
 }
