@@ -1,16 +1,24 @@
-// namespace to avoid even more global state
+
 var S2JConnection = {
 
+	// 
+	// Configuration
+	// 
+	
 	preferWs: true,
+	
+	// 
+	// Local variables
+	// 
+	
 	webSocket: null,
 	request: null,
 	identifier: null,
 
-	// This gets ovewritten in another script
-	doIt: function(code) {
-		return eval(code);
-	},
-
+	// 
+	// API
+	// 
+	
 	isWsSupported: function() {
 		return ("WebSocket" in window);
 	},
@@ -18,8 +26,6 @@ var S2JConnection = {
 	useWs: function() {
 		return (this.isWsSupported() && this.preferWs);
 	},
-
-	// common functions
 
 	connect: function() {
 		this.useWs() ? this.openSocket() : this.openComet();
@@ -53,8 +59,9 @@ var S2JConnection = {
 		this.useWs() ? this.closeSocket() : this.closeComet();
 	},
 
-	// comet functions
-
+	// 
+	// Private Comet functions
+	// 
 	createXmlRequest: function() {
 		return new XMLHttpRequest();
 	},
@@ -114,8 +121,10 @@ var S2JConnection = {
 		}
 	},
 	
-	// WebSocket
-
+	// 
+	// Private WebSocket functions
+	// 
+	
 	openSocket: function() {
 	
 		this.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
@@ -151,5 +160,11 @@ var S2JConnection = {
 			this.webSocket.close();
 			this.webSocket = null;
 		}
+	},
+	
+	// This gets ovewritten in another script
+	doIt: function(code) {
+		return eval(code);
 	}
+	
 }
