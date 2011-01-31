@@ -1,7 +1,7 @@
 // namespace to avoid even more global state
 var S2JConnection = {
 
-	preferWs: false,
+	preferWs: true,
 	data: null,
 	webSocket: null,
 	request: null,
@@ -28,7 +28,7 @@ var S2JConnection = {
 
 	send: function(data) {
 		if (data) {
-			return this.useWs() ? sendSocket(data) : this.sendComet(data);
+			return this.useWs() ? this.sendSocket(data) : this.sendComet(data);
 		}
 	},
 
@@ -63,22 +63,23 @@ var S2JConnection = {
 	poll: function() {
 		this.request = this.createXmlRequest();
 		this.request.open("GET", this.cometUrl(), true);
-		this.request.onreadystatechange = this.pollResponseHandler;
+		this.request.onreadystatechange = this.pollResponseHandler ;
 		this.request.send(null);
 	},
 
 	pollResponseHandler: function() {
-		if (this.request && this.request.readyState == 4) {
-			if (this.request.status == 200) {
-				var content = this.request.responseText;
-				this.doIt(content);
-				log(this.request.status, content);
-				this.poll();
+		// this is S2JConnection.request
+		if (this && this.readyState == 4) {
+			if (this.status == 200) {
+				var content = this.responseText;
+				S2JConnection.doIt(content);
+				log(this.status, content);
+				S2JConnection.poll();
 			}
-			else if (this.request.status == 202) {
-				this.identifier = this.request.responseText;
-				info("Registered with id " + this.identifier);
-				this.poll();
+			else if (this.status == 202) {
+				S2JConnection.identifier = this.responseText;
+				info("Registered with id " + S2JConnection.identifier);
+				S2JConnection.poll();
 			}
 			else info("disconnected");
 		}
@@ -126,7 +127,7 @@ var S2JConnection = {
 	
 		this.webSocket.onmessage = function(event) {			
 			   log(200, event.data);
-			   this.doIt(event.data);
+			   S2JConnection.doIt(event.data);
 		};
 	
 		this.webSocket.onclose = function() {
