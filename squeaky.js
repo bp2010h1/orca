@@ -145,9 +145,9 @@ var WithDebugging = function(method) {
 						indent += "  ";
 					}
 					if (this.__class == undefined) {
-						console.log(indent + this._classname + "." + arguments.callee.methodName);
+						S2JConsole.log(indent + this._classname + "." + arguments.callee.methodName);
 					} else {
-						console.log(indent + this.__class._classname + "." + arguments.callee.methodName);
+						S2JConsole.log(indent + this.__class._classname + "." + arguments.callee.methodName);
 					}
 				}
 				var result = method.apply(this, arguments);

@@ -72,15 +72,15 @@ var S2JConnection = {
 			if (this.request.status == 200) {
 				var content = this.request.responseText;
 				this.doIt(content);
-				log(this.request.status, content);
+				S2JConsole.logStatus(content, this.request.status);
 				this.poll();
 			}
 			else if (this.request.status == 202) {
 				this.identifier = this.request.responseText;
-				info("Registered with id " + this.identifier);
+				S2JConsole.info("Registered with id " + this.identifier);
 				this.poll();
 			}
-			else info("disconnected");
+			else S2JConsole.info("disconnected");
 		}
 	},
 
@@ -98,14 +98,19 @@ var S2JConnection = {
 
 	sendResponseHandler: function() {	
 		if ((this.request.readyState == 4) && (this.request.status == 201)) {
-			log(201, data);
+			S2JConsole.logStatus(data, 201);
 			this.poll();
 		}
 	},
 
 	closeComet: function() {
 		if (this.request) {
-			this.request.abort();
+			try {
+				this.request.abort();
+			} catch (e) {
+				// This will throw an exception
+				debugger;
+			}
 			this.request = null;
 		}
 	},
@@ -117,33 +122,33 @@ var S2JConnection = {
 		this.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 	
 		this.webSocket.onopen = function(event) {
-			info("Successfully opened WebSocket.");
+			S2JConsole.info("Successfully opened WebSocket.");
 		};
 	
 		this.webSocket.onerror = function(event) {
-			log("WebSocket failed.");
+			S2JConsole.info("WebSocket failed.");
 		};
 	
 		this.webSocket.onmessage = function(event) {			
-			   log(200, event.data);
+			   S2JConsole.logStatus(200, event.data);
 			   this.doIt(event.data);
 		};
 	
 		this.webSocket.onclose = function() {
-			info("WebSocket received close event.");
+			S2JConsole.info("WebSocket received close event.");
 		};
 	},
 
 	sendSocket: function(message) {
 		if (this.webSocket) {
 			this.webSocket.send(message);
-			log(200, message);
+			S2JConsole.log(message, 200);
 		}
 	},
 
 	closeSocket: function() {
 		if (this.webSocket) {
-			info("WebSocket closed by client.");
+			S2JConsole.info("WebSocket closed by client.");
 			this.webSocket.close();
 			this.webSocket = null;
 		}

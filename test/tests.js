@@ -64,7 +64,7 @@ var S2JTests = {
 		} else {
 			errorArray.push(error_type);
 		}
-		console.log(error_type + ". Message: " + exception_message);
+		S2JConsole.log(error_type + ". Message: " + exception_message);
 	},
 	
 	showResult: function(colorClass, message, errorMessage) {
@@ -108,6 +108,7 @@ var S2JTests = {
 	// If the slot/function setUp is present, it is called before each test*-function.
 	// If the slot (string) testedApp is present, the named application is used to load scripts (instead of default test).
 	runTestScript: function(scriptName) {
+		S2JConsole.log("Running test-script " + scriptName + "...");
 		this.currentScript = scriptName;
 		this.currentTest = "(?)";
 		var tester = null;
