@@ -6,6 +6,10 @@ var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js" ];
 
 var S2JTests = {
 
+	// If this is set to true, a test, that fails (or throws an error) is executed again.
+	// Only works for the actual test, not the setup or if loading the script fails.
+	DEBUG_ON_ERROR: true,
+
 	// 
 	// Test API
 	// 
@@ -70,12 +74,13 @@ var S2JTests = {
 		this.currentScript = scriptName;
 		this.currentTest = "(?)";
 		var tester = null;
-		try {
+		
+		this.tryCatch(function() {
 			this.APP_NAME = "test";
 			tester = this.loadScript("test/" + scriptName);
-		} catch (e) {
+		}, function(e) {
 			this.testError("Could not load and evaluate script. " + e);
-		}
+		});
 		if (tester) {
 			if (tester.testedApp !== undefined) {
 				this.APP_NAME = tester.testedApplication;
@@ -87,22 +92,22 @@ var S2JTests = {
 				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
 					this.currentTest = mt;
 					if (setup !== undefined) {
-						try {
-							setup();
-						} catch (e) {
+						this.tryCatch(function() {
+							setup.apply(tester);
+						}, function(e) {
 							this.testError("SetUp failed. " + e);
-						}
+						});
 					}
-					try {
+					this.tryCatch(function() {
 						tester[mt].apply(tester);
 						this.testOk();
-					} catch (e) {
+					}, function(e) {
 						if (e.S2J_IS_ASSERT_FAIL === true) {
 							this.testFail(e.message);
 						} else {
 							this.testError(e);
 						}
-					}
+					});
 				}
 			}
 		}
@@ -121,7 +126,7 @@ var S2JTests = {
 	// Remember the currently run script and test
 	currentScript: null,
 	currentTest: null,
-
+	
 	// Exception-object to signalize assert-fails
 	ASSERT_FAIL: function(message) { this.S2J_IS_ASSERT_FAIL = true; this.message = message; },
 
@@ -134,6 +139,19 @@ var S2JTests = {
 	// 
 	// Private functions
 	// 
+	
+	tryCatch: function(tryFunction, catchFunction) {
+		try {
+			tryFunction.apply(this);
+		} catch(e) {
+			catchFunction.apply(this, [e]);
+			if (this.DEBUG_ON_ERROR) {
+				debugger;
+				// Step into this function to re-execute, what just has failed.
+				tryFunction.apply(this);
+			}
+		}
+	},
 	
 	// This is private, but exposed directly over the global method assert (defined below this namespace)
 	assert: function(condition, exception_message) {
