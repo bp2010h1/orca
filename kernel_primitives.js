@@ -14,7 +14,7 @@ ProtoObject._addInstanceMethods({
 });
 
 _Object._addInstanceMethods({
-	_class: function() { return this.__class; }
+	_class: function() { return this.__class; },
 	halt: function() { debugger; }
 });
 
