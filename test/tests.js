@@ -4,93 +4,27 @@ DEBUG = false;
 
 var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js" ];
 
-//TestResultBox
-var TextBox = function(aNode, aMessage){
-	this.textNode = document.createElement("div");
-	this.textNode.className = "textBox";
-	this.parentNode = aNode;
-	this.textNode.innerHTML = aMessage;
-	return this;
-};
-TextBox.prototype.show = function(event, toggleDurability){
-		if(!this.durable){
-			this.parentNode.appendChild(this.textNode);
-			this.textNode.style.top = event.pageY + 1 + "px";
-			this.textNode.style.left = event.pageX + 1 + "px";
-		}
-		if(toggleDurability){
-			this.durable = !(this.durable || false);
-		}
-};
-TextBox.prototype.hide = function(){
-	if(!this.durable){
-		this.parentNode.removeChild(this.textNode);
-	}
-};
-	
-// Everything here is executed directly from this S2JTests-object. So we can use this to access other methods in this "namespace".
 var S2JTests = {
 
-	// This determines which application is used to load the js-scripts and compiled classes
-	APP_NAME: null,
+	// 
+	// Test API
+	// 
+	
+	// Run all tests defined in the array S2JTestScripts
+	runTests: function() {
+		this.RESULT_CONTAINER = document.createElement("ul");
+		document.getElementsByTagName("body")[0].appendChild(this.RESULT_CONTAINER);
 
-	// This will be the html-element, that contains the test-results
-	RESULT_CONTAINER: null,
-
-	// Remember the currently run script and test
-	currentScript: null,
-	currentTest: null,
-
-	// Exception-object to signalize assert-fails
-	ASSERT_FAIL: function(message) { this.IS_ASSERT_FAIL = true; this.message = message; },
-
-	getAppName: function() {
-		if (this.APP_NAME === null) {
-			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
+		// The tests are executed directly in these files
+		for (testScript in S2JTestScripts) {
+			this.runTestScript(S2JTestScripts[testScript]);
 		}
-		return this.APP_NAME;
-	},
 
-	TEST_RESULTS: {
-		ok: 0,
-		fail: new Array(),
-		error: new Array()
-	},
-
-	logError: function(errorArray, exception_message, error_type) {
-		error_type = this.currentScript + "/" + this.currentTest + ": " + error_type;
-		if(exception_message) {
-			errorArray.push(exception_message);
-		} else {
-			errorArray.push(error_type);
-		}
-		S2JConsole.log(error_type + ". Message: " + exception_message);
+		// Send the results to the server
+		S2JServer.performOnServer("[ :result | S2JJavascriptTest reportJSResults: result ]", this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
 	},
 	
-	showResult: function(colorClass, message, errorMessage) {
-		var result = document.createElement("li");
-		result.setAttribute("class", colorClass);
-		result.innerHTML = message;
-		var textBox = new TextBox(result, errorMessage);
-		if(errorMessage){
-			result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
-			result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
-			result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
-		}
-		this.RESULT_CONTAINER.appendChild(result);
-	},
-
-	assert: function(condition, exception_message) {
-		if (!condition) {
-			throw new this.ASSERT_FAIL(exception_message);
-		}
-	},
-
-	testFailed: function(exception_message) {
-		this.showResult("red", "ERROR");
-		this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
-	},
-
+	// Simply load the resource (relative to root)
 	GET: function(path) {
 		var req = new XMLHttpRequest();
 		req.open("GET", path, false);
@@ -102,13 +36,37 @@ var S2JTests = {
 		}
 	},
 
+	// Load the resource and evaluate it in global context. Return the evaluated result.
+	loadFile: function(fileName) {
+		var script = this.GET(fileName);
+		return window.eval(script); // The scripts need global context
+	},
+
+	// Load and evaluate the compiled squeak-classes
+	loadClasses: function() {
+		return this.loadFile(this.getAppName() + "/classes");
+	},
+
+	// Load the resource distributed from our file-handler in the image
+	loadScript: function(scriptName) {
+		return this.loadFile(this.getAppName() + "/file/" + scriptName);
+	},
+
+	// Load all resources needed to setup the squeak-environment on the client
+	setupSqueakEnvironment: function() {
+		this.loadClasses();
+		this.loadScript("bootstrap.js");
+		this.loadScript("kernel_primitives.js");
+	},
+	
+	// Run one test-script.
 	// This loads a script and evaluates it. Directory "test/" is prepended.
 	// The script must be thought of as a big function returning one object.
 	// The returned object is iterated and each function-slot starting with test* is executed as test-case.
 	// If the slot/function setUp is present, it is called before each test*-function.
 	// If the slot (string) testedApp is present, the named application is used to load scripts (instead of default test).
 	runTestScript: function(scriptName) {
-		S2JConsole.log("Running test-script " + scriptName + "...");
+		S2JConsole.info("Running test-script " + scriptName + "...");
 		this.currentScript = scriptName;
 		this.currentTest = "(?)";
 		var tester = null;
@@ -141,7 +99,7 @@ var S2JTests = {
 						this.TEST_RESULTS.ok++;
 					} catch (e) {
 						if (e.IS_ASSERT_FAIL === true) {
-							this.showResult("yellow", "FAIL");
+							this.showResult("yellow", "FAIL", e.message);
 							this.logError(this.TEST_RESULTS.fail, e.message,  "Assertion failed");
 						} else {
 							this.testFailed(e);
@@ -151,39 +109,101 @@ var S2JTests = {
 			}
 		}
 	},
+	
+	// 
+	// Local variables
+	// 
+	
+	// This determines which application is used to load the js-scripts and compiled classes
+	APP_NAME: null,
 
-	loadFile: function(fileName) {
-		var script = this.GET(fileName);
-		return window.eval(script); // The scripts need global context
+	// This will be the html-element, that contains the test-results
+	RESULT_CONTAINER: null,
+
+	// Remember the currently run script and test
+	currentScript: null,
+	currentTest: null,
+
+	// Exception-object to signalize assert-fails
+	ASSERT_FAIL: function(message) { this.IS_ASSERT_FAIL = true; this.message = message; },
+
+	TEST_RESULTS: {
+		ok: 0,
+		fail: new Array(),
+		error: new Array()
 	},
-
-	loadClasses: function() {
-		return this.loadFile(this.getAppName() + "/classes");
-	},
-
-	loadScript: function(scriptName) {
-		return this.loadFile(this.getAppName() + "/file/" + scriptName);
-	},
-
-	setupSqueakEnvironment: function() {
-		this.loadClasses();
-		this.loadScript("bootstrap.js");
-		this.loadScript("kernel_primitives.js");
-	},
-
-	runTests: function(){
-		this.RESULT_CONTAINER = document.createElement("ul");
-		document.getElementsByTagName("body")[0].appendChild(this.RESULT_CONTAINER);
-
-		// The tests are executed directly in these files
-		for (testScript in S2JTestScripts) {
-			this.runTestScript(S2JTestScripts[testScript]);
+	
+	// 
+	// Private functions
+	// 
+	
+	// This is private, but exposed directly over the global method assert (defined below this namespace)
+	assert: function(condition, exception_message) {
+		if (!condition) {
+			throw new this.ASSERT_FAIL(exception_message);
 		}
+	},
+	
+	getAppName: function() {
+		if (this.APP_NAME === null) {
+			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
+		}
+		return this.APP_NAME;
+	},
 
-		// Send the results to the server
-		S2JServer.performOnServer("[ :result | S2JJavascriptTest reportJSResults: result ]", this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
+	logError: function(errorArray, exception_message, error_type) {
+		error_type = this.currentScript + "/" + this.currentTest + ": " + error_type;
+		if(exception_message) {
+			errorArray.push(exception_message);
+		} else {
+			errorArray.push(error_type);
+		}
+		S2JConsole.info(error_type + ". Message: " + exception_message);
+	},
+	
+	showResult: function(colorClass, message, errorMessage) {
+		var result = document.createElement("li");
+		result.setAttribute("class", colorClass);
+		result.innerHTML = message;
+		if(errorMessage) {
+			var textBox = new TextBox(result, errorMessage);
+			result.onclick = function(aBox){ return function(event){ aBox.show(event, true); }}(textBox);
+			result.onmouseover = function(aBox){ return function(event){ aBox.show(event, false); }}(textBox);
+			result.onmouseout = function(aBox){ return function(event){ aBox.hide(); }}(textBox);
+		}
+		this.RESULT_CONTAINER.appendChild(result);
+	},
+	
+	testFailed: function(exception_message) {
+		this.showResult("red", "ERROR");
+		this.logError(this.TEST_RESULTS.error, exception_message, "Error running test");
+	},
+
+	// TestResultBox, shown on mouse-hovering of result-labels
+	TextBox: function(aNode, aMessage) {
+		this.textNode = document.createElement("div");
+		this.textNode.className = "textBox";
+		this.parentNode = aNode;
+		this.textNode.innerHTML = aMessage;
+		
+		this.show = function(event, toggleDurability){
+			if(!this.durable){
+				this.parentNode.appendChild(this.textNode);
+				this.textNode.style.top = event.pageY + 1 + "px";
+				this.textNode.style.left = event.pageX + 1 + "px";
+			}
+			if(toggleDurability){
+				this.durable = !(this.durable || false);
+			}
+		};
+		this.hide = function(){
+			if(!this.durable){
+				this.parentNode.removeChild(this.textNode);
+			}
+		};
+		return this;
 	}
-
+	
 };
 
 // For shorter test-code. Must apply the method in the context of the namespace.
