@@ -8,7 +8,7 @@ var S2JTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.
 	// Only works for the actual test, not the setup or if loading the script fails.
-	DEBUG_ON_ERROR: true,
+	DEBUG_ON_ERROR: false
 
 	// 
 	// Test API
