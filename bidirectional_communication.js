@@ -31,6 +31,20 @@ var S2JConnection = {
 			return this.useWs() ? this.sendSocket(data) : this.sendComet(data);
 		}
 	},
+	
+	sendSynchronously: function(data) {
+		if (data) {
+			if (!this.useWs()) this.closeComet();
+			this.request = this.createXmlRequest();
+			this.request.open("POST", this.methodInvocationUrl(), false);
+			this.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			this.request.send(data);
+			var result = this.request.responseText;
+			this.request = null;
+			if (!this.useWs()) this.openComet();
+			return result;
+		}
+	},
 
 	sendCodeInput: function() {
 		this.data = document.getElementById("input").value;
