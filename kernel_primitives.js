@@ -15,7 +15,7 @@ ProtoObject._addInstanceMethods({
 
 _Object._addInstanceMethods({
 	_class: function() { return this.__class; },
-	halt: function() { debugger; }
+	halt: function() { debugger; },
 });
 
 Exception._addInstanceMethods({
@@ -100,7 +100,7 @@ _Array._addInstanceMethods({
 		return this.arr$[idx.num$ - 1];
 	},
 	isEmpty: function(){
-    return (this.arr$.length == 0);
+		return (this.arr$.length == 0);
 	}
 });
 _Array._addClassMethods({
