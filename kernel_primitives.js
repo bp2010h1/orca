@@ -110,4 +110,4 @@ _Array._addClassMethods({
 });
 
 // Defined in bootstrap.js. Must be called after primitives-initialization.
-JsGlobal.AddJsFunctionToAllObjects();
+AddJsFunctionToAllObjects();

@@ -1,3 +1,3 @@
-JsGlobal.repeatWithPause = function(aFunction, interval){ 
+var repeatWithPause = function(aFunction, interval){ 
 	setInterval(aFunction, interval.num$);
 };

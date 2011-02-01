@@ -18,6 +18,7 @@ var Class = function(classname, attrs) {
 			aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
 			aPrototype[methodName].methodName = methodName;
 			aPrototype[methodName].originalMethod = method;
+			method.methodName = methodName;
 			method.methodHome = aPrototype; // This is the object, that actually contains this method
 		}
 		

@@ -1,10 +1,10 @@
 
-// Make JsGlobal alert: 'something' work out of the box
-// Not really needed... !? TODO this object should be accessible through a js-keyword or something, parse it directly instead of JsGlobal
-var JsGlobal = this;
-
 // Function called when a method with an unimplemented primitive declaration is called
-var primitiveDeclaration = function(){ alert("Primitive has been called!!! The code is: \n\n" + arguments.callee.caller) };
+var primitiveDeclaration = function(){
+	var currentMethod = CALL_STACK.peek().currentMethod;
+	alert("Primitive has been called!!! The method containing it is: \n\n" + 
+		currentMethod.methodHome.__class._classname + "." +
+		currentMethod.methodName) };
 
 // instead of bool(true) and bool(false) (which would be the equivalent to string(""), number(2) etc.)
 var _true = True._newInstance();
@@ -18,11 +18,11 @@ for (aClass in ALL_CLASSES) {
 
 // This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
 // Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
-JsGlobal.AddJsFunctionToAllObjects = function() {
+var AddJsFunctionToAllObjects = function() {
 	Object.prototype.js = function() {
 		return this;
 	}
-	JsGlobal.AddJsFunctionToAllObjects = undefined;
+	AddJsFunctionToAllObjects = undefined;
 }
 
 // 
