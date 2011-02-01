@@ -18,7 +18,7 @@ _Object._addInstanceMethods({
 	halt: function() { debugger; }
 });
 
-Error._addInstanceMethods({
+Exception._addInstanceMethods({
 	signal: function(){ throw this }
 });
 
