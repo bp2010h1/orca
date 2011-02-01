@@ -10,7 +10,7 @@ ProtoObject._addClassMethods({
 	name: function() { return this._classname; }
 });
 ProtoObject._addInstanceMethods({
-	_equals_equals: function(anObject) { if (this === anObject) {return _true; } else { return _false; } }
+	_equals_equals: function(anObject) { return bool(this === anObject); }
 });
 
 _Object._addInstanceMethods({
