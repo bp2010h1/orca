@@ -10,12 +10,13 @@ ProtoObject._addClassMethods({
 	name: function() { return this._classname; }
 });
 ProtoObject._addInstanceMethods({
-	_equals_equals: function(anObject) { return bool(this === anObject); }
+	_equals_equals: function(anObject) { return bool(this === anObject); },
+	identityHash: function() { return number(this.instanceNumber$); }
 });
 
 _Object._addInstanceMethods({
 	_class: function() { return this.__class; },
-	halt: function() { debugger; }
+	halt: function() { debugger; },
 });
 
 Exception._addInstanceMethods({
@@ -26,8 +27,21 @@ String._addInstanceMethods({
 	// This is not actually a primitive function, but behaves in the same way the #, method does
 	_comma: function(anotherString) { return string(this.string$ + anotherString.string$) },
 	_equals: function(anotherString) { return bool(this.string$ == anotherString.string$) },
-	isEmpty: function() { return bool(this.string$.length == 0) }
+	isEmpty: function() { return bool(this.string$.length == 0) },
+	size: function() { return number(this.string$.length); },
+	at_: function(num) { return character(this.string$[num.num$ - 1]); }
 });
+
+ByteString._addInstanceMethods({
+	at_: function(num) { return character(this.string$[num.num$ - 1]); }
+});
+
+/*
+at_ should also be defined in:
+ByteSymbol
+WideString
+WideSymbol
+*/
 
 _Number._addInstanceMethods({
 	printString: function() { return string(this.num$.toString()); }
@@ -38,7 +52,7 @@ Float._addInstanceMethods({
 	_minus: function(other) { return number(this.num$ - other.num$); },
 	_times: function(other) { return number(this.num$ * other.num$); },
 	_slash: function(other) { return number(this.num$ / other.num$); },
-	_slash_slash: function(other) { return number(this.num$ / other.num$); },
+	floor: function() { return number(Math.floor(this.num$)); },
 	_less: function(other) {
 		return bool(this.num$ < other.num$);
 	},
@@ -59,6 +73,9 @@ Float._addInstanceMethods({
 			aBlock.value();
 		}
 		return this;
+	},
+	truncated: function() {
+		return number(Math.floor(this.num$));
 	}
 });
 
@@ -77,14 +94,25 @@ BlockClosure._addInstanceMethods({
 	value_value_value_value_: _blockValueFunction_,
 	
 	whileTrue_: function(anotherBlock) {
-		// TODO implement whileTrue: for real
 		while (this.value() === _true) {
 			anotherBlock.value();
 		}
+		return nil;
 	},
-	
-	onServer: function() {
-		
+	whileTrue: function(anotherBlock) {
+		// TODO implement whileTrue: for real
+		while (this.value() === _true) ;
+		return nil;
+	},
+	whileFalse_: function() {
+		while (this.value() === _false) {
+			anotherBlock.value();
+		}
+		return nil;
+	},
+	whileFalse: function() {
+		while (this.value() === _false) ;
+		return nil;
 	}
 });
 
@@ -100,12 +128,16 @@ _Array._addInstanceMethods({
 		return this.arr$[idx.num$ - 1];
 	},
 	isEmpty: function(){
-    return (this.arr$.length == 0);
+		return (this.arr$.length == 0);
 	}
 });
 _Array._addClassMethods({
 	new_: function(size){
-		return array([]);
+		var arr = new Array(size.num$);
+		for (var i = 0; i < size.num$; i++) {
+			arr[i] = nil;
+		}
+		return array(arr);
 	}
 });
 

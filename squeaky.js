@@ -67,7 +67,7 @@ var Class = function(classname, attrs) {
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
-		var newInstancePrototype = function(){ INSTANCE_COUNT = INSTANCE_COUNT + 1; };
+		var newInstancePrototype = function(){ INSTANCE_COUNT = INSTANCE_COUNT + 1; this.instanceNumber$ = INSTANCE_COUNT; };
 		var newClass;
 		
 		if ('superclass' in attrs) {
