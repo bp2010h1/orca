@@ -51,12 +51,12 @@ var S2JTests = {
 
 	// Load and evaluate the compiled squeak-classes
 	loadClasses: function() {
-		return this.loadFile(this.getAppName() + "/classes");
+		return this.loadFile("classes");
 	},
 
 	// Load the resource distributed from our file-handler in the image
 	loadScript: function(scriptName) {
-		return this.loadFile(this.getAppName() + "/file/" + scriptName);
+		return this.loadFile("file/" + scriptName);
 	},
 
 	// Load all resources needed to setup the squeak-environment on the client
