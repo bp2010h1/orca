@@ -5,7 +5,7 @@ var S2JConnection = {
 	// Configuration
 	// 
 	
-	preferWs: false,
+	preferWs: true,
 	
 	// 
 	// Local variables
