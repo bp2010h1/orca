@@ -154,7 +154,7 @@ var WithDebugging = function(method) {
 				var result = method.apply(this, arguments);
 				return result;
 			} catch (e) {
-				if (e.DontDebug == true) {
+				if (e.DontDebug === true) {
 					throw e;
 				} else if (DEBUG) {
 					debugger;
@@ -201,7 +201,7 @@ var WithNonLocalReturn = function(method) {
 		}
 		catch( e ) {
 			CALL_STACK.pop();
-			if ( e == lastCallee ) {
+			if ( e === lastCallee ) {
 				return e.nonLocalReturnValue;
 			} else {
 				throw e;
