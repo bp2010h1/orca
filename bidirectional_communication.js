@@ -88,7 +88,7 @@ var S2JConnection = {
 				if (this.status == 200) {
 					var content = this.responseText;
 					S2JConnection.doIt(content);
-					S2JConsole.logStatus(content, this.status);
+					S2JConsole.statusInfo(content, this.status);
 					S2JConnection.poll();
 				}
 				else if (this.status == 202) {
@@ -139,7 +139,7 @@ var S2JConnection = {
 		};
 	
 		this.webSocket.onmessage = function(event) {
-			   S2JConsole.logStatus(200, event.data);
+			   S2JConsole.statusInfo(200, event.data);
 			   S2JConnection.doIt(event.data);
 		};
 	
