@@ -4,6 +4,9 @@ DEBUG = false;
 
 var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js", "test_communication.js" ];
 
+// This variable is used by tests to send some kind of result back to the server. This removes the need to load classes (like ByteString)
+var S2JmockTestResult = "abc123";
+
 var S2JTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.

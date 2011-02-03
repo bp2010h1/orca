@@ -1,14 +1,15 @@
 
-//This tests is meant to ensure that the server can push code.
-//Add more tests in general.
+// This tests is meant to ensure that the server can push code.
+// Add more tests in general.
 
-//global var wich has to be written to when calling the push. may be moved to classside
-var connectionToClientSuccessful = false;
-
-Class("ConnectionTester", { instanceMethods: {
+Class("ConnectionTester", { 
+	
+	classInstanceVariables: [ "connectionToClientSuccessful" ],
+	
+	instanceMethods: {
 		
 		setUp: function(){
-			connectionToClientSuccessful = false;
+			this.__class.connectionToClientSuccessful = false;
 		},
 		
 		testPull: function(){
@@ -18,12 +19,11 @@ Class("ConnectionTester", { instanceMethods: {
 		},
 		
 		testPush: function(){
-			S2JServer.performOnServer(
-				"[ S2JTestApp sendCode: 'JsGlobal js connectionToClientSuccessful js: true'. " + 
-					"(Delay forSeconds: 1) wait. " + 
-					"true ]");
-			assert(connectionToClientSuccessful, "Server didn't poke this client.");
+			S2JServer.performOnServer("[ S2JTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. true ]");
+			assert(this.__class.connectionToClientSuccessful, "Server didn't poke this client.");
 		}
-}});
+	}
+	
+});
 
 ConnectionTester._newInstance();
