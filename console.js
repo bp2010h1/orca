@@ -57,10 +57,12 @@ var S2JConsole = {
 	// 
 
 	log: function(text) { // optional: all arguments of prependRow: cssClass, httpStatus, evalText
-		if (this.USE_HTML_CONSOLE) 
+		if (this.USE_HTML_CONSOLE) {
 			this.prependRow(arguments);
-		if (this.USE_FIREBUG)
+		}
+		if (this.USE_FIREBUG) {
 			console.log(text);
+		}
 	},
 
 	prependRow: function(logText, cssClass, httpStatus, evaluatedData) {

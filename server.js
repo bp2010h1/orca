@@ -23,6 +23,7 @@ var S2JServer = {
 			args += "&arg" + (i - 1) + "=" + this.realEscape(arguments[i]);
 		}
 		var result = S2JConnection.sendSynchronously("code=" + this.realEscape(squeakCode) + args);
+		
 		return eval(result);
 	}
 	
