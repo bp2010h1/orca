@@ -15,55 +15,72 @@ var Class = function(classname, attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
 		var createMethod = function(aPrototype, methodName, method) {
-			aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
-			aPrototype[methodName].methodName = methodName;
-			aPrototype[methodName].originalMethod = method;
+			aPrototype[methodName] = decorateMethodForSqueaky(aPrototype, methodName, method);
+		};
+		
+		var createGetter = function(aPrototype, methodName, method) {
+			aPrototype.__defineGetter__(methodName, decorateMethodForSqueaky(aPrototype, methodName, method));
+		};
+		
+		var decorateMethodForSqueaky = function(aPrototype, methodName, method){
+			var decoratedMethod = WithDebugging(WithNonLocalReturn(method));
+			decoratedMethod.methodName = methodName;
+			decoratedMethod.originalMethod = method;
 			method.methodName = methodName;
 			method.methodHome = aPrototype; // This is the object, that actually contains this method
-		}
+			return decoratedMethod;
+		};
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
 			for (instVar in aPrototype) {
-				if (aPrototype[instVar] == null) {
+				if (aPrototype[instVar] === null) {
 					aPrototype[instVar] = newInitialValue;
 				}
 			}
-		}
+		};
 		
 		// Initialize all fields, that are null to the given value
 		newClassPrototype.prototype._initializeInstanceVariables = function(newInitialValue) {
 			initializeVariables(this._instancePrototype.prototype, newInitialValue);
 			initializeVariables(this._classPrototype.prototype, newInitialValue);
-		}
+		};
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
 			for(methodName in methodTable) {
-				createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
+			    if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+			        createGetter(this._instancePrototype.prototype, methodName, methodTable[methodName]);
+				} else {
+				    createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
+				}
 			}
-		}
+		};
 		
 		newClassPrototype.prototype._addClassMethods = function(methodTable) {
 			for(methodName in methodTable) {
-				createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
+			    if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+			        createGetter(this._classPrototype.prototype, methodName, methodTable[methodName]);
+				} else {
+				    createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
+				}
 			}
-		}
+		};
 		
 		newClassPrototype.prototype._addInstanceVariables = function(variableNames, defaultValue) {
 			for(idx in variableNames) {
 				this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
 			}
-		}
+		};
 		
 		newClassPrototype.prototype._addClassInstanceVariables = function(variableNames, defaultValue) {
 			for(idx in variableNames) {
 				this._classPrototype.prototype[variableNames[idx]] = defaultValue;
 			}
-		}
+		};
 		
 		newClassPrototype.prototype._addClassVariables = function(variableNames, defaultValue) {
 			// TODO not implemented yet
-		}
-	}
+		};
+	};
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
@@ -95,7 +112,7 @@ var Class = function(classname, attrs) {
 		newClass._classname = classname;
 		
 		return newClass;
-	}
+	};
 	
 	var addVariables = function(newClass) {
 		if('classInstanceVariables' in attrs) {
@@ -109,7 +126,7 @@ var Class = function(classname, attrs) {
 		if('classVariables' in attrs) {
 			newClass._addClassVariables(attrs.classVariables, null);
 		}
-	}
+	};
 	
 	var addMethods = function(newClass) {
 		if('instanceMethods' in attrs) {
@@ -119,7 +136,7 @@ var Class = function(classname, attrs) {
 		if('classMethods' in attrs) {
 			newClass._addClassMethods(attrs.classMethods);
 		}
-	}
+	};
 	
 	var newClass = createClassAndLinkPrototypes();
 	addVariables(newClass);
@@ -132,7 +149,7 @@ var Class = function(classname, attrs) {
 };
 
 // global
-var NonLocalReturnException = function(){ this.DontDebug = true };
+var NonLocalReturnException = function(){ this.DontDebug = true; };
 
 // A wrapper to enable several debugging-functionalities
 // global
@@ -160,11 +177,11 @@ var WithDebugging = function(method) {
 					debugger;
 				}
 			}
-		}
+		};
 	} else {
 		return method;
 	}
-}
+};
 
 // global, also used in bootstrap.js -> block()
 // Each element has the slot 'currentThis' set, that represents the object, the execution is currently in
@@ -182,8 +199,8 @@ var _super = function(methodName) {
 		var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
 		
         return invokedMethod.apply(currentThis, arguments);
-    }
-}
+    };
+};
 
 // hide real method behind a wrapper method which catches exceptions
 // global
@@ -208,7 +225,7 @@ var WithNonLocalReturn = function(method) {
 			}
 		}
 	};
-}
+};
 
 // global
 var nonLocalReturn = function(value) {
@@ -216,4 +233,4 @@ var nonLocalReturn = function(value) {
 	var e = blockFunction.nonLocalReturnException;
 	e.nonLocalReturnValue = value;
 	throw e;
-}
+};

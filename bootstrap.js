@@ -1,10 +1,10 @@
 
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function() {
-	alert("Primitive has been called!!! The method containing it is: \n\n" + 
+	/*alert("Primitive has been called!!! The method containing it is: \n\n" + 
 		CALL_STACK.peek().currentThis.__class._classname + "." +
 		CALL_STACK.peek().currentMethod.methodName +
-		"\n(implemented in class " + CALL_STACK.peek().currentMethod.methodHome.__class._classname + ")") };
+		"\n(implemented in class " + CALL_STACK.peek().currentMethod.methodHome.__class._classname + ")") */};
 
 // instead of bool(true) and bool(false) (which would be the equivalent to string(""), number(2) etc.)
 var _true = True._newInstance();
