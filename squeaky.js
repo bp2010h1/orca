@@ -33,7 +33,7 @@ var Class = function(classname, attrs) {
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
 			for (instVar in aPrototype) {
-				if (aPrototype[instVar] === null) {
+				if (aPrototype.__lookupGetter__(instVar) === undefined && aPrototype[instVar] === null) {
 					aPrototype[instVar] = newInitialValue;
 				}
 			}
