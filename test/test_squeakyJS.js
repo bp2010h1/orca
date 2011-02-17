@@ -35,7 +35,7 @@ Class('B', {
 			return _super('setTest_')(num);
 		},
 		lastName: function() {
-			return this.__class.lastName();
+			return this.__class.lastName;
 		}
 	},
 	classInstanceVariables: ['size'],
@@ -82,6 +82,7 @@ tester = {
 		assert(b.test == 4);
 
 		B.age = 100;
+		debugger;
 		assert(B.myAge == 100);
 		assert(b.lastName == B.lastName);
 	}

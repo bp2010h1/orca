@@ -192,13 +192,17 @@ CALL_STACK.peek = function() { return CALL_STACK[CALL_STACK.length - 1]; };
 var _super = function(methodName) {
     return function() {
 		var currentContext = CALL_STACK.peek();
-        var currentThis = currentContext.currentThis;
+		var invokedMethod = null;
 		
 		// Accessing .__proto__ here brings us one step higher in the class-hierarchy
 		// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
-		var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
+		if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+		    invokedMethod = currentContext.currentMethod.methodHome.__proto__.__lookupGetter__(methodName);
+		} else{
+		    invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
+		}
 		
-        return invokedMethod.apply(currentThis, arguments);
+        return invokedMethod.apply(currentContext.currentThis, arguments);
     };
 };
 
