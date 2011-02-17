@@ -70,13 +70,13 @@ Class("BlocksTester", { instanceMethods: {
 	
 	// non local return
 	test10: function() {
-		assert(this.helper10() == 2);
+		assert(this.helper10 == 2);
 	},
 	helper10: function() {
 		return block(function(){ nonLocalReturn(2); }).value;
 	},
 	test11: function() {
-		assert(this.helper11() == 1);
+		assert(this.helper11 == 1);
 	},
 	helper11: function() {
 		return block(function(){
@@ -87,7 +87,7 @@ Class("BlocksTester", { instanceMethods: {
 			return 100; }).value;
 	},
 	test12: function() {
-		assert(this.helper12() == 1);
+		assert(this.helper12 == 1);
 	},
 	helper12: function() {
 		return block(function(){
@@ -147,13 +147,13 @@ Class("BlocksTester", { instanceMethods: {
 	},
 	helper16: function() {
 		var _block = block(function() { nonLocalReturn("abc"); });
-		var result = this.innerhelper16(_block);
+		var result = this.innerhelper16_(_block);
 		this.counter = 100; // Should also not happen
 	},
-	innerhelper16: function(aBlock) {
+	innerhelper16_: function(aBlock) {
 		if (this.counter < 3) {
 			this.counter++;
-			this.innerhelper16(aBlock);
+			this.innerhelper16_(aBlock);
 			counterBack++; // Should not be executed
 		} else {
 			// Should return from the outer-most context (test16)
@@ -222,7 +222,7 @@ Class("BlocksTester", { instanceMethods: {
 			return (function() {
 				return this.instanceVar + arg1 + arg2 + lokal + lokalouter;
 			}).apply(this);
-		}).value("First", "Second");
+		}).value_value_("First", "Second");
 		assert(result == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
@@ -234,7 +234,7 @@ Class("BlocksTester", { instanceMethods: {
 			var innerParam = "InnerParam";
 			return block(function(arg1, arg2){
 				return this.instanceVar + arg1 + arg2 + outer + inner;
-			}).value(outerParam, innerParam);
+			}).value_value_(outerParam, innerParam);
 		}).apply(this);
 		assert(result == "InsOuterParamInnerParamOuterInner");
 	},
@@ -261,7 +261,8 @@ Class("BlocksTester", { instanceMethods: {
 	},
 	
 	test26: function() {
-		assert(this.helper26_outer() == "Correct!");
+		var result = this.helper26_outer();
+		assert(result == "Correct!");
 	},
 	helper26_inner: function(blockParameter) {
 		blockParameter.value.value;

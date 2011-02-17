@@ -93,27 +93,32 @@ var S2JTests = {
 			} else if (setup !== undefined) {
 				this.APP_NAME = "test";
 			}
-			var setup = tester.setUp;
+			var setup = tester.__lookupGetter__('setUp');
 			for (mt in tester) {
-				if (mt.indexOf("test") === 0 && typeof tester[mt] === "function") {
-				  this.currentTest = mt;
-				  this.tryCatch(function() {
-					  if (setup !== undefined) {
-					    setup.apply(tester);
-					  }
-					  this.tryCatch(function() {
-						  tester[mt].apply(tester);
-						  this.testOk();
-					  }, function(e) {
-						  if (e.S2J_IS_ASSERT_FAIL === true) {
-							   this.testFail(e.message);
-						    } else {
-							    this.testError(e);
-						    }
-					  });
-			    }, function(e) {
-				    this.testError("SetUp failed. " + e);
-			    });
+				if(/^test\d*/.test(mt) && 
+						(/^[A-Za-z][A-Za-z0-9]*$/.test(mt) || typeof tester[mt] === "function")){
+					this.currentTest = mt;
+					this.tryCatch(function() {
+						if (setup !== undefined) {
+							setup.apply(tester);
+						}
+						this.tryCatch(function() {
+								if (/^[A-Za-z][A-Za-z0-9]$/.test(mt)){
+									tester.mt;
+								} else {
+									tester[mt].apply(tester);
+								}
+								this.testOk();
+							}, function(e) {
+								if (e.S2J_IS_ASSERT_FAIL === true) {
+									this.testFail(e.message);
+								} else {
+									this.testError(e);
+								}
+							});
+					}, function(e) {
+						this.testError("SetUp failed. " + e);
+					});
 				}
 			}
 	  }
