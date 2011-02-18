@@ -1,15 +1,20 @@
-// Every class is added here. Needed to initialize their instance-variables later.
-var ALL_CLASSES = [];
-
-// If true, additional debugging functionality will be enabled.
-var DEBUG = true;
-
-// If set to true, every method-call will be printed to console.
-var DEBUG_INFINITE_RECURSION = false;
-
-// Each time an object (excluding classes) is created, this is incremented
-var INSTANCE_COUNT = 0;
-
+//Added namespace for SqueakyJS-Variables:
+var SqueakyJS = {
+	// Every class is added here. Needed to initialize their instance-variables later.
+	ALL_CLASSES: [],
+	
+	// If true, additional debugging functionality will be enabled.
+	DEBUG: true,
+	
+	// If set to true, every method-call will be printed to console.
+	DEBUG_INFINITE_RECURSION: false,
+	
+	// Each time an object (excluding classes) is created, this is incremented
+	INSTANCE_COUNT: 0,
+	
+	//Regex for deciding wich function-names to use for defineGetter and wich to chose for methods
+	UNARY: /^(_new|_class|[A-Za-z][A-Za-z0-9]*)$/
+	};
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
 	
@@ -47,7 +52,7 @@ var Class = function(classname, attrs) {
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
 			for(methodName in methodTable) {
-			    if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+			    if(SqueakyJS.UNARY.test(methodName)){
 			        createGetter(this._instancePrototype.prototype, methodName, methodTable[methodName]);
 				} else {
 				    createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
@@ -57,7 +62,7 @@ var Class = function(classname, attrs) {
 		
 		newClassPrototype.prototype._addClassMethods = function(methodTable) {
 			for(methodName in methodTable) {
-			    if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+			    if(SqueakyJS.UNARY.test(methodName)){
 			        createGetter(this._classPrototype.prototype, methodName, methodTable[methodName]);
 				} else {
 				    createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
@@ -84,7 +89,7 @@ var Class = function(classname, attrs) {
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
-		var newInstancePrototype = function(){ INSTANCE_COUNT = INSTANCE_COUNT + 1; this.instanceNumber$ = INSTANCE_COUNT; };
+		var newInstancePrototype = function(){ SqueakyJS.INSTANCE_COUNT = SqueakyJS.INSTANCE_COUNT + 1; this.instanceNumber$ = SqueakyJS.INSTANCE_COUNT; };
 		var newClass;
 		
 		if ('superclass' in attrs) {
@@ -143,7 +148,7 @@ var Class = function(classname, attrs) {
 	addMethods(newClass);
 
 	this[classname] = newClass;
-	ALL_CLASSES[ALL_CLASSES.length] = newClass;
+	SqueakyJS.ALL_CLASSES[SqueakyJS.ALL_CLASSES.length] = newClass;
 
 	return newClass;
 };
@@ -154,10 +159,10 @@ var NonLocalReturnException = function(){ this.DontDebug = true; };
 // A wrapper to enable several debugging-functionalities
 // global
 var WithDebugging = function(method) {
-	if (DEBUG) {
+	if (SqueakyJS.DEBUG) {
 		return function() {
 			try {
-				if (DEBUG_INFINITE_RECURSION) {
+				if (SqueakyJS.DEBUG_INFINITE_RECURSION) {
 					var indent = "";
 					for (var i = 0; i < CALL_STACK.length; i++) {
 						indent += "  ";
@@ -173,7 +178,7 @@ var WithDebugging = function(method) {
 			} catch (e) {
 				if (e.DontDebug === true) {
 					throw e;
-				} else if (DEBUG) {
+				} else if (SqueakyJS.DEBUG) {
 					debugger;
 				}
 			}
@@ -196,7 +201,7 @@ var _super = function(methodName) {
 		
 		// Accessing .__proto__ here brings us one step higher in the class-hierarchy
 		// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
-		if(/^[A-Za-z][A-Za-z0-9]*$/.test(methodName)){
+		if(SqueakyJS.UNARY.test(methodName)){
 		    invokedMethod = currentContext.currentMethod.methodHome.__proto__.__lookupGetter__(methodName);
 		} else{
 		    invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];

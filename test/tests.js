@@ -96,14 +96,14 @@ var S2JTests = {
 			var setup = tester.__lookupGetter__('setUp');
 			for (mt in tester) {
 				if(/^test\d*/.test(mt) && 
-						(/^[A-Za-z][A-Za-z0-9]*$/.test(mt) || typeof tester[mt] === "function")){
+						(SqueakyJS.UNARY.test(mt) || typeof tester[mt] === "function")){
 					this.currentTest = mt;
 					this.tryCatch(function() {
 						if (setup !== undefined) {
 							setup.apply(tester);
 						}
 						this.tryCatch(function() {
-								if (/^[A-Za-z][A-Za-z0-9]*$/.test(mt)){
+								if (SqueakyJS.UNARY.test(mt)){
 									tester.mt;
 								} else {
 									tester[mt].apply(tester);

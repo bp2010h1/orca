@@ -12,8 +12,8 @@ var _false = False._newInstance();
 var nil = UndefinedObject._newInstance();
 
 // Now, that nil is available, initialize all instance-variables of all classes to nil
-for (aClass in ALL_CLASSES) {
-	ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
+for (aClass in SqueakyJS.ALL_CLASSES) {
+	SqueakyJS.ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
 // This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
