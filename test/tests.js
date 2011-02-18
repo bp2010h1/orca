@@ -103,7 +103,7 @@ var S2JTests = {
 							setup.apply(tester);
 						}
 						this.tryCatch(function() {
-								if (/^[A-Za-z][A-Za-z0-9]$/.test(mt)){
+								if (/^[A-Za-z][A-Za-z0-9]*$/.test(mt)){
 									tester.mt;
 								} else {
 									tester[mt].apply(tester);
