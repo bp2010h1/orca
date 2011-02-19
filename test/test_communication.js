@@ -19,7 +19,7 @@ Class("ConnectionTester", {
 		},
 		
 		testPush: function(){
-			S2JServer.performOnServer("[ S2JTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. true ]");
+			S2JServer.performOnServer("[ S2JTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
 			assert(this.__class.$connectionToClientSuccessful, "Server didn't poke this client.");
 		}
 	}

@@ -28,7 +28,7 @@ var S2JTests = {
 		}
 
 		// Send the results to the server
-		S2JServer.performOnServer("[ :result | S2JJavascriptTest reportJSResults: result ]", this.TEST_RESULTS.fail.length + this.TEST_RESULTS.error.length);
+		S2JServer.performOnServer("[ :failed :errors | S2JJavascriptTest reportJSResults: failed and: errors ]", this.TEST_RESULTS.fail.length, this.TEST_RESULTS.error.length);
 	},
 	
 	// Simply load the resource (relative to root)
