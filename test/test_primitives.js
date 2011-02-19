@@ -28,6 +28,26 @@ Class("PrimitivesTester", {
 			assertRaisesError_(function (){this.$anObject.js()});
 		},
 		
+		testFloatLoop: function (){
+			var count = 0;
+			this.$aFloat.timesRepeat_(block(function (){ count++; }));
+			assert(count == 3);
+		},
+		
+		testPointTimes: function (){
+			var point = Point.x_y_(number(3), number(2));
+			var anotherPoint = point._times(number(5));
+			assert(anotherPoint.x() == 15);
+			assert(anotherPoint.y() == 10);
+		},
+		
+		testArray: function (){
+			assert(this.$anArray.size().js() == 3);
+			assert(this.$anArray.at_(number(1)) == 1);
+			this.$anArray.at_put_(number(2), number(4));
+			assert(this.$anArray.at_(number(2))._equals(number(4)));
+			assert(this.$anArray.isEmpty().js() === false)
+		}
 	}
 	
 });
