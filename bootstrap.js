@@ -16,8 +16,10 @@ for (aClass in SqueakyJS.ALL_CLASSES) {
 	SqueakyJS.ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-// This must be called after all primitives have been initialized, as it disturbs the functions _addInstanceMethod, etc.
-// Add the js()-function to ech object, to be able to call it without checking. This method is deleted after being called.
+/* This must be called after all primitives have been initialized, as it disturbs the 
+ * functions _addInstanceMethod, etc. because they iterate over every slot of 
+ * object listerals. */
+// Add the js()-function to each object, to be able to call it without checking. This method is deleted after being called.
 var AddJsFunctionToAllObjects = function() {
 	Object.prototype.js = function() {
 		return this;
