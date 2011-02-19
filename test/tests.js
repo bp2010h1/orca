@@ -93,21 +93,16 @@ var S2JTests = {
 			} else if (setup !== undefined) {
 				this.APP_NAME = "test";
 			}
-			var setup = tester.__lookupGetter__('setUp');
+			var setup = tester.setUp;
 			for (mt in tester) {
-				if(/^test\d*/.test(mt) && 
-						(SqueakyJS.UNARY.test(mt) || typeof tester[mt] === "function")){
+				if(/^test/.test(mt) && typeof tester[mt] === "function"){
 					this.currentTest = mt;
 					this.tryCatch(function() {
 						if (setup !== undefined) {
 							setup.apply(tester);
 						}
 						this.tryCatch(function() {
-								if (SqueakyJS.UNARY.test(mt)){
-									tester.mt;
-								} else {
-									tester[mt].apply(tester);
-								}
+								tester[mt].apply(tester);
 								this.testOk();
 							}, function(e) {
 								if (e.S2J_IS_ASSERT_FAIL === true) {

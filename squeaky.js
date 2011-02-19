@@ -10,82 +10,66 @@ var SqueakyJS = {
 	DEBUG_INFINITE_RECURSION: false,
 	
 	// Each time an object (excluding classes) is created, this is incremented
-	INSTANCE_COUNT: 0,
-	
-	//Regex for deciding wich function-names to use for defineGetter and wich to chose for methods
-	UNARY: /^(_new|_class|[A-Za-z][A-Za-z0-9]*)$/
+	INSTANCE_COUNT: 0
 	};
 // Helper-functions are inside the Class-function to not declare them globally
 var Class = function(classname, attrs) {
 	
 	var createHelpers = function(newClassPrototype) {
 		var createMethod = function(aPrototype, methodName, method) {
-			aPrototype[methodName] = decorateMethodForSqueaky(aPrototype, methodName, method);
-		};
-		
-		var createGetter = function(aPrototype, methodName, method) {
-			aPrototype.__defineGetter__(methodName, decorateMethodForSqueaky(aPrototype, methodName, method));
-		};
-		
-		var decorateMethodForSqueaky = function(aPrototype, methodName, method){
-			var decoratedMethod = WithDebugging(WithNonLocalReturn(method));
-			decoratedMethod.methodName = methodName;
-			decoratedMethod.originalMethod = method;
+			aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
+			aPrototype[methodName].methodName = methodName;
+			aPrototype[methodName].originalMethod = method;
 			method.methodName = methodName;
 			method.methodHome = aPrototype; // This is the object, that actually contains this method
-			return decoratedMethod;
-		};
+		}
 		
 		var initializeVariables = function(aPrototype, newInitialValue) {
 			for (instVar in aPrototype) {
-				if (aPrototype.__lookupGetter__(instVar) === undefined && aPrototype[instVar] === null) {
+				if (aPrototype[instVar] == null) {
 					aPrototype[instVar] = newInitialValue;
 				}
 			}
-		};
+		}
 		
 		// Initialize all fields, that are null to the given value
 		newClassPrototype.prototype._initializeInstanceVariables = function(newInitialValue) {
 			initializeVariables(this._instancePrototype.prototype, newInitialValue);
 			initializeVariables(this._classPrototype.prototype, newInitialValue);
-		};
+		}
 		
 		newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
 			for(methodName in methodTable) {
-			    if(SqueakyJS.UNARY.test(methodName)){
-			        createGetter(this._instancePrototype.prototype, methodName, methodTable[methodName]);
-				} else {
-				    createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
+				if (typeof methodTable[methodName] == 'function'){
+					createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
 				}
 			}
-		};
+		}
 		
 		newClassPrototype.prototype._addClassMethods = function(methodTable) {
 			for(methodName in methodTable) {
-			    if(SqueakyJS.UNARY.test(methodName)){
-			        createGetter(this._classPrototype.prototype, methodName, methodTable[methodName]);
-				} else {
-				    createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
+				if (typeof methodTable[methodName] == 'function'){
+					createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
 				}
 			}
-		};
+		}
 		
 		newClassPrototype.prototype._addInstanceVariables = function(variableNames, defaultValue) {
 			for(idx in variableNames) {
 				this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
 			}
-		};
+		}
 		
 		newClassPrototype.prototype._addClassInstanceVariables = function(variableNames, defaultValue) {
 			for(idx in variableNames) {
 				this._classPrototype.prototype[variableNames[idx]] = defaultValue;
 			}
-		};
+		}
 		
 		newClassPrototype.prototype._addClassVariables = function(variableNames, defaultValue) {
 			// TODO not implemented yet
-		};
-	};
+		}
+	}
 	
 	var createClassAndLinkPrototypes = function() {
 		var newClassPrototype = function(){};
@@ -117,7 +101,7 @@ var Class = function(classname, attrs) {
 		newClass._classname = classname;
 		
 		return newClass;
-	};
+	}
 	
 	var addVariables = function(newClass) {
 		if('classInstanceVariables' in attrs) {
@@ -131,7 +115,7 @@ var Class = function(classname, attrs) {
 		if('classVariables' in attrs) {
 			newClass._addClassVariables(attrs.classVariables, null);
 		}
-	};
+	}
 	
 	var addMethods = function(newClass) {
 		if('instanceMethods' in attrs) {
@@ -141,7 +125,7 @@ var Class = function(classname, attrs) {
 		if('classMethods' in attrs) {
 			newClass._addClassMethods(attrs.classMethods);
 		}
-	};
+	}
 	
 	var newClass = createClassAndLinkPrototypes();
 	addVariables(newClass);
@@ -154,7 +138,7 @@ var Class = function(classname, attrs) {
 };
 
 // global
-var NonLocalReturnException = function(){ this.DontDebug = true; };
+var NonLocalReturnException = function(){ this.DontDebug = true };
 
 // A wrapper to enable several debugging-functionalities
 // global
@@ -182,11 +166,11 @@ var WithDebugging = function(method) {
 					debugger;
 				}
 			}
-		};
+		}
 	} else {
 		return method;
 	}
-};
+}
 
 // global, also used in bootstrap.js -> block()
 // Each element has the slot 'currentThis' set, that represents the object, the execution is currently in
@@ -201,11 +185,7 @@ var _super = function(methodName) {
 		
 		// Accessing .__proto__ here brings us one step higher in the class-hierarchy
 		// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
-		if(SqueakyJS.UNARY.test(methodName)){
-		    invokedMethod = currentContext.currentMethod.methodHome.__proto__.__lookupGetter__(methodName);
-		} else{
-		    invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
-		}
+		invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
 		
         return invokedMethod.apply(currentContext.currentThis, arguments);
     };
@@ -234,7 +214,7 @@ var WithNonLocalReturn = function(method) {
 			}
 		}
 	};
-};
+}
 
 // global
 var nonLocalReturn = function(value) {
@@ -242,4 +222,4 @@ var nonLocalReturn = function(value) {
 	var e = blockFunction.nonLocalReturnException;
 	e.nonLocalReturnValue = value;
 	throw e;
-};
+}

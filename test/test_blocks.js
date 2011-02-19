@@ -1,3 +1,4 @@
+
 // This scripts uses blocks, which require Squeak-classes
 S2JTests.setupSqueakEnvironment();
 
@@ -15,36 +16,36 @@ Class("BlocksTester", { instanceMethods: {
 	// Basic, multiple blocks, instance var
 	test1: function() {
 		var _block = block(function(){ return 1; });
-		assert(_block.value == 1);
+		assert(_block.value() == 1);
 	},
 	test2: function() {
 		var _block = block(function(){
 			var a = "c"; // Random stuff in here
 			var _block = 1; // shadow the variable...
 			return _block; });
-		assert(_block.value == 1);
+		assert(_block.value() == 1);
 	},
 	test3: function() {
 		var _block = block(function(){
 			var inner = block(function(){ return "inner"; });
-			return inner.value; });
-		assert(_block.value == "inner");
+			return inner.value(); });
+		assert(_block.value() == "inner");
 	},
 	test4: function() {
 		var _block = block(function(){
 			var inner = block(function(){ 
 				var innerinner = block(function(){ return "innerinner"; });
-				return innerinner.value; });
-			return inner.value; });
-		assert(_block.value == "innerinner");
+				return innerinner.value(); });
+			return inner.value(); });
+		assert(_block.value() == "innerinner");
 	},
 	test5: function() {
 		var _block = block(function(){ return this.instVar; });
-		assert(_block.value == "instVar");
+		assert(_block.value() == "instVar");
 	},
 	test6: function() {
-		var _block = block(function(){ return this.instMethod; });
-		assert(_block.value == "methodRes");
+		var _block = block(function(){ return this.instMethod(); });
+		assert(_block.value() == "methodRes");
 	},
 	
 	// Parameters
@@ -70,46 +71,46 @@ Class("BlocksTester", { instanceMethods: {
 	
 	// non local return
 	test10: function() {
-		assert(this.helper10 == 2);
+		assert(this.helper10() == 2);
 	},
 	helper10: function() {
-		return block(function(){ nonLocalReturn(2); }).value;
+		return block(function(){ nonLocalReturn(2); }).value();
 	},
 	test11: function() {
-		assert(this.helper11 == 1);
+		assert(this.helper11() == 1);
 	},
 	helper11: function() {
 		return block(function(){
 			var inner = block(function() {
 				return 1;
 			});
-			nonLocalReturn(inner.value);
-			return 100; }).value;
+			nonLocalReturn(inner.value());
+			return 100; }).value();
 	},
 	test12: function() {
-		assert(this.helper12 == 1);
+		assert(this.helper12() == 1);
 	},
 	helper12: function() {
 		return block(function(){
 			var inner = block(function() {
 				nonLocalReturn(1);
 			});
-			inner.value;
+			inner.value();
 			nonLocalReturn(100);
-			return 200; }).value;
+			return 200; }).value();
 	},
 	test13: function() {
-		assert(this.helper13 == "instVarmethodRes");
+		assert(this.helper13() == "instVarmethodRes");
 	},
 	helper13: function() {
-		return block(function(){ nonLocalReturn(this.instVar + this.instMethod); }).value;
+		return block(function(){ nonLocalReturn(this.instVar + this.instMethod()); }).value();
 	},
 	test14: function() {
-		var _block = this.blockSource;
+		var _block = this.blockSource();
 		var result = "before";
 		var error = "no Error";
 		try {
-			result = _block.value;
+			result = _block.value();
 		} catch (e) {
 			error = e;
 		}
@@ -121,7 +122,7 @@ Class("BlocksTester", { instanceMethods: {
 	test15: function() {
 		this.counter = 0;
 		this.counterBack = 0;
-		assert(this.helper15 == "returned");
+		assert(this.helper15() == "returned");
 		assert(this.counter == 3);
 		assert(this.counterBack == 3);
 	},
@@ -130,40 +131,40 @@ Class("BlocksTester", { instanceMethods: {
 		block(function(){
 			if (this.counter < 3) {
 				this.counter++;
-				result = this.helper15;
+				result = this.helper15();
 				this.counterBack++;
 			} else {
 				// Return only from the inner-most invokation
 				nonLocalReturn("returned");
-		}}).value;
+		}}).value();
 		return result;
 	},
 	test16: function() {
 		this.counter = 0;
 		this.counterBack = 0;
-		this.helper16;
+		this.helper16();
 		assert(this.counter == 3);
 		assert(this.counterBack == 0); // !!
 	},
 	helper16: function() {
 		var _block = block(function() { nonLocalReturn("abc"); });
-		var result = this.innerhelper16_(_block);
+		var result = this.innerhelper16(_block);
 		this.counter = 100; // Should also not happen
 	},
-	innerhelper16_: function(aBlock) {
+	innerhelper16: function(aBlock) {
 		if (this.counter < 3) {
 			this.counter++;
-			this.innerhelper16_(aBlock);
+			this.innerhelper16(aBlock);
 			counterBack++; // Should not be executed
 		} else {
 			// Should return from the outer-most context (test16)
-			aBlock.value;
+			aBlock.value();
 		}
 	},
 	test17: function() {
 		this.counter = 0;
 		this.counterBack = 0;
-		this.helper17;
+		this.helper17();
 		assert(this.counter == 3);
 		assert(this.counterBack == 0); // !!
 	},
@@ -173,10 +174,10 @@ Class("BlocksTester", { instanceMethods: {
 		}
 		if (this.counter < 3) {
 			this.counter++;
-			this.helper17;
+			this.helper17();
 			this.counterBack++;
 		} else {
-			this.blockVar.value;
+			this.blockVar.value();
 		}
 	},
 	
@@ -201,7 +202,7 @@ Class("BlocksTester", { instanceMethods: {
 		var result = (function(){
 			return block(function(){
 				return this.instanceVar;
-			}).value;
+			}).value();
 		}).apply(this);
 		assert(result == "Ins");
 	},
@@ -211,7 +212,7 @@ Class("BlocksTester", { instanceMethods: {
 			return (function() {
 				return this.instanceVar;
 			}).apply(this);
-		}).value;
+		}).value();
 		assert(result == "Ins");
 	},
 	test22: function() {
@@ -222,7 +223,7 @@ Class("BlocksTester", { instanceMethods: {
 			return (function() {
 				return this.instanceVar + arg1 + arg2 + lokal + lokalouter;
 			}).apply(this);
-		}).value_value_("First", "Second");
+		}).value("First", "Second");
 		assert(result == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
@@ -234,7 +235,7 @@ Class("BlocksTester", { instanceMethods: {
 			var innerParam = "InnerParam";
 			return block(function(arg1, arg2){
 				return this.instanceVar + arg1 + arg2 + outer + inner;
-			}).value_value_(outerParam, innerParam);
+			}).value(outerParam, innerParam);
 		}).apply(this);
 		assert(result == "InsOuterParamInnerParamOuterInner");
 	},
@@ -246,7 +247,7 @@ Class("BlocksTester", { instanceMethods: {
 		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 	evaluateBlock: function(aBlock) {
-		return aBlock.value;
+		return aBlock.value();
 	},
 	test25: function() {
 		var otherTester = BlocksTester._newInstance();
@@ -255,17 +256,16 @@ Class("BlocksTester", { instanceMethods: {
 			var inner = block(function(){ 
 				var innerinner = block(function(){
 				  return this.instVar; });
-				return innerinner.value; });
-			return inner.value; });
+				return innerinner.value(); });
+			return inner.value(); });
 		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 	
 	test26: function() {
-		var result = this.helper26_outer();
-		assert(result == "Correct!");
+		assert(this.helper26_outer() == "Correct!");
 	},
 	helper26_inner: function(blockParameter) {
-		blockParameter.value.value;
+		blockParameter.value().value();
 		return "Also wrong!";
 	},
 	helper26_outer: function() {
