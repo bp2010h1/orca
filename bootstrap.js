@@ -31,7 +31,7 @@ var AddJsFunctionToAllObjects = function() {
 // A js-function is also added to the prototype of the js-primitive Object (but at the very end of all our scripts).
 // 
 _Object._addInstanceMethods( { js: function() { 
-	alert("Trying to pass a Squeak-object into a javascript-library-call! " + this); } } );
+	throw ("Trying to pass a Squeak-object into a javascript-library-call! " + this); } } );
 False._addInstanceMethods( { js: function() { return false; } } );
 True._addInstanceMethods( { js: function() { return true; } } );
 UndefinedObject._addInstanceMethods( { js: function() { return null; } } );
