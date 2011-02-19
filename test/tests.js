@@ -2,7 +2,7 @@
 // This script must be loaded after squeaky.js to apply this switch-setting!
 DEBUG = false;
 
-var S2JTestScripts = [ "test_squeakyJS.js", "test_blocks.js", "test_super.js", "test_communication.js" ];
+var S2JTestScripts = [ "test_squeakyJS.js", "test_primitives.js", "test_blocks.js", "test_super.js", "test_communication.js" ];
 
 // This variable is used by tests to send some kind of result back to the server. This removes the need to load classes (like ByteString)
 var S2JmockTestResult = "abc123";
@@ -19,14 +19,11 @@ var S2JTests = {
 	
 	// Run all tests defined in the array S2JTestScripts
 	runTests: function() {
-		this.RESULT_CONTAINER = document.createElement("ul");
-		document.getElementsByTagName("body")[0].appendChild(this.RESULT_CONTAINER);
-
 		// The tests are executed directly in these files
 		for (testScript in S2JTestScripts) {
-			var script = S2JTestScripts[testScript];
-			if (typeof script == "string") {
-				this.runTestScript(script);
+			var scriptName = S2JTestScripts[testScript];
+			if (typeof scriptName == "string") {
+				this.runTestScript(scriptName);
 			}
 		}
 
@@ -64,9 +61,12 @@ var S2JTests = {
 
 	// Load all resources needed to setup the squeak-environment on the client
 	setupSqueakEnvironment: function() {
-		this.loadClasses();
-		this.loadScript("bootstrap.js");
-		this.loadScript("kernel_primitives.js");
+		if (this.squeakEnvironmentLoaded === undefined) {
+			this.squeakEnvironmentLoaded = true;
+			this.loadClasses();
+			this.loadScript("bootstrap.js");
+			this.loadScript("kernel_primitives.js");
+		}
 	},
 	
 	// Run one test-script.
@@ -80,7 +80,8 @@ var S2JTests = {
 		this.currentScript = scriptName;
 		this.currentTest = "(?)";
 		var tester = null;
-		
+		this.startNewTest(scriptName);
+				
 		this.tryCatch(function() {
 			this.APP_NAME = "test";
 			tester = this.loadScript("test/" + scriptName);
@@ -160,13 +161,23 @@ var S2JTests = {
 	},
 	
 	// This is private, but exposed directly over the global method assert (defined below this namespace)
-	assert: function(condition, exception_message) {
+	assert: function (condition, exception_message){
 		if (!condition) {
 			throw new this.ASSERT_FAIL(exception_message);
 		}
 	},
+	assertRaisesError_: function (aFunction, exceptionMessage){
+		var errorRaised = false;
+		try{
+			aFunction();
+		}
+		catch (e){
+			errorRaised = true;
+		}
+		this.assert(errorRaised, exceptionMessage);
+	},
 	
-	getAppName: function() {
+	getAppName: function (){
 		if (this.APP_NAME === null) {
 			throw "Cannot load file/script: APPLICATION_NAME is not set. Use these functions only from test-scripts executed with runTestScripts().";
 		}
@@ -209,6 +220,19 @@ var S2JTests = {
 		result.onmouseout = function(event) { textBox.hide(); };
 		this.RESULT_CONTAINER.appendChild(result);
 	},
+	
+	startNewTest: function (testScriptName){
+		this.showHeadingFor_(testScriptName);
+		this.RESULT_CONTAINER = document.createElement("ul");
+		document.getElementsByTagName("body")[0].appendChild(this.RESULT_CONTAINER);
+	},
+	showHeadingFor_: function (testScriptName){
+		var heading = document.createElement("h1");
+		var headingText = /(?:^test\_(\w*)|(\w*)).js$/.exec(testScriptName);
+		headingText = document.createTextNode(headingText[1] || headingText[2] || testScriptName);
+		heading.appendChild(headingText);
+		document.getElementsByTagName("body")[0].appendChild(heading);
+	},
 
 	// TestResultBox, shown on mouse-hovering of result-labels
 	TextBox: function(aNode, aMessage) {
@@ -239,4 +263,5 @@ var S2JTests = {
 
 // For shorter test-code. Must apply the method in the context of the namespace.
 var assert = function() { S2JTests.assert.apply(S2JTests, arguments); };
+var assertRaisesError_ = function () {S2JTests.assertRaisesError_.apply(S2JTests, arguments);};
 

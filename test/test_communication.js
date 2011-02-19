@@ -9,7 +9,7 @@ Class("ConnectionTester", {
 	instanceMethods: {
 		
 		setUp: function(){
-			this.__class.connectionToClientSuccessful = false;
+			this.__class.$connectionToClientSuccessful = false;
 		},
 		
 		testPull: function(){
@@ -20,7 +20,7 @@ Class("ConnectionTester", {
 		
 		testPush: function(){
 			S2JServer.performOnServer("[ S2JTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. true ]");
-			assert(this.__class.connectionToClientSuccessful, "Server didn't poke this client.");
+			assert(this.__class.$connectionToClientSuccessful, "Server didn't poke this client.");
 		}
 	}
 	
