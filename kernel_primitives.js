@@ -6,7 +6,7 @@
 
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
-	_new: function() { return this.basicNew.initialize; },
+	_new: function() { return this.basicNew().initialize(); },
 	name: function() { return this._classname; }
 });
 ProtoObject._addInstanceMethods({
@@ -70,7 +70,7 @@ Float._addInstanceMethods({
 	},
 	timesRepeat_: function(aBlock){
 		for (var i = 0; i < this.num$; i++) {
-			aBlock.value;
+			aBlock.value();
 		}
 		return this;
 	},
@@ -81,7 +81,7 @@ Float._addInstanceMethods({
 
 Point._addInstanceMethods({
 	_times: function(aNumber){
-		return (this.x._times(aNumber))._at(this.y._times(aNumber));
+		return (this.x()._times(aNumber))._at(this.y()._times(aNumber));
 	}
 });
 
@@ -94,24 +94,24 @@ BlockClosure._addInstanceMethods({
 	value_value_value_value_: _blockValueFunction_,
 	
 	whileTrue_: function(anotherBlock) {
-		while (this.value === _true) {
-			anotherBlock.value;
+		while (this.value() === _true) {
+			anotherBlock.value();
 		}
 		return nil;
 	},
 	whileTrue: function(anotherBlock) {
 		// TODO implement whileTrue: for real
-		while (this.value === _true) ;
+		while (this.value() === _true) ;
 		return nil;
 	},
 	whileFalse_: function() {
-		while (this.value === _false) {
-			anotherBlock.value;
+		while (this.value() === _false) {
+			anotherBlock.value();
 		}
 		return nil;
 	},
 	whileFalse: function() {
-		while (this.value === _false) ;
+		while (this.value() === _false) ;
 		return nil;
 	}
 });
