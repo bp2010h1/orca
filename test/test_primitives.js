@@ -24,21 +24,23 @@ Class("PrimitivesTester", {
 			assert(this.$aNumber.js() == 1);
 			assert(this.$aString.js() == "Hello World!");
 			assert(this.$aFloat.js() == 4.2);
-			assert(this.$anArray.js() == [1, 2, 3]);
+			assert(this.$anArray.js()[0] == [1, 2, 3][0]);
+			assert(this.$anArray.js()[1] == [1, 2, 3][1]);
+			assert(this.$anArray.js()[2] == [1, 2, 3][2]);
 			assertRaisesError_(function (){this.$anObject.js()});
 		},
 		
 		testFloatLoop: function (){
 			var count = 0;
 			this.$aFloat.timesRepeat_(block(function (){ count++; }));
-			assert(count == 3);
+			assert(count == 5);
 		},
 		
 		testPointTimes: function (){
 			var point = Point.x_y_(number(3), number(2));
 			var anotherPoint = point._times(number(5));
-			assert(anotherPoint.x() == 15);
-			assert(anotherPoint.y() == 10);
+			assert(anotherPoint.x().js() == 15);
+			assert(anotherPoint.y().js() == 10);
 		},
 		
 		testArray: function (){

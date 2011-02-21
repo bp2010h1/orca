@@ -128,7 +128,7 @@ _Array._addInstanceMethods({
 		return this.arr$[idx.num$ - 1];
 	},
 	isEmpty: function(){
-		return (this.arr$.length == 0);
+		return bool(this.arr$.length == 0);
 	}
 });
 _Array._addClassMethods({
