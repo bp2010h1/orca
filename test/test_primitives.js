@@ -48,7 +48,10 @@ Class("PrimitivesTester", {
 			assert(this.$anArray.at_(number(1)) == 1);
 			this.$anArray.at_put_(number(2), number(4));
 			assert(this.$anArray.at_(number(2))._equals(number(4)));
-			assert(this.$anArray.isEmpty().js() === false)
+			assert(this.$anArray.isEmpty().js() === false);
+		},
+		testArrayIncludes: function(){
+		  assert(array([number(1), number(2)]).includes_(number(1)).js(), "Array.includes: does not work as expected");
 		}
 	}
 	
