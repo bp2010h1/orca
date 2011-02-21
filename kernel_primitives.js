@@ -132,6 +132,17 @@ _Array._addInstanceMethods({
 	},
 	isEmpty: function(){
 		return bool(this.arr$.length == 0);
+	},
+	
+	/* this is actually not a primitive and should be implemented by squeak.
+	   it is only implemented here to work around a hardly tracable bug, probably in out blocks
+	   and nonlocal return */
+	includes_: function(anElement) {
+    for(var i = 0; i <= this.arr$.length; i++) {
+      if(this.arr$[i]._equals(anElement))
+        return _true;
+    }
+    return _false;
 	}
 });
 _Array._addClassMethods({
