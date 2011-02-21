@@ -68,6 +68,9 @@ Float._addInstanceMethods({
 	_equals: function(other) {
 		return bool(this.num$ == other.num$);
 	},
+	_tilde_equals: function(other) {
+	  return bool(this.num$ != other.num$);
+	},
 	timesRepeat_: function(aBlock){
 		for (var i = 0; i < this.num$; i++) {
 			aBlock.value();
