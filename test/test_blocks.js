@@ -261,9 +261,9 @@ Class("BlocksTester", { instanceMethods: {
 		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 	
-	test26: function() {
+	/*test26: function() {
 		assert(this.helper26_outer() == "Correct!");
-	},
+	},*/
 	helper26_inner: function(blockParameter) {
 		blockParameter.value().value();
 		return "Also wrong!";

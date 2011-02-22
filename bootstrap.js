@@ -1,7 +1,7 @@
 
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function() {
-	alert("Primitive has been called!!! The method containing it is: \n\n" + 
+	throw("Primitive has been called!!! The method containing it is: \n\n" + 
 		CALL_STACK.peek().currentThis.__class._classname + "." +
 		CALL_STACK.peek().currentMethod.methodName +
 		"\n(implemented in class " + CALL_STACK.peek().currentMethod.methodHome.__class._classname + ")") };

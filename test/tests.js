@@ -1,6 +1,6 @@
 
 // This script must be loaded after squeaky.js to apply this switch-setting!
-DEBUG = false;
+SqueakyJS.DEBUG = false;
 
 var S2JTestScripts = [ "test_squeakyJS.js", "test_primitives.js", "test_blocks.js", "test_super.js", "test_communication.js" ];
 

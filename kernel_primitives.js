@@ -68,6 +68,9 @@ Float._addInstanceMethods({
 	_equals: function(other) {
 		return bool(this.num$ == other.num$);
 	},
+	_tilde_equals: function(other) {
+	  return bool(this.num$ != other.num$);
+	},
 	timesRepeat_: function(aBlock){
 		for (var i = 0; i < this.num$; i++) {
 			aBlock.value();
@@ -128,7 +131,18 @@ _Array._addInstanceMethods({
 		return this.arr$[idx.num$ - 1];
 	},
 	isEmpty: function(){
-		return (this.arr$.length == 0);
+		return bool(this.arr$.length == 0);
+	},
+	
+	/* this is actually not a primitive and should be implemented by squeak.
+	   it is only implemented here to work around a hardly tracable bug, probably in out blocks
+	   and nonlocal return */
+	includes_: function(anElement) {
+    for(var i = 0; i <= this.arr$.length; i++) {
+      if(this.arr$[i]._equals(anElement))
+        return _true;
+    }
+    return _false;
 	}
 });
 _Array._addClassMethods({
