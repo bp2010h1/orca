@@ -11,7 +11,7 @@ ProtoObject._addClassMethods({
 });
 ProtoObject._addInstanceMethods({
 	_equals_equals: function(anObject) { return bool(this === anObject); },
-	identityHash: function() { return number(this.instanceNumber$); }
+	identityHash: function() { return number(this.instanceNumber$); },	
 });
 
 _Object._addInstanceMethods({
@@ -23,7 +23,7 @@ Exception._addInstanceMethods({
 	signal: function(){ throw this }
 });
 
-String._addInstanceMethods({
+_String._addInstanceMethods({
 	// This is not actually a primitive function, but behaves in the same way the #, method does
 	_comma: function(anotherString) { return string(this.string$ + anotherString.string$) },
 	_equals: function(anotherString) { return bool(this.string$ == anotherString.string$) },
