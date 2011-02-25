@@ -16,24 +16,15 @@ for (aClass in SqueakyJS.ALL_CLASSES) {
 	SqueakyJS.ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-/* This must be called after all primitives have been initialized, as it disturbs the 
- * functions _addInstanceMethod, etc. because they iterate over every slot of 
- * object listerals. */
-// Add the js()-function to each object, to be able to call it without checking. This method is deleted after being called.
-var AddJsFunctionToAllObjects = function() {
-	Object.prototype.js = function() {
-		return this;
-	}
-	AddJsFunctionToAllObjects = undefined;
-}
-
-// 
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
 // their Squeak-wrapper-objects. As short as possible, as it is called on every argument of js-library-calls.
 // A js-function is also added to the prototype of the js-primitive Object (but at the very end of all our scripts).
 // 
 _Object._addInstanceMethods( { js: function() { 
-	throw ("Trying to pass a Squeak-object into a javascript-library-call! " + this); } } );
+	//throw ("Trying to pass a Squeak-object into a javascript-library-call! " + this);
+	return this;
+	} } );
+	
 False._addInstanceMethods( { js: function() { return false; } } );
 True._addInstanceMethods( { js: function() { return true; } } );
 UndefinedObject._addInstanceMethods( { js: function() { return null; } } );
