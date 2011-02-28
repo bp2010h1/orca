@@ -31,8 +31,13 @@ UndefinedObject._addInstanceMethods( { js: function() { return null; } } );
 ByteString._addInstanceMethods( { js: function() { return this.string$; } } );
 _Number._addInstanceMethods( { js: function() { return this.num$; } } );
 Character._addInstanceMethods( { js: function() { return this.character$; } } );
-_Array._addInstanceMethods( { js: function() { return this.arr$; } } );
 BlockClosure._addInstanceMethods( { js: function() { return this.func$; } } );
+_Array._addInstanceMethods( { js: function() { 
+	var returnArray = [];
+	for(var i = 0; i < this.arr$.length; i++){
+		returnArray[i] = this.arr$[i].js();
+	}
+	return returnArray; } } );
 
 // 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
