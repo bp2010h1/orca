@@ -60,6 +60,16 @@ Class("PrimitivesTester", {
 			assert(testArray.js()[1] == 1, "Array doesn't unpack it's element when converted to JS-Array, 2");
 			assert(testArray.js()[2][0] == 2, "Array doesn't unpack it's element when converted to JS-Array, 3");
 			assert(testArray.js()[2].length == 1, "Array doesn't unpack it's element when converted to JS-Array, 4");
+		},
+		
+		testFunctionPrimitives: function (){
+			var func = function (){ return "1"; };
+			assert(func.value() == "1", "Calling Js functions like a BlockClosure with value.");
+			func = function(a, b){ if( !b ){ return a; } return b; };
+			assert(func.value_(number(1)) == 1, "Calling Js functions like a BlockClosure with value_." + func(number(1)));
+			assert(func.value_value_(number(1), number(2)) == 2, "Calling Js functions like a BlockClosure with value_value_.");
+			assert(func.valueWithArguments_(array([number(1)])) == 1, "Calling Js functions like a BlockClosure with valueWithArguments. 1");
+			assert(func.valueWithArguments_(array([number(1), number(2)])) == 2, "Calling Js functions like a BlockClosure with valueWithArguments. 2");
 		}
 	}
 	

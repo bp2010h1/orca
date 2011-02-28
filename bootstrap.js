@@ -16,6 +16,14 @@ for (aClass in SqueakyJS.ALL_CLASSES) {
 	SqueakyJS.ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
+//We want to be able to evaluate parameter functions. We just handle them like a block. 
+//So we implement value, etc. for Functions
+Function.prototype.value = function() { 
+	return this.apply(null, null); };
+Function.prototype.value_ = function (a){ return this.apply(null, [a.js()]); };
+Function.prototype.value_value_ = function (a, b){ return this.apply(null, [a.js(), b.js()]); };
+Function.prototype.valueWithArguments_ = function(argsArray) { return this.apply(null, argsArray.js()); };
+
 // Each object can convert itself into a js-only version. Used to unpack primitive values like Strings and Numbers from
 // their Squeak-wrapper-objects. As short as possible, as it is called on every argument of js-library-calls.
 // A js-function is also added to the prototype of the js-primitive Object (but at the very end of all our scripts).
@@ -32,13 +40,19 @@ ByteString._addInstanceMethods( { js: function() { return this.string$; } } );
 _Number._addInstanceMethods( { js: function() { return this.num$; } } );
 Character._addInstanceMethods( { js: function() { return this.character$; } } );
 BlockClosure._addInstanceMethods( { js: function() { return this.func$; } } );
-_Array._addInstanceMethods( { js: function() { 
-	var returnArray = [];
-	for(var i = 0; i < this.arr$.length; i++){
-		returnArray[i] = this.arr$[i].js();
-	}
-	return returnArray; } } );
+_Array._addInstanceMethods( { js: function() { return SqueakyJS.stripArray(this.arr$); }} );
 
+SqueakyJS.stripArray = function (stArray){
+	var returnArray = [];
+	for(var i = 0; i < stArray.length; i++){
+		if (stArray[i] && typeof stArray[i].js == "function"){
+			returnArray[i] = stArray[i].js();
+		} else {
+			returnArray[i] = stArray[i];
+		}
+	}
+	return returnArray; 
+};
 // 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // 
@@ -82,7 +96,7 @@ var block = function(func) {
 	var currentThis = arguments.callee.caller.originalThis;
 	if (currentThis == undefined) {
 		// We are in the most-outer block of a method. The 'current this' is the top of the call-stack.
-		currentThis = CALL_STACK.peek().currentThis;
+		currentThis = CALL_STACK.peek() && CALL_STACK.peek().currentThis;
 	}
 	func.originalThis = currentThis;
 	b.func$ = function() {
