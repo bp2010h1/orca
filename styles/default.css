@@ -43,3 +43,29 @@ tr th:nth-child(1), tr th:nth-child(2){
 .blue {
 	background-color: #C3D9FF;
 }
+
+.ui-autocomplete-input {
+	margin-left:5px;
+}
+
+.ui-autocomplete {
+	background-color: #FFFFFF;
+	padding:0px;
+	margin:0px;
+	margin-left:5px;
+	
+	display: inline-block;
+	cursor: pointer;
+	font-size: 11px;
+	-moz-box-shadow: 5px 5px 5px #ccc;
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	box-shadow: 5px 5px 5px #ccc;
+	border-right:#ccc thin solid;
+	border-left:#ccc thin solid;
+	border-bottom:#ccc thin solid;	
+	left:0px !important;
+}
+.ui-autocomplete li {
+	list-style:none;
+}
+
