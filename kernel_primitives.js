@@ -138,8 +138,8 @@ _Array._addInstanceMethods({
 	   it is only implemented here to work around a hardly tracable bug, probably in out blocks
 	   and nonlocal return */
 	includes_: function(anElement) {
-    for(var i = 0; i <= this.arr$.length; i++) {
-      if(this.arr$[i]._equals(anElement))
+    for(var i = 0; i < this.arr$.length; i++) {
+      if(this.arr$[i]._equals(anElement).js())
         return _true;
     }
     return _false;
@@ -155,5 +155,3 @@ _Array._addClassMethods({
 	}
 });
 
-// Defined in bootstrap.js. Must be called after primitives-initialization.
-AddJsFunctionToAllObjects();

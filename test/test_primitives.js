@@ -17,7 +17,7 @@ Class("PrimitivesTester", {
 			this.$aNumber = number(1);
 			this.$aString = string("Hello World!");
 			this.$aFloat = number(4.2);
-			this.$anArray = array([1, 2, 3]);
+			this.$anArray = array([number(1), number(2), number(3)]);
 		},
 		
 		testJsFunctions: function(){
@@ -27,7 +27,7 @@ Class("PrimitivesTester", {
 			assert(this.$anArray.js()[0] == [1, 2, 3][0]);
 			assert(this.$anArray.js()[1] == [1, 2, 3][1]);
 			assert(this.$anArray.js()[2] == [1, 2, 3][2]);
-			assertRaisesError_(function (){this.$anObject.js()});
+			assertRaisesError_(function (){this.$anObject.js(); });
 		},
 		
 		testFloatLoop: function (){
@@ -44,14 +44,32 @@ Class("PrimitivesTester", {
 		},
 		
 		testArray: function (){
-			assert(this.$anArray.size().js() == 3);
-			assert(this.$anArray.at_(number(1)) == 1);
-			this.$anArray.at_put_(number(2), number(4));
-			assert(this.$anArray.at_(number(2))._equals(number(4)));
-			assert(this.$anArray.isEmpty().js() === false);
+			assert(this.$anArray.size().js() == 3, "1");
+			assert(this.$anArray.at_(number(1)).js() == 1, "2");
+			this.$anArray.at_put_(number(2), number(4), "3");
+			assert(this.$anArray.at_(number(2))._equals(number(4)), "4");
+			assert(this.$anArray.isEmpty().js() === false, "5");
 		},
 		testArrayIncludes: function(){
 		  assert(array([number(1), number(2)]).includes_(number(1)).js(), "Array.includes: does not work as expected");
+		},
+		
+		testArrayJs: function (){
+			var testArray = array([string("a"), number(1), array([number(2)])]);
+			assert(testArray.js()[0] == "a", "Array doesn't unpack it's element when converted to JS-Array, 1");
+			assert(testArray.js()[1] == 1, "Array doesn't unpack it's element when converted to JS-Array, 2");
+			assert(testArray.js()[2][0] == 2, "Array doesn't unpack it's element when converted to JS-Array, 3");
+			assert(testArray.js()[2].length == 1, "Array doesn't unpack it's element when converted to JS-Array, 4");
+		},
+		
+		testFunctionPrimitives: function (){
+			var func = function (){ return "1"; };
+			assert(func.value() == "1", "Calling Js functions like a BlockClosure with value.");
+			func = function(a, b){ if( !b ){ return a; } return b; };
+			assert(func.value_(number(1)) == 1, "Calling Js functions like a BlockClosure with value_." + func(number(1)));
+			assert(func.value_value_(number(1), number(2)) == 2, "Calling Js functions like a BlockClosure with value_value_.");
+			assert(func.valueWithArguments_(array([number(1)])) == 1, "Calling Js functions like a BlockClosure with valueWithArguments. 1");
+			assert(func.valueWithArguments_(array([number(1), number(2)])) == 2, "Calling Js functions like a BlockClosure with valueWithArguments. 2");
 		}
 	}
 	
