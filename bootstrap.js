@@ -41,6 +41,7 @@ _Number._addInstanceMethods( { js: function() { return this.num$; } } );
 Character._addInstanceMethods( { js: function() { return this.character$; } } );
 BlockClosure._addInstanceMethods( { js: function() { return this.func$; } } );
 _Array._addInstanceMethods( { js: function() { return SqueakyJS.stripArray(this.arr$); }} );
+OrderedCollection._addInstanceMethods( { js: function() { return this.$array.js(); }} );
 
 SqueakyJS.stripArray = function (stArray){
 	var returnArray = [];
