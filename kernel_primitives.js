@@ -29,7 +29,9 @@ _String._addInstanceMethods({
 	_equals: function(anotherString) { return bool(this.string$ == anotherString.string$) },
 	isEmpty: function() { return bool(this.string$.length == 0) },
 	size: function() { return number(this.string$.length); },
-	at_: function(num) { return character(this.string$[num.num$ - 1]); }
+	at_: function(num) { return character(this.string$[num.num$ - 1]);},
+	ifEmpty_: function(aBlock) {return this.isEmpty().ifTrue_(aBlock);},
+	ifNotEmpty_: function(aBlock) {return this.isEmpty().ifFalse_(aBlock);}
 });
 
 ByteString._addInstanceMethods({
