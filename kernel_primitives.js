@@ -53,6 +53,7 @@ Float._addInstanceMethods({
 	_times: function(other) { return number(this.num$ * other.num$); },
 	_slash: function(other) { return number(this.num$ / other.num$); },
 	floor: function() { return number(Math.floor(this.num$)); },
+	rounded: function() { return number(Math.round(this.num$)); },
 	_less: function(other) {
 		return bool(this.num$ < other.num$);
 	},
@@ -79,6 +80,14 @@ Float._addInstanceMethods({
 	},
 	truncated: function() {
 		return number(Math.floor(this.num$));
+	},
+	roundTo_: function(quantum) {
+		var result = (this._slash(quantum)).rounded()._times(quantum).js();
+        var decimalCount = 0;
+        while (decimalCount <= 21 && quantum.js().toFixed(decimalCount) != quantum.js()) {
+            decimalCount++;
+        };
+        return number(result.toFixed(decimalCount));
 	}
 });
 
