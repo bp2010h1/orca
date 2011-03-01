@@ -36,6 +36,15 @@ Class("PrimitivesTester", {
 			assert(count == 5);
 		},
 		
+		testFloatRoundTo: function (){
+			assert(this.$aFloat.roundTo_(number(1)).js() == 4);
+			assert(this.$aFloat.roundTo_(number(0.1)).js() == 4.2);
+			assert(this.$aFloat.roundTo_(number(0.01)).js() == 4.20);
+			assert(this.$aFloat.roundTo_(number(0.4)).js() == 4.4);
+			assert(this.$aFloat.roundTo_(number(0.10)).js() == 4.20);
+			assert(this.$aFloat.roundTo_(number(-1)).js() == 4);
+		},
+		
 		testPointTimes: function (){
 			var point = Point.x_y_(number(3), number(2));
 			var anotherPoint = point._times(number(5));

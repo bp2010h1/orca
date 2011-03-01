@@ -261,23 +261,36 @@ Class("BlocksTester", { instanceMethods: {
 		assert("instVar" == otherTester.evaluateBlock(_block));
 	},
 	
-	/*test26: function() {
-		assert(this.helper26_outer() == "Correct!");
-	},*/
-	helper26_inner: function(blockParameter) {
-		blockParameter.value().value();
-		return "Also wrong!";
+	testWhileTrue: function() {
+		var result = this._testWhileTrueBlock();
+		assert(result == "OKAAY", "Result was: " + result);
 	},
-	helper26_outer: function() {
-		this.helper26_inner(
-			block(function() {
-				return block(function() {
-					nonLocalReturn("Correct!");
-				});
+	_testWhileTrueBlock: function(blockParameter) {
+		var i = 0;
+		block(function(){
+				i++;
+				return bool(i < 10);
 			})
-		);
-		return "WRONG";
+			.whileTrue_(block(function(){
+				if (i >= 5) { nonLocalReturn("OKAAY"); }
+			}));
+		return "Sollte nicht";
+	},
+	
+	testErrorWhenClosureIsAlreadyLeft: function() {
+		var exception = null;
+		try {
+			helper_testErrorWhenClosureIsAlreadyLeft().value();
+		} catch (e) {
+			exception = e;
+		}
+		assert(exception != null);
+	},
+	helper_testErrorWhenClosureIsAlreadyLeft: function() {
+		return block(function(){ nonLocalReturn("This should throw error"); });
 	}
+	
+	
 }});
 
 BlocksTester._newInstance();
