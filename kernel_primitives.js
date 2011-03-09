@@ -210,7 +210,13 @@ S2JBox._addInstanceMethods({
     }
     // the setter's stub
     this[key + "_"] = function(param) {
-      //for now we don't allow overwriting functions
+      /* for now we don't allow setting slots that contain functions.
+         probably they should be boxed into blocks so that you can write
+           someObj someFun value: "foo"
+         with the current implementation however you can do
+           someObj someFun: "foo"
+         which is nicer in most cases, but can be a problem in some cases.
+       */
       if ( typeof(this.$nativeObject[key]) == "function" ) {
         return S2JBox.on_(this.$nativeObject[key](param.unbox()));
       } else {
