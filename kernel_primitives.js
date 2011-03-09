@@ -164,3 +164,60 @@ _Array._addClassMethods({
 	}
 });
 
+S2JBox._addClassMethods({
+  on_boundTo_: function(nativeObject, that){
+    switch( typeof(nativeObject) ) {
+      case "number": return number(nativeObject); break;
+      case "string": return string(nativeObject); break;
+      case "boolean": return bool(nativeObject); break;
+      case "function": return boundBlock(nativeObject, that); break;
+      case "undefined": return nil; break;
+      case "object":
+        if (nativeObject == null) {
+          return nil;
+        } else if (nativeObject.constructor == Array) {
+          return array(nativeObject);
+        } else {
+          return this.onObject_(nativeObject);
+        }
+        break;
+      default:
+        alert("You are creepy, because you tried to box a " + nativeObject);
+    }
+  },
+  on_: function(nativeObject){
+    return this.on_boundTo_(nativeObject, undefined);
+  },
+  onObject_: function(nativeObject){
+    var box = this._new();
+    box.$nativeObject = nativeObject;
+    box.generateStubs();
+    return box;
+  }
+});
+
+S2JBox._addInstanceMethods({
+  generateStubs: function() {
+    for (var key in this.$nativeObject) {
+      this.generateStub(key);
+    }
+  },
+  generateStub: function(key) {
+    // the getter's stub
+    this[key] = function() {
+      // return S2JBox.on_boundTo_( this.$nativeObject[key], this.$nativeObject );
+      return S2JBox.on_( this.$nativeObject[key] );
+    }
+    // the setter's stub
+    this[key + "_"] = function(param) {
+      //for now we don't allow overwriting functions
+      if ( typeof(this.$nativeObject[key]) == "function" ) {
+        return S2JBox.on_(this.$nativeObject[key](param.unbox()));
+      } else {
+        this.$nativeObject[key] = param.unbox();
+      }
+      return param;
+    }
+  },
+  reload: function(){ this.generateStubs(); return this }
+})

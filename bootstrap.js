@@ -28,10 +28,15 @@ Function.prototype.valueWithArguments_ = function(argsArray) { return this.apply
 // their Squeak-wrapper-objects. As short as possible, as it is called on every argument of js-library-calls.
 // A js-function is also added to the prototype of the js-primitive Object (but at the very end of all our scripts).
 // 
-_Object._addInstanceMethods( { js: function() { 
-	//throw ("Trying to pass a Squeak-object into a javascript-library-call! " + this);
-	return this;
-	} } );
+_Object._addInstanceMethods({
+  js: function() {
+    //throw ("Trying to pass a Squeak-object into a javascript-library-call! " + this);
+    return this;
+	},
+	unbox: function() {
+	  return this.js();
+	}
+});
 	
 False._addInstanceMethods( { js: function() { return false; } } );
 True._addInstanceMethods( { js: function() { return true; } } );
@@ -103,6 +108,15 @@ var block = function(func) {
 	b.func$ = function() {
 		// Use the CALL_STACK to get the object, this block should be executed in
 		return func.apply(currentThis, arguments);
+	}
+	return b;
+}
+
+// if we box a javascript function into a smalltalk block we must bind it on creation
+var boundBlock = function(func, that) {
+	var b = BlockClosure._newInstance();
+	b.func$ = function() {
+		return func.apply(that, arguments);
 	}
 	return b;
 }
