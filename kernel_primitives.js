@@ -226,4 +226,11 @@ S2JBox._addInstanceMethods({
     }
   },
   reload: function(){ this.generateStubs(); return this }
-})
+});
+
+S2JWidgetWithBoxing._addInstanceMethods({
+	uniqueCssId: function() {
+		var millis = new Date().getTime();
+		return string(millis);
+	}
+});
