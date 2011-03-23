@@ -2,7 +2,7 @@
 // Implementations of primitive methods
 // This is loaded at the very end, everything is already available
 // If this gets too long, split it in multiple files
-// 
+//
 
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
@@ -198,23 +198,35 @@ S2JBox._addClassMethods({
 
 S2JBox._addInstanceMethods({
   generateStubs: function() {
-    for (var key in this.$nativeObject) {
-      this.generateStub(key);
+    // get a list of all (also unenumerable) properties of an object over that we can iterate
+    var getAllPropertyNames = function(obj) {
+      if (typeof(obj) == "object" && obj != null) {
+        // recurse up the prototype chain until null
+        return Object.getOwnPropertyNames(obj).concat(arguments.callee(obj.__proto__));
+      } else {
+        return [];
+      }
+    };
+    var keys = getAllPropertyNames(this.$nativeObject);
+    for (var key in keys) {
+      this.generateStub(keys[key]);
     }
   },
   generateStub: function(key) {
     // the getter's stub
     this[key] = function() {
-      // return S2JBox.on_boundTo_( this.$nativeObject[key], this.$nativeObject );
-      return S2JBox.on_( this.$nativeObject[key] );
+      if (typeof(this.$nativeObject[key]) == "function")
+        return S2JBox.on_boundTo_( this.$nativeObject[key], this.$nativeObject );
+      else
+        return S2JBox.on_( this.$nativeObject[key] );
     }
     // the setter's stub
     this[key + "_"] = function(param) {
       /* for now we don't allow setting slots that contain functions.
          probably they should be boxed into blocks so that you can write
-           someObj someFun value: "foo"
+           Global setTimeOut value: 'alert(hello)' value: 0.4
          with the current implementation however you can do
-           someObj someFun: "foo"
+           Global setTimeOut: { 'alert(hello)'. 0.4 }
          which is nicer in most cases, but can be a problem in some cases.
        */
       if ( typeof(this.$nativeObject[key]) == "function" ) {
@@ -229,8 +241,8 @@ S2JBox._addInstanceMethods({
 });
 
 S2JWidgetWithBoxing._addInstanceMethods({
-	uniqueCssId: function() {
-		var millis = new Date().getTime();
-		return string(millis);
-	}
+  uniqueCssId: function() {
+    var millis = new Date().getTime();
+    return string(millis);
+  }
 });
