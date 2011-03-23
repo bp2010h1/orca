@@ -116,7 +116,11 @@ var block = function(func) {
 var boundBlock = function(func, that) {
 	var b = BlockClosure._newInstance();
 	b.func$ = function() {
-		return S2JBox.on_(func.apply(that, arguments));
+	  var unboxedArguments = [];
+    for (var arg in arguments) {
+      unboxedArguments.push(arguments[arg].unbox());
+    }
+		return S2JBox.on_(func.apply(that, unboxedArguments));
 	}
   // in case we want to box a constructor function, we can send it a new message like so:
   // ST: (S2JBox on: f) new

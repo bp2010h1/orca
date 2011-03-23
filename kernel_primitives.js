@@ -175,7 +175,7 @@ S2JBox._addClassMethods({
       case "object":
         if (nativeObject == null) {
           return nil;
-        } else if (nativeObject.constructor == Array) {
+        } else if (nativeObject.constructor == Array || nativeObject.constructor == NodeList) {
           return array(nativeObject);
         } else {
           return this.onObject_(nativeObject);
