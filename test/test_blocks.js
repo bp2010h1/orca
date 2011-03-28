@@ -290,7 +290,6 @@ Class("BlocksTester", { instanceMethods: {
 		return block(function(){ nonLocalReturn("This should throw error"); });
 	}
 	
-	
 }});
 
 BlocksTester._newInstance();
