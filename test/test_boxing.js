@@ -33,22 +33,6 @@ Class("BoxingTester", { instanceMethods: {
 		assert(b2.a()._equals(number(25)) == _true);
 	},
 	
-	// this test relies on DoesNotUnderstand in Box objects as onChange are undefined initially
-	// when onChange is not defined in the native object the box object will not have stubs for this.
-	testNativeFunctionBoundBlockTwoObjectsWithDoesNotUnderstand: function() {
-		var n1 = { a: 24 };
-		var n2 = { a: 25 };
-		var b1 = S2JBox.on_(n1);
-		var b2 = S2JBox.on_(n2);
-		// b1 onChange: [ b1 a: 'twentyfour' ]
-		b1.onChange_(block(function() { b1.a_(string('twentyfour')) } ));
-		// b2 onChange: b1 onChange
-		b2.onChange_(b1.onChange());
-		b2.onChange().value();
-		assert(b1.a()._equals(string('twentyfour')) == _true);
-		assert(b2.a()._equals(number(25)) == _true);
-	}
-	
 	
 }});
 
