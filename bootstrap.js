@@ -1,4 +1,10 @@
 
+var Js = {
+  Global: function() {
+    return S2JBox.on_(document);
+	}
+};
+
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function() {
 	throw("Primitive has been called!!! The method containing it is: \n\n" + 
@@ -130,6 +136,7 @@ var boundBlock = function(func, that) {
   }
 	return b;
 }
+_boxObject = function(nativeObject) { return S2JBox.on_(nativeObject) };
 
 S2JConnection.doIt = function(source) {
   return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");

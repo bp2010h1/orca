@@ -2,7 +2,7 @@
 // This script must be loaded after squeaky.js to apply this switch-setting!
 SqueakyJS.DEBUG = false;
 
-var S2JTestScripts = [ "test_squeakyJS.js", "test_primitives.js", "test_blocks.js", "test_super.js", "test_communication.js" ];
+var S2JTestScripts = [ "test_squeakyJS.js", "test_primitives.js", "test_blocks.js", "test_super.js", "test_communication.js", "test_boxing.js" ];
 
 // This variable is used by tests to send some kind of result back to the server. This removes the need to load classes (like ByteString)
 var S2JmockTestResult = "abc123";
