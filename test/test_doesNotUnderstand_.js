@@ -15,9 +15,9 @@ Class("DoesNotUnderstandTester", {
 		
 		testdoesNotUnderstand: function (){
 			this.ifTrue_();
-			assert(this.$lastDoesNotUnderstand != "ifTrue:", 
+			assert(this.$lastDoesNotUnderstand._equals(string("ifTrue_")).not().js(), 
 				"Although we are within the JavaScriptWorld, the doesNotUnderstand comes from Smalltalk and therefore, the symbol should be the Smalltalk selector-Name.");
-			assert(this.$lastDoesNotUnderstand == "ifTrue_");
+			assert(this.$lastDoesNotUnderstand._equals(string("ifTrue:")).js());
 		},
 		
 		doesNotUnderstand_: function (aMessage){
