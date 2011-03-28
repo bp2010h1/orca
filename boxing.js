@@ -25,7 +25,7 @@ Class("_Box", { superclass: _Object });
 var bool = function(aBool) { if (aBool) { return _true; } else { return _false; } }
 var character = function(aString) { return Character._wrapping(aString); }
 var string = function(aString) { return ByteString._wrapping(aString); }
-var number = function(aNumber) { return Float._wrapping(number); }
+var number = function(aNumber) { return Float._wrapping(aNumber); }
 var array = function(anArray) { return _Array._wrapping(anArray); }
 var object = function(anArray) { return _Box._wrapping(anArray); }
 // if we box a javascript function into a smalltalk block we must bind it on creation
