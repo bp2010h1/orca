@@ -27,7 +27,7 @@ var character = function(aString) { return Character._wrapping(aString); }
 var string = function(aString) { return ByteString._wrapping(aString); }
 var number = function(aNumber) { return Float._wrapping(aNumber); }
 var array = function(anArray) { return _Array._wrapping(anArray); }
-var object = function(anArray) { return _Box._wrapping(anArray); }
+var object = function(anObject) { return _Box._wrapping(anObject); }
 // if we box a javascript function into a smalltalk block we must bind it on creation
 // Non-local-return handling is not required here
 var boundBlock = function(func, that) {
@@ -93,14 +93,6 @@ UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
 
 // These boxing classes box variable values and are all added the same functionality.
 var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array, OrderedCollection];
-var getAllPropertyNames = function(obj) {
-	if (typeof(obj) == "object" && obj != null) {
-		// recurse up the prototype chain until null
-		return Object.getOwnPropertyNames(obj).concat(getAllPropertyNames(obj.__proto__));
-	} else {
-		return [];
-	}
-};
 for (index in boxingClasses) {
 	var aClass = boxingClasses[index];
 	aClass._addClassMethods({
@@ -111,6 +103,17 @@ for (index in boxingClasses) {
 		}
 	});
 	aClass._addInstanceMethods({
+		doesNotUnderstand_: function(aMessage) {
+			var methodName = aMessage.selector().unbox();
+			if (methodName[methodName.length-1] == '_') {
+				// setter
+				this.original$[methodName.substring(0, methodName.length-1)] = aMessage.arguments().first()._unbox();
+				return aMessage.arguments().first();
+			} else {
+				// getter
+				return _Box._wrapping(this.original$[methodName]);
+			}
+		},
 		_unbox: function() {
 			return this.original$;
 		}
