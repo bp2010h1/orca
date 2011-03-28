@@ -20,7 +20,10 @@ _Object._addInstanceMethods({
 });
 
 Exception._addInstanceMethods({
-	signal: function(){ throw this }
+	signal: function() { 
+		alert(this.messageText().unbox());
+		throw this;
+	}
 });
 
 _String._addInstanceMethods({

@@ -1,4 +1,10 @@
 
+var Js = {
+  Global: function() {
+    return S2JBox.on_(document);
+	}
+};
+
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function() {
 	throw("Primitive has been called!!! The method containing it is: \n\n" + 
