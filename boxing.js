@@ -56,8 +56,8 @@ var isArrayObject = function(anObject) {
 
 // This static unboxing-function is added to avoid adding an _unbox method to native js-objects
 var _unboxObject = function(anyObject) {
-	if (_boxObject._isBoxedObject) {
-		return _boxObject._unbox();
+	if (anyObject._isBoxedObject) {
+		return anyObject._unbox();
 	}
 	return anyObject;
 };

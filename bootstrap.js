@@ -6,7 +6,7 @@ var Js = {
 	},
 	_Document: _boxObject(document),
 	Document: function() {
-		return _Document;
+		return this._Document;
 	}
 };
 
