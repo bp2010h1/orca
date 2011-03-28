@@ -1,7 +1,12 @@
 
+var _Global = _boxObject(this); // Need global context to capture the global object
 var Js = {
-  Global: function() {
-    return S2JBox.on_(document);
+	Global: function() {
+		return _Global;
+	},
+	_Document: _boxObject(document),
+	Document: function() {
+		return _Document;
 	}
 };
 
@@ -16,9 +21,6 @@ var primitiveDeclaration = function() {
 var _true = True._newInstance();
 var _false = False._newInstance();
 var nil = UndefinedObject._newInstance();
-
-var Global = _boxObject(this);
-var Document = _boxObject(document);
 
 // Now, that nil is available, initialize all instance-variables of all classes to nil
 for (aClass in SqueakyJS.ALL_CLASSES) {
@@ -38,6 +40,6 @@ var serverBlock = function (squeakCode) {
 		for (var i = 0; i < arguments.length; i++) {
 			args.push(arguments[i]);
 		}
-		return S2JServer.performOnServer.apply(S2JServer,args);
+		return S2JServer.performOnServer.apply(S2JServer, args);
 	});
 }
