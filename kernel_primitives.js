@@ -112,8 +112,8 @@ BlockClosure._addInstanceMethods({
 		return nil;
 	},
 	whileTrue: function(anotherBlock) {
-		// TODO implement whileTrue: for real
-		while (this.value() === _true) ;
+		while (this.value() === _true)
+			anotherBlock.value();
 		return nil;
 	},
 	whileFalse_: function() {
@@ -163,6 +163,8 @@ _Array._addClassMethods({
 		return array(arr);
 	}
 });
+
+// TODO must organize primitives in another way, e.g. one js-file per class in a separate subdirectory
 
 S2JWidgetWithBoxing._addInstanceMethods({
   uniqueCssId: function() {

@@ -1,4 +1,8 @@
 
+// This file sets up boxing of javascript native objects into squeak objects
+// All relevant classes are enhanced by that functionality and there are 
+// Several global functions to box or unbox objects.
+
 // Some objects are boxing primitive js-values. Unboxing these values is polymorphic.
 // The real version of this method is below. This could alternatively throw an error,
 // but we try to be tolerant.
@@ -50,7 +54,7 @@ var isArrayObject = function(anObject) {
 	return false;
 };
 
-// This static unboxing-function is added to avoid 
+// This static unboxing-function is added to avoid adding an _unbox method to native js-objects
 var _unboxObject = function(anyObject) {
 	if (_boxObject._isBoxedObject) {
 		return _boxObject._unbox();
