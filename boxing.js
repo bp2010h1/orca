@@ -105,7 +105,7 @@ for (index in boxingClasses) {
 	var aClass = boxingClasses[index];
 	aClass._addClassMethods({
 		_wrapping: function(originalObject) {
-			var result = _Box._new();
+			var result = this._new(); // Polymorphic for different kinds of boxes
 			result.original$ = originalObject;
 			return result;
 		}
