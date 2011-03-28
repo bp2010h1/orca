@@ -62,7 +62,7 @@ var _unboxObject = function(anyObject) {
 	return anyObject;
 };
 var _boxObject = function(nativeObject, that) { // The 'that' parameter is optional and will be undefined otherwise
-	if (nativeObject._isBoxedObject) {
+	if (!nativeObject._isBoxedObject) {
 		switch( typeof(nativeObject) ) {
 			case "number": return number(nativeObject); break;
 			case "string": return string(nativeObject); break;
@@ -106,12 +106,13 @@ for (index in boxingClasses) {
 		doesNotUnderstand_: function(aMessage) {
 			var methodName = aMessage.selector().unbox();
 			if (methodName[methodName.length-1] == '_') {
-				// setter
-				this.original$[methodName.substring(0, methodName.length-1)] = aMessage.arguments().first()._unbox();
-				return aMessage.arguments().first();
+				// setter. Set the unboxed, native-js, value.
+				var value = aMessage.arguments().first();
+				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
+				return value;
 			} else {
 				// getter
-				return _Box._wrapping(this.original$[methodName]);
+				return _boxObject(this.original$[methodName]);
 			}
 		},
 		_unbox: function() {
