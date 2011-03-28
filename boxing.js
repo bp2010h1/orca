@@ -17,7 +17,7 @@ _Object._addInstanceMethods({
 // Class, that will wrap native javascript-objects to implement the Object-interface.
 // Additionally, it adds accessor-methods for all fields to provide a squeak-API to
 // set slots on javascript-objects.
-Class("_Box", { superclass: _Object }};
+Class("_Box", { superclass: _Object });
 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
@@ -72,7 +72,7 @@ var _boxObject = function(nativeObject, that) { // The 'that' parameter is optio
 			case "object":
 				if (nativeObject == null) {
 					return nil;
-				} else if (isArrayObject(nativeObject) {
+				} else if (isArrayObject(nativeObject)) {
 					return array(nativeObject);
 				} else {
 					return object(nativeObject);
@@ -103,16 +103,15 @@ var getAllPropertyNames = function(obj) {
 };
 for (index in boxingClasses) {
 	var aClass = boxingClasses[index];
-	aClass.addClassMethods({
+	aClass._addClassMethods({
 		_wrapping: function(originalObject) {
 			var result = _Box._new();
 			result.original$ = originalObject;
-			result._generateAccessors();
 			return result;
 		}
 	});
-	aClass.addInstanceMethods({
-		_unbox: {
+	aClass._addInstanceMethods({
+		_unbox: function() {
 			return this.original$;
 		}
 	});
