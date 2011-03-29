@@ -63,7 +63,9 @@ var _unboxObject = function(anyObject) {
 	}
 	return anyObject;
 };
-var _boxObject = function(nativeObject, that) { // The 'that' parameter is optional and will be undefined otherwise
+// The 'that' parameter is optional and will be undefined otherwise
+// It is relevant for functions, to bind them to their containing object when invoking them.
+var _boxObject = function(nativeObject, that) {
 	if (!nativeObject._isBoxedObject) {
 		switch( typeof(nativeObject) ) {
 			case "number": return number(nativeObject); break;
@@ -113,8 +115,8 @@ for (index in boxingClasses) {
 				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
 				return value;
 			} else {
-				// getter
-				return _boxObject(this.original$[methodName]);
+				// getter. Second parameter relevant, if slot contains a function.
+				return _boxObject(this.original$[methodName], this.original$);
 			}
 		},
 		_unbox: function() {
