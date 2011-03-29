@@ -7,24 +7,29 @@
 // The real version of this method is below. This could alternatively throw an error,
 // but we try to be tolerant.
 _Object._addInstanceMethods({
+	__giveError: function(methodname) {
+		var msg = "We have an obsolete " + methodname + "()-call! Fix it.";
+		alert(msg);
+		throw msg;
+	}
 	// TODO if we're sure everything is fixed, remove these warnings.
 	js: function() {
-		alert("We have an obsolete js()-call! Fix it.");
+		__giveError("js");
 	},
 	jsNew_: function() {
-		alert("We have an obsolete jsNew:()-call! Fix it.");
+		__giveError("jsNew:");
 	},
 	js_: function() {
-		alert("We have an obsolete js:()-call! Fix it.");
+		__giveError("js:");
 	},
 	slot_be_: function() {
-		alert("We have an obsolete slot:be:()-call! Fix it.");
+		__giveError("slot:be:");
 	},
 	slot_: function() {
-		alert("We have an obsolete slot:()-call! Fix it.");
+		__giveError("slot:");
 	},
 	slot_apply_: function() {
-		alert("We have an obsolete slot:apply:()-call! Fix it.");
+		__giveError("slot:apply:");
 	},
 	
 	_unbox: function() {
