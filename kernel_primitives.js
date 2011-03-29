@@ -118,14 +118,16 @@ var _toArray = function(iterable) {
 	while (length--) results[length] = iterable[length];
 	return results;
 }
-var _curried = function(func, that, boundArgs) { 
-	return function() { return func.apply(that, boundArgs.concat(_toArray(arguments))); };
+var _curried = function(func, boundArgs) { 
+	// Return a function with the first parameters bound to boundArgs. Function itself will be bound to this.
+	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
 }
 var _createInstance_ = function() {
-	// This is done to enable varargs-parameters for constructor-parameters
+	// This is done to enable varargs-parameters for constructor-parameters AND
+	// to be able to treat any block as javascript-constructor.
 	// First bind all constructor-parameters, then call the curried function without arguments
 	// Bind the function to the function itself. Seemed necessary.
-	return _boxObject(new (_curried(this.evaluated$, this.evaluated$, _toArray(arguments))) ());
+	return _boxObject(new (_curried(this.evaluated$, _toArray(arguments))) ());
 }
 
 BlockClosure._addInstanceMethods({
