@@ -21,7 +21,7 @@ _Object._addInstanceMethods({
 
 Exception._addInstanceMethods({
 	signal: function() { 
-		alert(this.messageText().unbox());
+		alert(_unboxObject(this.messageText()));
 		throw this;
 	}
 });
