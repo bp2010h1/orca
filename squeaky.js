@@ -238,5 +238,9 @@ var block = function(func) {
 		// Use the CALL_STACK to get the object, this block should be executed in
 		return func.apply(currentThis, arguments);
 	}
+	b.constructorArguments$ = function(argumentCollection) {
+		// When using real blocks as constructor, don't unpack the constructor-parameters
+		return argumentCollection;
+	}
 	return b;
 }

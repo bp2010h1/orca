@@ -123,11 +123,12 @@ var _curried = function(func, boundArgs) {
 	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
 }
 var _createInstance_ = function() {
-	// This is done to enable varargs-parameters for constructor-parameters AND
-	// to be able to treat any block as javascript-constructor.
+	// This is done to enable varargs-parameters for constructor-parameters
 	// First bind all constructor-parameters, then call the curried function without arguments
 	// Bind the function to the function itself. Seemed necessary.
-	return _boxObject(new (_curried(this.evaluated$, _toArray(arguments))) ());
+	// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and squeaky.js -> block())
+	var args = this.constructorArguments$(arguments);
+	return _boxObject(new (_curried(this.original$, args)) ());
 }
 
 BlockClosure._addInstanceMethods({

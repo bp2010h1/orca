@@ -60,11 +60,11 @@ var boundBlock = function(func, that) {
 	// This block is unboxed to func, but additional things happen on evaluation
 	b.original$ = func;
 	b.evaluated$ = function() {
-		var unboxedArguments = [];
-		for (index in arguments) {
-			unboxedArguments.push(_unboxObject(arguments[index]));
-		}
-		return _boxObject(func.apply(that, unboxedArguments));
+		return _boxObject(func.apply(that, _unboxIterable(arguments)));
+	}
+	b.constructorArguments$ = function(argumentCollection) {
+		// When using a library-function as constructor, unpack the arguments
+		return _unboxIterable(argumentCollection);
 	}
 	return b;
 }
@@ -88,6 +88,13 @@ var _unboxObject = function(anyObject) {
 	}
 	return anyObject;
 };
+var _unboxIterable = function(iterable) {
+	var unboxed = [];
+	for (index in iterable) {
+		unboxed.push(_unboxObject(iterable[index]));
+	}
+	return unboxed;
+}
 // The 'that' parameter is optional and will be undefined otherwise
 // It is relevant for functions, to bind them to their containing object when invoking them.
 var _boxObject = function(nativeObject, that) {
