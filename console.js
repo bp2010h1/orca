@@ -56,7 +56,7 @@ var S2JConsole = {
 		for (index in obj) {
 			debug(index + " = " + obj[index]);
 		}
-	}
+	},
 
 	// 
 	// private methods, should not be used
