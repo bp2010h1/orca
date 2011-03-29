@@ -101,9 +101,7 @@ var _boxObject = function(nativeObject, that) {
 			case "boolean": return bool(nativeObject); break;
 			case "function": return boundBlock(nativeObject, that); break;
 			case "object":
-				if (nativeObject == null) {
-					return nil;
-				} else if (isArrayObject(nativeObject)) {
+				if (isArrayObject(nativeObject)) {
 					return array(nativeObject);
 				} else {
 					return object(nativeObject);
