@@ -37,7 +37,7 @@ var boundBlock = function(func, that) {
 	b.evaluated$ = function() {
 		var unboxedArguments = [];
 		for (index in arguments) {
-			unboxedArguments.push(arguments[index].unbox());
+			unboxedArguments.push(_unboxObject(arguments[index]));
 		}
 		return _boxObject(func.apply(that, unboxedArguments));
 	}
