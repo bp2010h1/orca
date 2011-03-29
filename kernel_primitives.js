@@ -214,11 +214,3 @@ _Array._addClassMethods({
 	}
 });
 
-// TODO must organize primitives in another way, e.g. one js-file per class in a separate subdirectory
-
-S2JWidgetWithBoxing._addInstanceMethods({
-  uniqueCssId: function() {
-    var millis = new Date().getTime();
-    return string(millis);
-  }
-});
