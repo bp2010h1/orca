@@ -14,22 +14,22 @@ _Object._addInstanceMethods({
 	},
 	// TODO if we're sure everything is fixed, remove these warnings.
 	js: function() {
-		__giveError("js");
+		this.__giveError("js");
 	},
 	jsNew_: function() {
-		__giveError("jsNew:");
+		this.__giveError("jsNew:");
 	},
 	js_: function() {
-		__giveError("js:");
+		this.__giveError("js:");
 	},
 	slot_be_: function() {
-		__giveError("slot:be:");
+		this.__giveError("slot:be:");
 	},
 	slot_: function() {
-		__giveError("slot:");
+		this.__giveError("slot:");
 	},
 	slot_apply_: function() {
-		__giveError("slot:apply:");
+		this.__giveError("slot:apply:");
 	},
 	
 	_unbox: function() {
