@@ -11,7 +11,7 @@ _Object._addInstanceMethods({
 		var msg = "We have an obsolete " + methodname + "()-call! Fix it.";
 		alert(msg);
 		throw msg;
-	}
+	},
 	// TODO if we're sure everything is fixed, remove these warnings.
 	js: function() {
 		__giveError("js");
