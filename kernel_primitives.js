@@ -111,14 +111,21 @@ Point._addInstanceMethods({
 var _blockValueFunction_ = function() { return this.evaluated$.apply(this, arguments); };
 
 // Helpers to implement Block-Closure-primitives
-var _toArray = function(argumentsObject) { return Array.prototype.slice.apply(arguments); }
-var _curried = function(func, boundArgs) { 
-	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
+var _toArray = function(iterable) { 
+	if (!iterable) return [];
+	if (iterable.toArray) return iterable.toArray();
+	var length = iterable.length, results = new Array(length);
+	while (length--) results[length] = iterable[length];
+	return results;
+}
+var _curried = function(func, that, boundArgs) { 
+	return function() { return func.apply(that, boundArgs.concat(_toArray(arguments))); };
 }
 var _createInstance_ = function() {
 	// This is done to enable varargs-parameters for constructor-parameters
 	// First bind all constructor-parameters, then call the curried function without arguments
-	return new (_curried(this.evaluated$, _toArray(arguments))) ();
+	// Bind the function to the function itself. Seemed necessary.
+	return _boxObject(new (_curried(this.evaluated$, this.evaluated$, _toArray(arguments))) ());
 }
 
 BlockClosure._addInstanceMethods({
