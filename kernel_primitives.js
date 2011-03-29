@@ -15,9 +15,11 @@ ProtoObject._addInstanceMethods({
 });
 
 _Object._addInstanceMethods({
-	doesNotUnderstand_: function(messageName, message) {
+	doesNotUnderstand_: function(message) {
 		// TODO implement this correctly
-		throw this + " did not understand " + messageName;
+		var msg = this + "(instance of " + this._class().name() + 
+				") did not understand " + _unboxObject(message.selector());
+		Exception.signal_(string(msg));
 	},
 	_class: function() { return this.__class; },
 	halt: function() { debugger; },
