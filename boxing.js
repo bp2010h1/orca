@@ -32,7 +32,9 @@ var object = function(anObject) { return _Box._wrapping(anObject); }
 // Non-local-return handling is not required here
 var boundBlock = function(func, that) {
 	var b = BlockClosure._newInstance();
-	b.original$ = function() {
+	// This block is unboxed to func, but additional things happen on evaluation
+	b.original$ = func;
+	b.evaluated$ = function() {
 		var unboxedArguments = [];
 		for (index in arguments) {
 			unboxedArguments.push(arguments[index].unbox());
@@ -104,7 +106,7 @@ for (index in boxingClasses) {
 	});
 	aClass._addInstanceMethods({
 		doesNotUnderstand_: function(aMessage) {
-			var methodName = aMessage.selector().unbox();
+			var methodName = _unboxObject(aMessage.selector());
 			if (methodName[methodName.length-1] == '_') {
 				// setter. Set the unboxed, native-js, value.
 				var value = aMessage.arguments().first();

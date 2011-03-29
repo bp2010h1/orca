@@ -233,7 +233,8 @@ var block = function(func) {
 		currentThis = CALL_STACK.peek() && CALL_STACK.peek().currentThis;
 	}
 	func.originalThis = currentThis;
-	b.original$ = function() {
+	// Unboxing a real block must give the same function as when evaluating it.
+	b.original$ = b.evaluated$ = function() {
 		// Use the CALL_STACK to get the object, this block should be executed in
 		return func.apply(currentThis, arguments);
 	}
