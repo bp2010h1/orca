@@ -108,7 +108,19 @@ Point._addInstanceMethods({
 
 // We distinct an evaluated$-function and an original$-function in case of blocks.
 // evaluated$ is the version, that is evaluated in the squeak-world, original$ is the function inside javascript
-var _blockValueFunction_ = function(){ return this.evaluated$.apply(this, arguments); };
+var _blockValueFunction_ = function() { return this.evaluated$.apply(this, arguments); };
+
+// Helpers to implement Block-Closure-primitives
+var _toArray = function(argumentsObject) { return Array.prototype.slice.apply(arguments); }
+var _curried = function(func, boundArgs) { 
+	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
+}
+var _createInstance_ = function() {
+	// This is done to enable varargs-parameters for constructor-parameters
+	// First bind all constructor-parameters, then call the curried function without arguments
+	return new (_curried(this.evaluated$, _toArray(arguments))) ();
+}
+
 BlockClosure._addInstanceMethods({
 	value: _blockValueFunction_,
 	value_: _blockValueFunction_,
@@ -136,6 +148,23 @@ BlockClosure._addInstanceMethods({
 	whileFalse: function() {
 		while (this.value() === _false) ;
 		return nil;
+	},
+	
+	// Up to 9 parameters for direct constructor call
+	jsNew: _createInstance_,
+	jsNew_: _createInstance_,
+	jsNew_with_: _createInstance_,
+	jsNew_with_with_: _createInstance_,
+	jsNew_with_with_with_: _createInstance_,
+	jsNew_with_with_with_with_: _createInstance_,
+	jsNew_with_with_with_with_with_: _createInstance_,
+	jsNew_with_with_with_with_with_with_: _createInstance_,
+	jsNew_with_with_with_with_with_with_with_: _createInstance_,
+	jsNew_with_with_with_with_with_with_with_with_: _createInstance_,
+	
+	// Any arguments as array
+	jsNewWithArgs: function(args) {
+		_createInstance_.apply(this, args);
 	}
 });
 
