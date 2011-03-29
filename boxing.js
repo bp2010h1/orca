@@ -7,6 +7,26 @@
 // The real version of this method is below. This could alternatively throw an error,
 // but we try to be tolerant.
 _Object._addInstanceMethods({
+	// TODO if we're sure everything is fixed, remove these warnings.
+	js: function() {
+		alert("We have an obsolete js()-call! Fix it.");
+	},
+	jsNew_: function() {
+		alert("We have an obsolete jsNew:()-call! Fix it.");
+	},
+	js_: function() {
+		alert("We have an obsolete js:()-call! Fix it.");
+	},
+	slot_be_: function() {
+		alert("We have an obsolete slot:be:()-call! Fix it.");
+	},
+	slot_: function() {
+		alert("We have an obsolete slot:()-call! Fix it.");
+	},
+	slot_apply_: function() {
+		alert("We have an obsolete slot:apply:()-call! Fix it.");
+	},
+	
 	_unbox: function() {
 		return this;
 	},
