@@ -66,13 +66,15 @@ var _unboxObject = function(anyObject) {
 // The 'that' parameter is optional and will be undefined otherwise
 // It is relevant for functions, to bind them to their containing object when invoking them.
 var _boxObject = function(nativeObject, that) {
+	if (nativeObject === null || nativeObject === undefined) {
+		return nil;
+	}
 	if (!nativeObject._isBoxedObject) {
 		switch( typeof(nativeObject) ) {
 			case "number": return number(nativeObject); break;
 			case "string": return string(nativeObject); break;
 			case "boolean": return bool(nativeObject); break;
 			case "function": return boundBlock(nativeObject, that); break;
-			case "undefined": return nil; break;
 			case "object":
 				if (nativeObject == null) {
 					return nil;
