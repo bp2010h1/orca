@@ -38,7 +38,7 @@ var serverBlock = function (squeakCode) {
 	return block(function(){
 		var args = [ squeakCode ];
 		for (var i = 0; i < arguments.length; i++) {
-			args.push(arguments[i]);
+			args.push(_unboxObject(arguments[i]));
 		}
 		return S2JServer.performOnServer.apply(S2JServer, args);
 	});
