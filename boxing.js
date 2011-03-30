@@ -161,3 +161,15 @@ for (index in boxingClasses) {
 		}
 	});
 }
+
+BlockClosure._addInstanceMethods ( { 
+	_unbox: function() {		
+		var originalBlock = this.original$;
+		return function () { 
+			var boxedArguments = new Array(arguments.length);
+			for (var i=0; i <arguments.length ; i++) {
+				boxedArguments[i] = _boxObject(arguments[i]);
+			}			
+			return originalBlock.apply(this, boxedArguments )  }
+	} 
+});
