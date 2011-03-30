@@ -51,14 +51,14 @@ Class("PrimitivesTester", {
 		},
 		
 		testArray: function (){
-			assert(this.$anArray.size().js() == 3, "1");
-			assert(this.$anArray.at_(number(1)).js() == 1, "2");
+			assertEquals_(this.$anArray.size(), 3, "1");
+			assertEquals_(this.$anArray.at_(number(1)), 1, "2");
 			this.$anArray.at_put_(number(2), number(4), "3");
-			assert(this.$anArray.at_(number(2))._equals(number(4)), "4");
-			assert(this.$anArray.isEmpty().js() === false, "5");
+			assertEquals_(this.$anArray.at_(number(2)), 4, "4");
+			assertEquals_(this.$anArray.isEmpty(), false, "5");
 		},
 		testArrayIncludes: function(){
-		  assert(array([number(1), number(2)]).includes_(number(1)).js(), "Array.includes: does not work as expected");
+		  assert(array([number(1), number(2)]).includes_(number(1)) == _true, "Array.includes: does not work as expected");
 		},
 		
 		testArrayJs: function (){

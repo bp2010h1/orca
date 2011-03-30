@@ -15,15 +15,15 @@ Class("BoxingTester", { instanceMethods: {
 	
 	testNativeFunctionBoundBlock: function() {
 		var nativeObject = { a: 23, f: function(){ return this.a; } };
-	  var box = S2JBox.on_( nativeObject );
+	  var box = _boxObject( nativeObject );
 	  assert( box.f().value()._equals(number(23)) == _true);
 	},
 	
 	testNativeFunctionBoundBlockTwoObjects: function() {
 		var n1 = { a: 24, onChange: undefined };
 		var n2 = { a: 25, onChange: undefined };
-		var b1 = S2JBox.on_(n1);
-		var b2 = S2JBox.on_(n2);
+		var b1 = _boxObject(n1);
+		var b2 = _boxObject(n2);
 		// b1 onChange: [ b1 a: 'twentyfour' ]
 		b1.onChange_(block(function() { b1.a_(string('twentyfour')) } ));
 		// b2 onChange: b1 onChange
