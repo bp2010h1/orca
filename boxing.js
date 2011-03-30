@@ -44,6 +44,24 @@ _Object._addInstanceMethods({
 // set slots on javascript-objects.
 Class("_Box", { superclass: _Object });
 
+_Box._addInstanceMethods ( {
+	value : function() {
+		// if the original object has an attribute value or function value it is more important to use this instead
+		if(this.original$.value) {
+			if(typeof(this.original$.value) == "function") {
+				return this.original$.value();
+			}else {
+				return this.original$.value;
+			}
+			
+		} else {
+			return _super.value();
+		}
+	}
+}
+	
+	)
+
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
 // (Instead of bool(), compiled code uses _true/_false directly. bool() is used in kernel_primitives.js etc.)
