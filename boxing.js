@@ -141,9 +141,14 @@ for (index in boxingClasses) {
 	aClass._addInstanceMethods({
 		doesNotUnderstand_: function(aMessage) {
 			var methodName = _unboxObject(aMessage.selector());
-			if (methodName[methodName.length-1] == '_') {
+			if (methodName[methodName.length-1] == ':') {
 				// setter. Set the unboxed, native-js, value.
-				var value = aMessage.arguments().first();
+				var value;
+				if ((aMessage._arguments().length ) == 1 )
+					value = aMessage._arguments()[0];
+				else
+					value = aMessage._arguments();
+				
 				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
 				return value;
 			} else {
