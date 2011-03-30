@@ -4,10 +4,7 @@ var S2JServer = {
 	
 	realEscape: function(string) {
 		// * @ - _ + . / are not escaped
-		if (string.js === undefined)
-			var result = escape(string);
-		else
-			var result = escape(string.js());
+		var result = escape(string);
 			
 		result = result.replace(/(\*)/g, "%2A");
 		result = result.replace(/(\@)/g, "%40");
