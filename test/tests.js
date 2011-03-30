@@ -71,6 +71,7 @@ var S2JTests = {
 		if (this.squeakEnvironmentLoaded === undefined) {
 			this.squeakEnvironmentLoaded = true;
 			this.loadClasses();
+			this.loadScript("boxing.js");
 			this.loadScript("bootstrap.js");
 			this.loadScript("kernel_primitives.js");
 		}
