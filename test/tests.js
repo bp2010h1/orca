@@ -174,6 +174,9 @@ var S2JTests = {
 			throw new this.ASSERT_FAIL(exception_message);
 		}
 	},
+	assertEquals_: function (anObject, aReferenceObject, exceptionMessage) {
+    return assert(_unboxObject(anObject) == aReferenceObject, exceptionMessage);
+	},
 	assertRaisesError_: function (aFunction, exceptionMessage){
 		var errorRaised = false;
 		try{
@@ -272,4 +275,4 @@ var S2JTests = {
 // For shorter test-code. Must apply the method in the context of the namespace.
 var assert = function() { S2JTests.assert.apply(S2JTests, arguments); };
 var assertRaisesError_ = function () {S2JTests.assertRaisesError_.apply(S2JTests, arguments);};
-
+var assertEquals_ = function() {S2JTests.assertEquals_.apply(S2JTests, arguments);};
