@@ -199,7 +199,7 @@ _Array._addInstanceMethods({
 	   and nonlocal return */
 	includes_: function(anElement) {
     for(var i = 0; i < this.original$.length; i++) {
-      if(this.original$[i]._equals(anElement).js())
+      if(this.original$[i]._equals(anElement))
         return _true;
     }
     return _false;
