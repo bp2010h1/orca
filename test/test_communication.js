@@ -15,7 +15,7 @@ Class("ConnectionTester", {
 		testPull: function(){
 			var result = 0;
 			result = S2JServer.performOnServer("[ 42 ]");
-			assert(result.js() == 42, "Answer from Server has been the wrong number: " + result.js());
+			assertEquals_(result, 42, "Answer from Server has been the wrong number");
 		}
 		
 		/*testPush: function(){

@@ -62,11 +62,10 @@ Class("PrimitivesTester", {
 		},
 		
 		testArrayJs: function (){
-			var testArray = array([string("a"), number(1), array([number(2)])]);
-			assert(testArray.js()[0] == "a", "Array doesn't unpack it's element when converted to JS-Array, 1");
-			assert(testArray.js()[1] == 1, "Array doesn't unpack it's element when converted to JS-Array, 2");
-			assert(testArray.js()[2][0] == 2, "Array doesn't unpack it's element when converted to JS-Array, 3");
-			assert(testArray.js()[2].length == 1, "Array doesn't unpack it's element when converted to JS-Array, 4");
+			var testArray = array(["a", 1, [2]]);
+			assertEquals_(testArray.at_(number(1)), "a");
+			assertEquals_(testArray.at_(number(2)), 1);
+			assertEquals_(testArray.at_(number(3)).first(), 2);
 		},
 		
 		testFunctionPrimitives: function (){
