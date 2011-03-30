@@ -17,17 +17,15 @@ Class("PrimitivesTester", {
 			this.$aNumber = number(1);
 			this.$aString = string("Hello World!");
 			this.$aFloat = number(4.2);
-			this.$anArray = array([number(1), number(2), number(3)]);
+			this.$anArray = array([1, 2, 3]);
 		},
 		
 		testJsFunctions: function(){
-			assert(this.$aNumber.js() == 1);
-			assert(this.$aString.js() == "Hello World!");
-			assert(this.$aFloat.js() == 4.2);
-			assert(this.$anArray.js()[0] == [1, 2, 3][0]);
-			assert(this.$anArray.js()[1] == [1, 2, 3][1]);
-			assert(this.$anArray.js()[2] == [1, 2, 3][2]);
-			assertRaisesError_(function (){this.$anObject.js(); });
+			assertEquals_(this.$aNumber, 1);
+			assertEquals_(this.$aString, "Hello World!");
+			assertEquals_(this.$aFloat, 4.2);
+      // assertEquals_(this.$anArray, [1, 2, 3]);
+      assertRaisesError_(function (){_unboxObject(this.$anObject); });
 		},
 		
 		testFloatLoop: function (){
@@ -37,19 +35,19 @@ Class("PrimitivesTester", {
 		},
 		
 		testFloatRoundTo: function (){
-			assert(this.$aFloat.roundTo_(number(1)).js() == 4);
-			assert(this.$aFloat.roundTo_(number(0.1)).js() == 4.2);
-			assert(this.$aFloat.roundTo_(number(0.01)).js() == 4.20);
-			assert(this.$aFloat.roundTo_(number(0.4)).js() == 4.4);
-			assert(this.$aFloat.roundTo_(number(0.10)).js() == 4.20);
-			assert(this.$aFloat.roundTo_(number(-1)).js() == 4);
+			assertEquals_(this.$aFloat.roundTo_(number(1)), 4);
+			assertEquals_(this.$aFloat.roundTo_(number(0.1)), 4.2);
+			assertEquals_(this.$aFloat.roundTo_(number(0.01)), 4.20);
+			assertEquals_(this.$aFloat.roundTo_(number(0.4)), 4.4);
+			assertEquals_(this.$aFloat.roundTo_(number(0.10)), 4.20);
+			assertEquals_(this.$aFloat.roundTo_(number(-1)), 4);
 		},
 		
 		testPointTimes: function (){
 			var point = Point.x_y_(number(3), number(2));
 			var anotherPoint = point._times(number(5));
-			assert(anotherPoint.x().js() == 15);
-			assert(anotherPoint.y().js() == 10);
+			assertEquals_(anotherPoint.x(), 15);
+			assertEquals_(anotherPoint.y(), 10);
 		},
 		
 		testArray: function (){

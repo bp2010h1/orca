@@ -91,9 +91,9 @@ Float._addInstanceMethods({
 		return number(Math.floor(this.original$));
 	},
 	roundTo_: function(quantum) {
-		var result = (this._slash(quantum)).rounded()._times(quantum).js();
+		var result = _unboxObject((this._slash(quantum)).rounded()._times(quantum));
         var decimalCount = 0;
-        while (decimalCount <= 21 && quantum.js().toFixed(decimalCount) != quantum.js()) {
+        while (decimalCount <= 21 && _unboxObject(quantum).toFixed(decimalCount) != _unboxObject(quantum)) {
             decimalCount++;
         };
         return number(result.toFixed(decimalCount));
