@@ -42,7 +42,10 @@ _Object._addInstanceMethods({
 // Class, that will wrap native javascript-objects to implement the Object-interface.
 // Additionally, it adds accessor-methods for all fields to provide a squeak-API to
 // set slots on javascript-objects.
-Class("_Box", { superclass: _DoesNotUnderstandClass_ });
+Class("_Box", { 
+	superclass: _DoesNotUnderstandClass_, 
+	// regarding this method, see _Object._isBoxedObject
+	instanceMethods: { _isBoxedObject: function() { return true; } } });
 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
