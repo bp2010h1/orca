@@ -49,13 +49,17 @@ _Box._addInstanceMethods ( {
 		// if the original object has an attribute value or function value it is more important to use this instead
 		if(this.original$.value) {
 			if(typeof(this.original$.value) == "function") {
-				return this.original$.value();
+				return this.original$.value(arguments);
 			}else {
-				return this.original$.value;
+				if (arguments.length > 0 ) {
+					return this.original$.value = arguments[0];
+				} else {			
+					return this.original$.value;
+				}
 			}
-			
 		} else {
-			return _super.value();
+			// super class (Object) has only a getter for value
+			return _Object.value.apply(this, null);
 		}
 	}
 }
