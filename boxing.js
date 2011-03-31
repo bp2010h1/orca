@@ -134,16 +134,21 @@ False._addInstanceMethods( { _unbox: function() { return false; } } );
 True._addInstanceMethods( { _unbox: function() { return true; } } );
 UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
 
+// This DummyClass implements doesNotUnderstand: returning nil. This enables correct behaviour
+// Of the _Box-class. An instance of _Box needs an instance of such a Dummy to implement the Object-interface.
+// This Dummy-instance is invoked, if the original$-object does not have the queried slot.
+Class("_DummyClass", {superclass: _Object, instanceMethods: { doesNotUnderstand_: function() { return nil; }}});
+var _wrappingImpl = function(originalObject) {
+	var result = this._newInstance(); // Polymorphic for different kinds of boxes
+	result.original$ = originalObject;
+	return result;
+};
 // These boxing classes box variable values and are all added the same functionality.
 var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array];
 for (index in boxingClasses) {
 	var aClass = boxingClasses[index];
 	aClass._addClassMethods({
-		_wrapping: function(originalObject) {
-			var result = this._newInstance(); // Polymorphic for different kinds of boxes
-			result.original$ = originalObject;
-			return result;
-		}
+		_wrapping: _wrappingImpl
 	});
 	aClass._addInstanceMethods({
 		_hiddenGetter_: function(slotName) {
@@ -181,8 +186,8 @@ _Box._addClassMethods({
 		// so it does not implement any of Object's methods (to be able to fully access the underlying native object).
 		// If the underlying object does not contain a certain slot, the method is invoked on the dummy-instance instead.
 		// This way we have methods like #hash and #ifNil:ifNotNil: on boxed native objects.
-		var result = _super("_wrapping")(originalObject);
-		result.proxiedObject$ = _Object._newInstance();
+		var result = _wrappingImpl.apply(this, arguments);
+		result.dummyObject$ = _DummyClass._newInstance();
 		return result;
 	}
 });
@@ -190,27 +195,15 @@ _Box._addInstanceMethods({
 	_hiddenGetter_: function(slotName) {
 		var result = this.original$[slotName];
 		// First check, if the underlying object has this slot.
-		if (result != undefined) {
-			if (typeof(result) == "function") {
-				result = result();
-			}
-		} else {
-			// If not, invoke it on our 'proxiedObject' to implement the Object-protocol of Squeak.
-			// As this covers onle 'getters', invoke without arguments
-			result = this.proxiedObject$[slotName]();
+		// If not, try to invoke the corresponding Method implemented on Object (e.g. ifNil:ifNotNil:)
+		// If this is not present, return nil.
+		if (result === undefined) {
+			// If not, invoke it on our 'dummyObject' to implement the Object-protocol of Squeak.
+			// As this covers only 'getters', invoke without arguments.
+			// This returns nil, if there is no such method. This corresponds to the javascript-behaviour,
+			// when querying a slot, that is not present.
+			result = this.dummyObject$[slotName]();
 		}
 		return result;
-	}
-});
-
-BlockClosure._addInstanceMethods ( { 
-	_unbox: function() {		
-		var originalBlock = this.original$;
-		return function () { 
-			var boxedArguments = new Array(arguments.length);
-			for (var i=0; i <arguments.length ; i++) {
-				boxedArguments[i] = _boxObject(arguments[i]);
-			}			
-			return originalBlock.apply(this, boxedArguments )  }
 	}
 });
