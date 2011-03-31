@@ -203,6 +203,16 @@ _Array._addInstanceMethods({
         return _true;
     }
     return _false;
+	},
+	asObject : function () {
+		//creates Prototype from object literal#
+		var prototype= {};
+
+		this.do_(block(function(anAssociation){
+			prototype[_unboxObject(anAssociation.key())] = anAssociation.value();
+		}));
+		
+		return _boxObject(prototype);
 	}
 });
 _Array._addClassMethods({
