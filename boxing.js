@@ -6,6 +6,7 @@
 // Some objects are boxing primitive js-values. Unboxing these values is polymorphic.
 // The real version of this method is below. This could alternatively throw an error,
 // but we try to be tolerant.
+var __isBoxedObject = function() { throw "just access this slot without calling."; };
 _Object._addInstanceMethods({
 	__giveError: function(methodname) {
 		var msg = "We have an obsolete " + methodname + "()-call! Fix it.";
@@ -36,7 +37,7 @@ _Object._addInstanceMethods({
 		return this;
 	},
 	// This never gets called, we just need a true-ish slot in each box-instance
-	_isBoxedObject: function() { throw "just access this slot without calling."; }
+	_isBoxedObject: __isBoxedObject
 });
 
 // Class, that will wrap native javascript-objects to implement the Object-interface.
@@ -45,7 +46,7 @@ _Object._addInstanceMethods({
 Class("_Box", { 
 	superclass: _DoesNotUnderstandClass_, 
 	// regarding this method, see _Object._isBoxedObject
-	instanceMethods: { _isBoxedObject: function() { return true; } } });
+	instanceMethods: { _isBoxedObject: __isBoxedObject });
 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
