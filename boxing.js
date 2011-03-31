@@ -46,7 +46,7 @@ _Object._addInstanceMethods({
 Class("_Box", { 
 	superclass: _DoesNotUnderstandClass_, 
 	// regarding this method, see _Object._isBoxedObject
-	instanceMethods: { _isBoxedObject: __isBoxedObject });
+	instanceMethods: { _isBoxedObject: __isBoxedObject }});
 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
