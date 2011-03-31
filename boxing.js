@@ -99,6 +99,13 @@ var _unboxIterable = function(iterable) {
 	}
 	return unboxed;
 }
+var _unboxSlotObject(slotObject) {
+	// This unboxes all slot-values of the object. The value does not need to be returned.
+	// This is used in serialization of Slot-Objects (S2JSlotObject >> fillInstVars:guardedBy:)
+	for (index in slotObject) {
+		slotObject[index] = _unboxObject(slotObject[index]);
+	}
+}
 // The 'that' parameter is optional and will be undefined otherwise
 // It is relevant for functions, to bind them to their containing object when invoking them.
 var _boxObject = function(nativeObject, that) {
