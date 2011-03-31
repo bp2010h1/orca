@@ -42,25 +42,7 @@ _Object._addInstanceMethods({
 // Class, that will wrap native javascript-objects to implement the Object-interface.
 // Additionally, it adds accessor-methods for all fields to provide a squeak-API to
 // set slots on javascript-objects.
-Class("_Box", { superclass: _Object });
-
-_Box._addInstanceMethods ( {
-	value : function() {
-		// if the original object has an attribute value or function value it is more important to use this instead
-		if(this.original$.value) {
-			if(typeof(this.original$.value) == "function") {
-				return this.original$.value();
-			}else {
-				return this.original$.value;
-			}
-			
-		} else {
-			return _super.value();
-		}
-	}
-}
-	
-	)
+Class("_Box", { superclass: _DoesNotUnderstandClass_ });
 
 // Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 // Most functions are used in translated code directly, to avoid switch-statement in _boxObject()
@@ -139,6 +121,13 @@ var _boxObject = function(nativeObject, that) {
 	// nativeObject is already boxed!
 	return nativeObject;
 };
+var _boxIterable = function(iterable) {
+	var boxed = [];
+	for (index in iterable) {
+		boxed.push(_boxObject(iterable[index]));
+	}
+	return boxed;
+}
 
 // These boxing classes box fixed, immutable values
 False._addInstanceMethods( { _unbox: function() { return false; } } );
@@ -146,7 +135,7 @@ True._addInstanceMethods( { _unbox: function() { return true; } } );
 UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
 
 // These boxing classes box variable values and are all added the same functionality.
-var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array, OrderedCollection];
+var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array];
 for (index in boxingClasses) {
 	var aClass = boxingClasses[index];
 	aClass._addClassMethods({
@@ -157,21 +146,27 @@ for (index in boxingClasses) {
 		}
 	});
 	aClass._addInstanceMethods({
+		_hiddenGetter_: function(slotName) {
+			return this.original$[slotName];
+		},
 		doesNotUnderstand_: function(aMessage) {
 			var methodName = _unboxObject(aMessage.selector());
-			if (methodName[methodName.length-1] == ':') {
+			if (methodName[methodName.length - 1] == ':') {
 				// setter. Set the unboxed, native-js, value.
-				var value;
-				if ((aMessage._arguments().length ) == 1 )
-					value = aMessage._arguments()[0];
-				else
-					value = aMessage._arguments();
+				var value = aMessage._arguments();
+				if (value.length >= 1) // If more then one argument, ignore the rest!
+					value = value[0];
+				else // No arguments given when invoking setter!? Don't set an empty array.
+					value = undefined;
 				
 				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
 				return value;
 			} else {
 				// getter. Second parameter relevant, if slot contains a function.
-				return _boxObject(this.original$[methodName], this.original$);
+				// For most boxing classes, the javascript-native is hidden totally (this implementation).
+				// _Box refines this method (_hiddenGetter_) to also check the underlying original$ for the slot
+				// An example is the slot 'value', which is important on a DOM-TextArea and also implemented in Object
+				return _boxObject(this._hiddenGetter_(methodName), this.original$);
 			}
 		},
 		_unbox: function() {
@@ -179,6 +174,34 @@ for (index in boxingClasses) {
 		}
 	});
 }
+_Box.addClassMethods({
+	_wrapping: function(originalObject) {
+		// In addition to the default original$-slot, also create a dummy-Object-instance.
+		// This is a hack to implement the Object-protocol in a _Box. _Box inherits from _DoesNotUnderstandClass_,
+		// so it does not implement any of Object's methods (to be able to fully access the underlying native object).
+		// If the underlying object does not contain a certain slot, the method is invoked on the dummy-instance instead.
+		// This way we have methods like #hash and #ifNil:ifNotNil: on boxed native objects.
+		var result = _super("_wrapping")(originalObject);
+		result.proxiedObject$ = _Object._newInstance();
+		return result;
+	}
+});
+_Box._addInstanceMethods({
+	_hiddenGetter_: function(slotName) {
+		var result = this.original$[slotName];
+		// First check, if the underlying object has this slot.
+		if (result != undefined) {
+			if (typeof(result) == "function") {
+				result = result();
+			}
+		} else {
+			// If not, invoke it on our 'proxiedObject' to implement the Object-protocol of Squeak.
+			// As this covers onle 'getters', invoke without arguments
+			result = this.proxiedObject$[slotName]();
+		}
+		return result;
+	}
+});
 
 BlockClosure._addInstanceMethods ( { 
 	_unbox: function() {		
@@ -189,5 +212,5 @@ BlockClosure._addInstanceMethods ( {
 				boxedArguments[i] = _boxObject(arguments[i]);
 			}			
 			return originalBlock.apply(this, boxedArguments )  }
-	} 
+	}
 });

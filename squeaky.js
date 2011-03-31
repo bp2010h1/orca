@@ -235,8 +235,9 @@ var block = function(func) {
 	func.originalThis = currentThis;
 	// Unboxing a real block must give the same function as when evaluating it.
 	b.original$ = b.evaluated$ = function() {
-		// Use the CALL_STACK to get the object, this block should be executed in
-		return func.apply(currentThis, arguments);
+		// Use the CALL_STACK to get the object, this block should be executed in.
+		// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
+		return func.apply(currentThis, _boxIterable(arguments));
 	}
 	b.constructorArguments$ = function(argumentCollection) {
 		// When using real blocks as constructor, don't unpack the constructor-parameters
