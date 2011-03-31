@@ -174,7 +174,7 @@ for (index in boxingClasses) {
 		}
 	});
 }
-_Box.addClassMethods({
+_Box._addClassMethods({
 	_wrapping: function(originalObject) {
 		// In addition to the default original$-slot, also create a dummy-Object-instance.
 		// This is a hack to implement the Object-protocol in a _Box. _Box inherits from _DoesNotUnderstandClass_,
