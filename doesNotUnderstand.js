@@ -65,7 +65,7 @@ var _jsFunctionNameFor_ = (function (){
 			case "!": return 'exclamation';
 			case "`": return 'backtick';
 			case ",": return 'comma';
-			case "": return 'plusminus';
+			case "±": return 'plusminus';
 			case "|": return 'pipe';
 			default: return c;
 	}};
