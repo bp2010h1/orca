@@ -17,10 +17,11 @@ ProtoObject._addInstanceMethods({
 var _perform_ = function (aSTString){
 		var theArguments = _toArray(arguments);
 		theArguments.shift();
-		if(this[_unboxObject(aSTString)] !== undefined){
-			this[_unboxObject(aSTString)].apply(this, array(theArguments));
+		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
+		if(this[aJSString] !== undefined){
+			return this[aJSString].apply(this, theArguments);
 		} else {
-			this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
 		}
 };
 
@@ -35,7 +36,11 @@ _Object._addInstanceMethods({
 	halt: function() { debugger; },
 	perform_: _perform_,
 	perform_with_: _perform_,
-	perform_with_with_: _perform_
+	perform_with_with_: _perform_,
+	perform_with_with_with_: _perform_,
+	perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
+		return _perform_.apply(this, _unboxObject(anArgumentsCollection));
+	}
 });
 
 Exception._addInstanceMethods({

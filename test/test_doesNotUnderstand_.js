@@ -31,6 +31,13 @@ Class("DoesNotUnderstandTester", {
 			assert(_unboxObject(this.$lastDoesNotUnderstand._equals(string("thisTest_"))));
 			assert(_unboxObject(this.$lastArguments.at_(number(1))._equals(string("thisTest"))), "Arguments are not transfered correctly.");
 		},
+		
+		testPerformReturnValue: function (){
+			assert(_unboxObject(this.perform_(string("aTestMethod"))) == 2);
+		},
+		aTestMethod: function (){
+			return number(2);
+		},
 
 		doesNotUnderstand_: function (aMessage){
 			this.$lastDoesNotUnderstand = aMessage.selector();
