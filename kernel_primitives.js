@@ -180,15 +180,22 @@ BlockClosure._addInstanceMethods({
 });
 
 _Array._addInstanceMethods({
+	_privateGet: function(index) {
+		return _boxObject(this.original$[index]);
+	},
+	_privateSet: function(index, obj) {
+		this.original$[index] = _unboxObject(obj);
+	},
+	
 	size: function(){
 		return number(this.original$.length);
 	},
 	at_put_: function(idx, val){
-		this.original$[idx.original$ - 1] = val;
+		this._privateSet(idx.original$ - 1, val);
 		return val;
 	},
 	at_: function(idx){
-		return this.original$[idx.original$ - 1];
+		return this._privateGet(idx.original$ - 1);
 	},
 	isEmpty: function(){
 		return bool(this.original$.length == 0);
@@ -198,29 +205,26 @@ _Array._addInstanceMethods({
 	   it is only implemented here to work around a hardly tracable bug, probably in out blocks
 	   and nonlocal return */
 	includes_: function(anElement) {
-    for(var i = 0; i < this.original$.length; i++) {
-      if(this.original$[i]._equals(anElement))
-        return _true;
-    }
-    return _false;
+		for (index in this.original$) {
+			if (this._privateGet(index)._equals(anElement))
+				return _true;
+		}
+		return _false;
 	},
 	asObject : function () {
 		// creates Prototype from object literal
 		// Can only be called on arrays containing only Associations (understanding key()/value())
 		var newObject = {};
 		for (index in this.original$) {
-			var anAssociation = this.original$[index];
+			var anAssociation = this._privateGet(index);
 			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
 		}
 		return newObject(object);
 	}
 });
 _Array._addClassMethods({
-	new_: function(size){
-		var arr = new Array(size.original$);
-		for (var i = 0; i < size.original$; i++) {
-			arr[i] = nil;
-		}
-		return array(arr);
+	new_: function(size) {
+		// Not filling the indices of the array with 'nil', because of autoboxing
+		return array(new Array(size.original$));
 	}
 });
