@@ -41,7 +41,7 @@ Class("DoesNotUnderstandTester", {
 
 		testSelectorTranslation: function (){
 			this.perform_(string("aSecondTestMethod:"), number(1));
-			assert(this.$lastDoesNotUnderstand.isNil() === "");
+			assert(this.$lastDoesNotUnderstand === "");
 		},
 		
 		testPerformDynamicReturnValue: function (){
