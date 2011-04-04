@@ -1,4 +1,4 @@
-
+	
 // This file sets up boxing of javascript native objects into squeak objects
 // All relevant classes are enhanced by that functionality and there are 
 // Several global functions to box or unbox objects.
@@ -66,9 +66,10 @@ var boundBlock = function(func, that) {
 	b.evaluated$ = function() {
 		return _boxObject(func.apply(that, _unboxIterable(arguments)));
 	}
-	b.constructorArguments$ = function(argumentCollection) {
+	b.constructor$ = function() {
 		// When using a library-function as constructor, unpack the arguments
-		return _unboxIterable(argumentCollection);
+		// Use the actual 'this' instead of the stored 'that'
+		return func.apply(this, _unboxIterable(arguments));
 	}
 	return b;
 }
