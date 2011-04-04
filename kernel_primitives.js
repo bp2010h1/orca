@@ -118,7 +118,7 @@ Point._addInstanceMethods({
 // We distinct an evaluated$-function and an original$-function in case of blocks.
 // evaluated$ is the version, that is evaluated in the squeak-world, original$ is the function inside javascript
 var _blockValueFunction_ = function() { 
-	return this.evaluated$.apply(this, arguments); };
+	return this.evaluated$.apply(this, _toArray(arguments)); };
 
 // Helpers to implement Block-Closure-primitives
 var _toArray = function(iterable) { 
@@ -224,8 +224,8 @@ _Array._addInstanceMethods({
 	   it is only implemented here to work around a hardly tracable bug, probably in out blocks
 	   and nonlocal return */
 	includes_: function(anElement) {
-		for (index in this.original$) {
-			if (this._privateGet(index)._equals(anElement))
+		for (var i = 0; i < this.original$.length; i++) {
+			if (this._privateGet(i)._equals(anElement))
 				return _true;
 		}
 		return _false;
@@ -234,8 +234,8 @@ _Array._addInstanceMethods({
 		// creates Prototype from object literal
 		// Can only be called on arrays containing only Associations (understanding key()/value())
 		var newObject = {};
-		for (index in this.original$) {
-			var anAssociation = this._privateGet(index);
+		for (var i = 0; i < this.original$.length; i++) {
+			var anAssociation = this._privateGet(i);
 			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
 		}
 		return newObject;
