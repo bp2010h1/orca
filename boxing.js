@@ -75,7 +75,7 @@ var boundBlock = function(func, that) {
 }
 
 // There are multiple js-'classes', that will be wrapped into a Squeak-Array
-var arrayConstructors = [Array, NodeList];
+var arrayConstructors = [Array, NodeList, HTMLCollection];
 var isArrayObject = function(anObject) {
 	var constructor = anObject.constructor;
 	for (index in arrayConstructors) {

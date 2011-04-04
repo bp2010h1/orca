@@ -118,7 +118,8 @@ Point._addInstanceMethods({
 // We distinct an evaluated$-function and an original$-function in case of blocks.
 // evaluated$ is the version, that is evaluated in the squeak-world, original$ is the function inside javascript
 var _blockValueFunction_ = function() { 
-	return this.evaluated$.apply(this, arguments); };
+	return this.evaluated$.apply(this, arguments); 
+};
 
 // Helpers to implement Block-Closure-primitives
 var _toArray = function(iterable) { 
