@@ -205,14 +205,14 @@ _Array._addInstanceMethods({
     return _false;
 	},
 	asObject : function () {
-		//creates Prototype from object literal#
-		var prototype= {};
-
-		this.do_(block(function(anAssociation){
-			prototype[_unboxObject(anAssociation.key())] = anAssociation.value();
-		}));
-		
-		return _boxObject(prototype);
+		// creates Prototype from object literal
+		// Can only be called on arrays containing only Associations (understanding key()/value())
+		var newObject = {};
+		for (index in this.original$) {
+			var anAssociation = this.original$[index];
+			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
+		}
+		return newObject(object);
 	}
 });
 _Array._addClassMethods({
@@ -224,4 +224,3 @@ _Array._addClassMethods({
 		return array(arr);
 	}
 });
-
