@@ -7,13 +7,13 @@ S2JTests.setupSqueakEnvironment();
 // This simulates, that these 4 methods exist in the squeak-image.
 _DoesNotUnderstandClass_._addInstanceMethods({
 	a: function(){
-        return this.doesNotUnderstand_(Message.selector_arguments_(string("a"), arguments)); },
+        return this.doesNotUnderstand_(Message.selector_arguments_(string("a"), array(_toArray(arguments)))); },
 	a_: function(){
-        return this.doesNotUnderstand_(Message.selector_arguments_(string("a:"), arguments)); },
+        return this.doesNotUnderstand_(Message.selector_arguments_(string("a:"), array(_toArray(arguments)))); },
 	b: function(){
-        return this.doesNotUnderstand_(Message.selector_arguments_(string("b"), arguments)); },
+        return this.doesNotUnderstand_(Message.selector_arguments_(string("b"), array(_toArray(arguments)))); },
 	b_: function(){
-        return this.doesNotUnderstand_(Message.selector_arguments_(string("b:"), arguments)); }
+        return this.doesNotUnderstand_(Message.selector_arguments_(string("b:"), array(_toArray(arguments)))); }
 });
 
 Class("BoxingTester", { instanceMethods: {
