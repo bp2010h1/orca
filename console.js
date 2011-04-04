@@ -54,7 +54,7 @@ var S2JConsole = {
 
 	print: function(obj) {
 		for (index in obj) {
-			debug(index + " = " + obj[index]);
+			this.debug(index + " = " + obj[index]);
 		}
 	},
 
