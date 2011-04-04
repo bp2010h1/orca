@@ -1,4 +1,4 @@
-
+	
 // This file sets up boxing of javascript native objects into squeak objects
 // All relevant classes are enhanced by that functionality and there are 
 // Several global functions to box or unbox objects.
@@ -88,7 +88,7 @@ var isArrayObject = function(anObject) {
 
 // This static unboxing-function is added to avoid adding an _unbox method to native js-objects
 var _unboxObject = function(anyObject) {
-	if (anyObject != null && anyObject != undefined && anyObject._isBoxedObject) {
+	if (anyObject != undefined && anyObject != null && anyObject._isBoxedObject) {
 		return anyObject._unbox();
 	}
 	return anyObject;

@@ -11,8 +11,19 @@ ProtoObject._addClassMethods({
 });
 ProtoObject._addInstanceMethods({
 	_equals_equals: function(anObject) { return bool(this === anObject); },
-	identityHash: function() { return number(this.instanceNumber$); },	
+	identityHash: function() { return number(this.instanceNumber$); }	
 });
+
+var _perform_ = function (aSTString){
+		var theArguments = _toArray(arguments);
+		theArguments.shift();
+		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
+		if(this[aJSString] !== undefined){
+			return this[aJSString].apply(this, theArguments);
+		} else {
+			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+		}
+};
 
 _Object._addInstanceMethods({
 	doesNotUnderstand_: function(message) {
@@ -23,6 +34,13 @@ _Object._addInstanceMethods({
 	},
 	_class: function() { return this.__class; },
 	halt: function() { debugger; },
+	perform_: _perform_,
+	perform_with_: _perform_,
+	perform_with_with_: _perform_,
+	perform_with_with_with_: _perform_,
+	perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
+		return _perform_.apply(this, _unboxObject(anArgumentsCollection));
+	}
 });
 
 Exception._addInstanceMethods({
@@ -34,11 +52,12 @@ Exception._addInstanceMethods({
 
 _String._addInstanceMethods({
 	// This is not actually a primitive function, but behaves in the same way the #, method does
-	_comma: function(anotherString) { return string(this.original$ + anotherString.original$) },
-	_equals: function(anotherString) { return bool(this.original$ == anotherString.original$) },
-	isEmpty: function() { return bool(this.original$.length == 0) },
+	_comma: function(anotherString) { return string(this.original$ + anotherString.original$); },
+	_equals: function(anotherString) { return bool(this.original$ == anotherString.original$); },
+	_equals_equals: function(anotherString) { return this._equals(anotherString); },
+	isEmpty: function() { return bool(this.original$.length === 0); },
 	size: function() { return number(this.original$.length); },
-	at_: function(num) { return character(this.original$[num.original$ - 1]);},
+	at_: function(num) { return character(this.original$[num.original$ - 1]); }
 });
 
 ByteString._addInstanceMethods({
@@ -95,7 +114,7 @@ Float._addInstanceMethods({
         var decimalCount = 0;
         while (decimalCount <= 21 && _unboxObject(quantum).toFixed(decimalCount) != _unboxObject(quantum)) {
             decimalCount++;
-        };
+        }
         return number(result.toFixed(decimalCount));
 	}
 });
@@ -118,11 +137,11 @@ var _toArray = function(iterable) {
 	var length = iterable.length, results = new Array(length);
 	while (length--) results[length] = iterable[length];
 	return results;
-}
+};
 var _curried = function(func, boundArgs) { 
 	// Return a function with the first parameters bound to boundArgs. Function itself will be bound to this.
 	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
-}
+};
 var _createInstance_ = function() {
 	// This is done to enable varargs-parameters for constructor-parameters
 	// First bind all constructor-parameters, then call the curried function without arguments
@@ -131,7 +150,7 @@ var _createInstance_ = function() {
 	var newObject = new (_curried(this.constructor$, _toArray(arguments))) ();
 	_unboxSlotObject(newObject); // unbox each slot on the new object
 	return _boxObject(newObject); // but box the object itself
-}
+};
 
 BlockClosure._addInstanceMethods({
 	// Implementation detail. Unboxing arguments to fit into the js-native apply()-function
@@ -229,7 +248,7 @@ _Array._addInstanceMethods({
 			var anAssociation = this._privateGet(index);
 			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
 		}
-		return newObject(object);
+		return newObject;
 	}
 });
 _Array._addClassMethods({
