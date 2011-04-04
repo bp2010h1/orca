@@ -1,4 +1,4 @@
-
+	
 // This file sets up boxing of javascript native objects into squeak objects
 // All relevant classes are enhanced by that functionality and there are 
 // Several global functions to box or unbox objects.
@@ -66,9 +66,10 @@ var boundBlock = function(func, that) {
 	b.evaluated$ = function() {
 		return _boxObject(func.apply(that, _unboxIterable(arguments)));
 	}
-	b.constructorArguments$ = function(argumentCollection) {
+	b.constructor$ = function() {
 		// When using a library-function as constructor, unpack the arguments
-		return _unboxIterable(argumentCollection);
+		// Use the actual 'this' instead of the stored 'that'
+		return func.apply(this, _unboxIterable(arguments));
 	}
 	return b;
 }
@@ -87,7 +88,7 @@ var isArrayObject = function(anObject) {
 
 // This static unboxing-function is added to avoid adding an _unbox method to native js-objects
 var _unboxObject = function(anyObject) {
-	if (anyObject._isBoxedObject) {
+	if (anyObject != undefined && anyObject != null && anyObject._isBoxedObject) {
 		return anyObject._unbox();
 	}
 	return anyObject;
@@ -170,10 +171,10 @@ for (index in boxingClasses) {
 			if (methodName[methodName.length - 1] == ':') {
 				// setter. Set the unboxed, native-js, value.
 				var value = aMessage._arguments();
-				if (value.length >= 1) // If more then one argument, ignore the rest!
-					value = value[0];
+				if (value.size()._greater_equals(number(1))) // If more then one argument, ignore the rest!
+					value = value.at_(number(1));
 				else // No arguments given when invoking setter!? Don't set an empty array.
-					value = undefined;
+					Exception.signal_(string("No sufficient arguments given on a box " + methodName));
 				
 				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
 				return value;
@@ -202,6 +203,18 @@ _Box._addClassMethods({
 		return result;
 	}
 });
+
+var _perform_ = function (aSTString){
+		var theArguments = _toArray(arguments);
+		theArguments.shift();
+		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
+		if(this[aJSString] !== undefined){
+			return this[aJSString].apply(this, theArguments);
+		} else {
+			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+		}
+};
+
 _Box._addInstanceMethods({
 	_hiddenGetter_: function(slotName) {
 		var result = this.original$[slotName];
@@ -216,5 +229,13 @@ _Box._addInstanceMethods({
 			result = this.dummyObject$[slotName]();
 		}
 		return result;
+	},
+	// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
+	perform_: _perform_,
+	perform_with_: _perform_,
+	perform_with_with_: _perform_,
+	perform_with_with_with_: _perform_,
+	perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
+		return _perform_.apply(this, _unboxObject(anArgumentsCollection));
 	}
 });

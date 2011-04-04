@@ -246,7 +246,7 @@ var S2JTests = {
 		document.getElementsByTagName("body")[0].appendChild(heading);
 	},
 
-	// TestResultBox, shown on mouse-hovering of result-labels
+	// box for test-results, shown on mouse-hovering of result-labels
 	TextBox: function(aNode, aMessage) {
 		this.textNode = document.createElement("div");
 		this.textNode.className = "textBox";

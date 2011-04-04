@@ -23,6 +23,7 @@ _Object._addInstanceMethods({
 	},
 	_class: function() { return this.__class; },
 	halt: function() { debugger; },
+	// _perform_ is implemented in boxing.js
 	perform_: _perform_,
 	perform_with_: _perform_,
 	perform_with_with_: _perform_,
@@ -134,18 +135,28 @@ var _curried = function(func, boundArgs) {
 var _createInstance_ = function() {
 	// This is done to enable varargs-parameters for constructor-parameters
 	// First bind all constructor-parameters, then call the curried function without arguments
-	// Bind the function to the function itself. Seemed necessary.
+	// (Bind the curried function to the original function itself. Seemed necessary.)
 	// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and squeaky.js -> block())
-	var args = this.constructorArguments$(arguments);
-	return _boxObject(new (_curried(this.original$, args)) ());
+	var newObject = new (_curried(this.constructor$, _toArray(arguments))) ();
+	_unboxSlotObject(newObject); // unbox each slot on the new object
+	return _boxObject(newObject); // but box the object itself
 };
 
 BlockClosure._addInstanceMethods({
+	// Implementation detail. Unboxing arguments to fit into the js-native apply()-function
+	_callFunctionImpl: function(func, args) {
+		return func.apply(this, _unboxObject(args));
+	},
+	
+	// Up to 4 arguments, the Squeak-methods implemented
 	value: _blockValueFunction_,
 	value_: _blockValueFunction_,
 	value_value_: _blockValueFunction_,
 	value_value_value_: _blockValueFunction_,
 	value_value_value_value_: _blockValueFunction_,
+	valueWithArguments_: function(args) {
+		return this._callFunctionImpl(_blockValueFunction_, args);
+	},
 	
 	whileTrue_: function(anotherBlock) {
 		while (this.value() === _true) {
@@ -182,8 +193,8 @@ BlockClosure._addInstanceMethods({
 	jsNew_with_with_with_with_with_with_with_with_: _createInstance_,
 	
 	// Any arguments as array
-	jsNewWithArgs: function(args) {
-		_createInstance_.apply(this, args);
+	jsNewWithArgs_: function(args) {
+		return this._callFunctionImpl(_createInstance_, args);
 	}
 });
 
@@ -234,5 +245,13 @@ _Array._addClassMethods({
 	new_: function(size) {
 		// Not filling the indices of the array with 'nil', because of autoboxing
 		return array(new Array(size.original$));
+	}
+});
+
+// this should be reorganized
+if (this.S2JWidget)
+S2JWidget._addInstanceMethods({
+	generateCssId: function() {
+		return string(Date.now());
 	}
 });

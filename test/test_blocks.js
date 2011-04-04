@@ -5,13 +5,13 @@ S2JTests.setupSqueakEnvironment();
 Class("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {
-		this.instVar = "instVar";
-		this.instanceVar = "Ins";
-		this.counter = 0;
-		this.counterBack = 0;
+		this.instVar = string("instVar");
+		this.instanceVar = string("Ins");
+		this.counter = number(0);
+		this.counterBack = number(0);
 	},
 	
-	instMethod: function() { return "methodRes"; },
+	instMethod: function() { return string("methodRes"); },
 	
 	// Basic, multiple blocks, instance var
 	test1: function() {
@@ -41,32 +41,32 @@ Class("BlocksTester", { instanceMethods: {
 	},
 	test5: function() {
 		var _block = block(function(){ return this.instVar; });
-		assert(_block.value() == "instVar");
+		assert(_block.value().original$ == "instVar");
 	},
 	test6: function() {
 		var _block = block(function(){ return this.instMethod(); });
-		assert(_block.value() == "methodRes");
+		assert(_block.value().original$ == "methodRes");
 	},
 	
 	// Parameters
 	test7: function() {
-		var _block = block(function(arg1, arg2){ return arg1 + "22"; });
-		assert(_block.value_value_("abc", "def") == "abc22");
+		var _block = block(function(arg1, arg2){ return arg1._comma(string("22")); });
+		assert(_block.value_value_("abc", "def").original$ == "abc22");
 	},
 	test8: function() {
 		var _block = block(function(arg1, arg2){
 			var inner = block(function(arg1, arg2){
-				return arg2 + "d";
+				return arg2._comma(string("d"));
 			});
-			return inner.value_value_(2, arg1);
+			return inner.value_value_(number(2), arg1);
 		});
-		assert(_block.value_value_("abc", "def") == "abcd");
+		assert(_block.value_value_("abc", "def").original$ == "abcd");
 	},
 	test9: function() {
-		var local = "outer";
-		var local1 = "outer1";
-		var _block = block(function(local1, arg2){ var local = "inner"; return local1 + local; });
-		assert(_block.value_value_("abc", "def") == "abcinner");
+		var local = string("outer");
+		var local1 = string("outer1");
+		var _block = block(function(local1, arg2){ var local = string("inner"); return local1._comma(local); });
+		assert(_block.value_value_("abc", "def").original$ == "abcinner");
 	},
 	
 	// non local return
@@ -100,10 +100,10 @@ Class("BlocksTester", { instanceMethods: {
 			return 200; }).value();
 	},
 	test13: function() {
-		assert(this.helper13() == "instVarmethodRes");
+		assert(this.helper13().original$ == "instVarmethodRes");
 	},
 	helper13: function() {
-		return block(function(){ nonLocalReturn(this.instVar + this.instMethod()); }).value();
+		return block(function(){ nonLocalReturn(this.instVar._comma(this.instMethod())); }).value();
 	},
 	test14: function() {
 		var _block = this.blockSource();
@@ -189,13 +189,13 @@ Class("BlocksTester", { instanceMethods: {
 		assert(result == 1);
 	},
 	test19: function() {
-		var local = "Lokal";
+		var local = string("Lokal");
 		var result = (function(){
-			var receiver = "Ab";
-			receiver = receiver + this.instanceVar;
-			return receiver + local;
+			var receiver = string("Ab");
+			receiver = receiver._comma(this.instanceVar);
+			return receiver._comma(local);
 		}).apply(this);
-		assert(result == "AbInsLokal"); // ^^
+		assert(result.original$ == "AbInsLokal"); // ^^
 	},
 	test20: function() {
 		// Block in cascade
@@ -204,7 +204,7 @@ Class("BlocksTester", { instanceMethods: {
 				return this.instanceVar;
 			}).value();
 		}).apply(this);
-		assert(result == "Ins");
+		assert(result.original$ == "Ins");
 	},
 	test21: function() {
 		// Cascade in block
@@ -213,52 +213,52 @@ Class("BlocksTester", { instanceMethods: {
 				return this.instanceVar;
 			}).apply(this);
 		}).value();
-		assert(result == "Ins");
+		assert(result.original$ == "Ins");
 	},
 	test22: function() {
-		// cascade in Block with arguments
-		var lokalouter = "Outer";
+		// "cascade" in Block with arguments
+		var lokalouter = string("Outer");
 		var result = block(function(arg1, arg2){
-			var lokal = "Inner";
+			var lokal = string("Inner");
 			return (function() {
-				return this.instanceVar + arg1 + arg2 + lokal + lokalouter;
+				return this.instanceVar._comma(arg1)._comma(arg2)._comma(lokal)._comma(lokalouter);
 			}).apply(this);
-		}).value("First", "Second");
-		assert(result == "InsFirstSecondInnerOuter");
+		}).value(string("First"), string("Second"));
+		assert(result.original$ == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
 		// Block with arguments in cascade
-		var outer = "Outer";
-		var outerParam = "OuterParam";
+		var outer = string("Outer");
+		var outerParam = string("OuterParam");
 		var result = (function(){
-			var inner = "Inner";
-			var innerParam = "InnerParam";
+			var inner = string("Inner");
+			var innerParam = string("InnerParam");
 			return block(function(arg1, arg2){
-				return this.instanceVar + arg1 + arg2 + outer + inner;
+				return this.instanceVar._comma(arg1)._comma(arg2)._comma(outer)._comma(inner);
 			}).value(outerParam, innerParam);
 		}).apply(this);
-		assert(result == "InsOuterParamInnerParamOuterInner");
+		assert(result.original$ == "InsOuterParamInnerParamOuterInner");
 	},
 	
 	test24: function() {
 		var _block = block( function() { return this.instVar; } );
 		var otherTester = BlocksTester._newInstance();
-		otherTester.instVar = "otherInstVar";
-		assert("instVar" == otherTester.evaluateBlock(_block));
+		otherTester.instVar = string("otherInstVar");
+		assert("instVar" == otherTester.evaluateBlock(_block).original$);
 	},
 	evaluateBlock: function(aBlock) {
 		return aBlock.value();
 	},
 	test25: function() {
 		var otherTester = BlocksTester._newInstance();
-		otherTester.instVar = "otherInstVar";
+		otherTester.instVar = string("otherInstVar");
 		var _block = block(function(){
 			var inner = block(function(){ 
 				var innerinner = block(function(){
 				  return this.instVar; });
 				return innerinner.value(); });
 			return inner.value(); });
-		assert("instVar" == otherTester.evaluateBlock(_block));
+		assert("instVar" == otherTester.evaluateBlock(_block).original$);
 	},
 	
 	testWhileTrue: function() {
