@@ -14,17 +14,6 @@ ProtoObject._addInstanceMethods({
 	identityHash: function() { return number(this.instanceNumber$); }	
 });
 
-var _perform_ = function (aSTString){
-		var theArguments = _toArray(arguments);
-		theArguments.shift();
-		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
-		if(this[aJSString] !== undefined){
-			return this[aJSString].apply(this, theArguments);
-		} else {
-			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
-		}
-};
-
 _Object._addInstanceMethods({
 	doesNotUnderstand_: function(message) {
 		// TODO implement this correctly
@@ -34,6 +23,7 @@ _Object._addInstanceMethods({
 	},
 	_class: function() { return this.__class; },
 	halt: function() { debugger; },
+	// _perform_ is implemented in kernel_primitives.js
 	perform_: _perform_,
 	perform_with_: _perform_,
 	perform_with_with_: _perform_,
