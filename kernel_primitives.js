@@ -174,7 +174,7 @@ BlockClosure._addInstanceMethods({
 	jsNew_with_with_with_with_with_with_with_with_: _createInstance_,
 	
 	// Any arguments as array
-	jsNewWithArgs: function(args) {
+	jsNewWithArgs_: function(args) {
 		_createInstance_.apply(this, args);
 	}
 });
