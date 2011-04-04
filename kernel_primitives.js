@@ -247,3 +247,9 @@ _Array._addClassMethods({
 		return array(new Array(size.original$));
 	}
 });
+
+S2JWidget._addInstanceMethods({
+	generateCssId: function() {
+		return string(Date.now());
+	}
+});
