@@ -128,7 +128,7 @@ var _createInstance_ = function() {
 	// First bind all constructor-parameters, then call the curried function without arguments
 	// Bind the function to the function itself. Seemed necessary.
 	// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and squeaky.js -> block())
-	var args = this.constructorArguments$(arguments);
+	var args = this.constructorArguments$(_toArray(arguments));
 	return _boxObject(new (_curried(this.original$, args)) ());
 }
 
