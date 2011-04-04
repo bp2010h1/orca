@@ -171,10 +171,10 @@ for (index in boxingClasses) {
 			if (methodName[methodName.length - 1] == ':') {
 				// setter. Set the unboxed, native-js, value.
 				var value = aMessage._arguments();
-				if (value.length >= 1) // If more then one argument, ignore the rest!
-					value = value[0];
+				if (value.size()._greater_equals(number(1))) // If more then one argument, ignore the rest!
+					value = value.at_(number(1));
 				else // No arguments given when invoking setter!? Don't set an empty array.
-					value = undefined;
+					Exception.signal_(string("No sufficient arguments given on a box " + methodName));
 				
 				this.original$[methodName.substring(0, methodName.length - 1)] = _unboxObject(value);
 				return value;
