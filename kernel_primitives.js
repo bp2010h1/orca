@@ -15,14 +15,14 @@ ProtoObject._addInstanceMethods({
 });
 
 var _perform_ = function (aSTString){
-		var theArguments = _toArray(arguments);
-		theArguments.shift();
-		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
-		if(this[aJSString] !== undefined){
-			return this[aJSString].apply(this, theArguments);
-		} else {
-			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
-		}
+	var theArguments = _toArray(arguments);
+	theArguments.shift(); // Removes the first argument, which is aSTString
+	var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
+	if(this[aJSString] !== undefined){
+		return this[aJSString].apply(this, theArguments);
+	} else {
+		return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+	}
 };
 
 _Object._addInstanceMethods({
