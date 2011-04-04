@@ -5,12 +5,13 @@ S2JTests.setupSqueakEnvironment();
 Class("DoesNotUnderstandTester", { 
 	superclass: _Object,
 	classInstanceVariables: [ ],
-	instanceVariables: [ "lastDoesNotUnderstand" ],
+	instanceVariables: [ "lastDoesNotUnderstand", "lastArguments" ],
 	
 	instanceMethods: {
 		
 		setUp: function(){
 			this.$lastDoesNotUnderstand = "";
+			this.$lastArguments = "";
 		},
 		
 		testdoesNotUnderstand: function (){
@@ -20,8 +21,20 @@ Class("DoesNotUnderstandTester", {
 			assert(_unboxObject(this.$lastDoesNotUnderstand._equals(string("ifTrue:"))));
 		},
 		
+		testPerform: function (){
+			this.perform_(string("thisTest"));
+			assert(_unboxObject(this.$lastDoesNotUnderstand._equals(string("thisTest"))));
+		},
+
+		testPerformWith: function (){
+			this.perform_with_(string("thisTest_"), string("thisTest"));
+			assert(_unboxObject(this.$lastDoesNotUnderstand._equals(string("thisTest_"))));
+			assert(_unboxObject(this.$lastArguments.at_(number(1))._equals(string("thisTest"))), "Arguments are not transfered correctly.");
+		},
+
 		doesNotUnderstand_: function (aMessage){
 			this.$lastDoesNotUnderstand = aMessage.selector();
+			this.$lastArguments = aMessage._arguments();
 		}
 	}
 	
