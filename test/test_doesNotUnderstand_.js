@@ -39,6 +39,20 @@ Class("DoesNotUnderstandTester", {
 			return number(2);
 		},
 
+		testSelectorTranslation: function (){
+			this.perform_(string("aSecondTestMethod:"), number(1));
+			assert(this.$lastDoesNotUnderstand === "");
+		},
+		
+		testPerformDynamicReturnValue: function (){
+			assert(_unboxObject(this.perform_with_(string("aSecondTestMethod:"), number(4))) == 4);
+			
+		},
+		aSecondTestMethod_: function (anObject){
+			return anObject;
+		},
+
+		
 		doesNotUnderstand_: function (aMessage){
 			this.$lastDoesNotUnderstand = aMessage.selector();
 			this.$lastArguments = aMessage._arguments();

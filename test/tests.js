@@ -73,6 +73,7 @@ var S2JTests = {
 			this.loadClasses();
 			this.loadScript("boxing.js");
 			this.loadScript("bootstrap.js");
+			this.loadScript("doesNotUnderstand.js");
 			this.loadScript("kernel_primitives.js");
 		}
 	},

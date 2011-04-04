@@ -247,3 +247,11 @@ _Array._addClassMethods({
 		return array(new Array(size.original$));
 	}
 });
+
+// this should be reorganized
+if (this.S2JWidget)
+S2JWidget._addInstanceMethods({
+	generateCssId: function() {
+		return string(Date.now());
+	}
+});
