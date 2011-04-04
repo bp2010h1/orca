@@ -232,7 +232,7 @@ _Array._addInstanceMethods({
 			var anAssociation = this._privateGet(index);
 			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
 		}
-		return newObject(object);
+		return newObject;
 	}
 });
 _Array._addClassMethods({
