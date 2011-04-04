@@ -216,5 +216,14 @@ _Box._addInstanceMethods({
 			result = this.dummyObject$[slotName]();
 		}
 		return result;
+	},
+	// copied from objects, parallel hierarchy, ProtoObject should not be able to perform.
+	// _perform_ is implemented in kernel_primitives.js
+	perform_: _perform_,
+	perform_with_: _perform_,
+	perform_with_with_: _perform_,
+	perform_with_with_with_: _perform_,
+	perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
+		return _perform_.apply(this, _unboxObject(anArgumentsCollection));
 	}
 });
