@@ -66,10 +66,10 @@ var boundBlock = function(func, that) {
 	b.evaluated$ = function() {
 		return _boxObject(func.apply(that, _unboxIterable(arguments)));
 	}
-	b.constructor$ = function(argumentCollection) {
+	b.constructor$ = function() {
 		// When using a library-function as constructor, unpack the arguments
 		// Use the actual 'this' instead of the stored 'that'
-		return func.apply(this, _unboxIterable(argumentCollection));
+		return func.apply(this, _unboxIterable(arguments));
 	}
 	return b;
 }
