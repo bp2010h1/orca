@@ -207,6 +207,18 @@ _Box._addClassMethods({
 		return result;
 	}
 });
+
+var _perform_ = function (aSTString){
+		var theArguments = _toArray(arguments);
+		theArguments.shift();
+		var aJSString = _unboxObject(aSTString); //TODO: translated the selector to JS
+		if(this[aJSString] !== undefined){
+			return this[aJSString].apply(this, theArguments);
+		} else {
+			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+		}
+};
+
 _Box._addInstanceMethods({
 	_hiddenGetter_: function(slotName) {
 		var result = this.original$[slotName];
@@ -222,8 +234,7 @@ _Box._addInstanceMethods({
 		}
 		return result;
 	},
-	// copied from objects, parallel hierarchy, ProtoObject should not be able to perform.
-	// _perform_ is implemented in kernel_primitives.js
+	// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
 	perform_: _perform_,
 	perform_with_: _perform_,
 	perform_with_with_: _perform_,

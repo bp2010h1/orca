@@ -34,6 +34,7 @@ _Object._addInstanceMethods({
 	},
 	_class: function() { return this.__class; },
 	halt: function() { debugger; },
+	// _perform_ is implemented in kernel_primitives.js
 	perform_: _perform_,
 	perform_with_: _perform_,
 	perform_with_with_: _perform_,
