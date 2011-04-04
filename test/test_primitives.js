@@ -21,11 +21,15 @@ Class("PrimitivesTester", {
 		},
 		
 		testJsFunctions: function(){
-			assertEquals_(this.$aNumber, 1);
-			assertEquals_(this.$aString, "Hello World!");
-			assertEquals_(this.$aFloat, 4.2);
-      // assertEquals_(this.$anArray, [1, 2, 3]);
-      assertRaisesError_(function (){_unboxObject(this.$anObject); });
+			assertEquals_(this.$aNumber.original$, 1);
+			assertEquals_(this.$aString.original$, "Hello World!");
+			assertEquals_(this.$aFloat.original$, 4.2);
+			
+			var arr = this.$anArray.original$;
+			var arr2 = [1, 2, 3];
+			for (index in arr) {
+				assertEquals_(arr[index], arr2[index]);
+			}
 		},
 		
 		testFloatLoop: function (){
@@ -58,7 +62,7 @@ Class("PrimitivesTester", {
 			assertEquals_(this.$anArray.isEmpty(), false, "5");
 		},
 		testArrayIncludes: function(){
-		  assert(array([number(1), number(2)]).includes_(number(1)) == _true, "Array.includes: does not work as expected");
+			assert(array([number(1), number(2)]).includes_(number(1)) == _true, "Array.includes: does not work as expected");
 		},
 		
 		testArrayJs: function (){
@@ -68,15 +72,66 @@ Class("PrimitivesTester", {
 			assertEquals_(testArray.at_(number(3)).first(), 2);
 		},
 		
-		testFunctionPrimitives: function (){
-			var func = function (){ return "1"; };
-			assert(func.value() == "1", "Calling Js functions like a BlockClosure with value.");
-			func = function(a, b){ if( !b ){ return a; } return b; };
-			assert(func.value_(number(1)) == 1, "Calling Js functions like a BlockClosure with value_." + func(number(1)));
-			assert(func.value_value_(number(1), number(2)) == 2, "Calling Js functions like a BlockClosure with value_value_.");
-			assert(func.valueWithArguments_(array([number(1)])) == 1, "Calling Js functions like a BlockClosure with valueWithArguments. 1");
-			assert(func.valueWithArguments_(array([number(1), number(2)])) == 2, "Calling Js functions like a BlockClosure with valueWithArguments. 2");
+		testBlockPrimitives: function (){
+			var func = block(function(a, b) {
+				if ( !a )
+					// boxed!
+					return string("abc");
+				if( !b )
+					return a;
+				return b;
+			});
+			this.blockPrimitivesImpl(func);
+		},
+		testBlockPrimitivesOnLibraryfunction: function() {
+			var func = object({x : function(a, b) {
+				if ( !a )
+					// unboxed!
+					return "abc";
+				if( !b )
+					return a;
+				return b;
+			}}).x();
+			this.blockPrimitivesImpl(func);
+		},
+		blockPrimitivesImpl: function(func) {
+			assert(func.value().original$ == "abc", "Calling a BlockClosure with value.");
+			assert(func.value_(number(1)).original$ == 1, "Calling a BlockClosure with value_.");
+			assert(func.value_value_(number(1), number(2)).original$ == 2, "Calling a BlockClosure with value_value_.");
+			assert(func.valueWithArguments_(array([number(1)])).original$ == 1, "Calling a BlockClosure with valueWithArguments. 1");
+			assert(func.valueWithArguments_(array([number(1), number(2)])).original$ == 2, "Calling a BlockClosure with valueWithArguments. 2");
+		},
+		
+		testJsNewPrimitives: function() {
+			// normal Squeak-block, called jsNew on
+			var f = block(function(b) {
+				// boxed!
+				this.a = string("a");
+				this.b = b;
+			});
+			this.jsNewPrimitivesImpl(f);
+		},
+		testJsNewPrimitivesOnLibraryfunction: function() {
+			// library function, boxed as block upon entering the Squeak-system (being extracted from the object)
+			var f = object({x : function(b) {
+				// unboxed!
+				this.a = "a";
+				this.b = b;
+			}}).x();
+			this.jsNewPrimitivesImpl(f);
+		},
+		jsNewPrimitivesImpl: function(block) {
+			// Here are just basic checks for jsNew-functionality. Extended tests regarding boxing are done elsewhere.
+			assert(block.jsNew().original$.a == "a", "jsNew() on BlockClosure. 1");
+			assert(block.jsNew().original$.b == undefined, "jsNew() on BlockClosure. 2");
+			
+			var b = block.jsNew_("b");
+			assert(b.original$.a == "a" && b.original$.b == "b", "jsNew_() on BlockClosure");
+			
+			b = block.jsNewWithArgs_(["b"]);
+			assert(b.original$.a == "a" && b.original$.b == "b", "jsNewWithArgs_() on BlockClosure");
 		}
+		
 	}
 	
 });
