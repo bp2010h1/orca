@@ -66,9 +66,10 @@ var boundBlock = function(func, that) {
 	b.evaluated$ = function() {
 		return _boxObject(func.apply(that, _unboxIterable(arguments)));
 	}
-	b.constructorArguments$ = function(argumentCollection) {
+	b.constructor$ = function(argumentCollection) {
 		// When using a library-function as constructor, unpack the arguments
-		return _unboxIterable(argumentCollection);
+		// Use the actual 'this' instead of the stored 'that'
+		return func.apply(this, _unboxIterable(argumentCollection));
 	}
 	return b;
 }
@@ -87,7 +88,7 @@ var isArrayObject = function(anObject) {
 
 // This static unboxing-function is added to avoid adding an _unbox method to native js-objects
 var _unboxObject = function(anyObject) {
-	if (anyObject._isBoxedObject) {
+	if (anyObject != null && anyObject != undefined && anyObject._isBoxedObject) {
 		return anyObject._unbox();
 	}
 	return anyObject;

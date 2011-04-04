@@ -239,9 +239,11 @@ var block = function(func) {
 		// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
 		return func.apply(currentThis, _boxIterable(arguments));
 	}
-	b.constructorArguments$ = function(argumentCollection) {
-		// When using real blocks as constructor, don't unpack the constructor-parameters
-		return argumentCollection;
+	b.constructor$ = function() {
+		// When using real blocks as constructor, don't unpack the constructor-parameters, 
+		// but box them to be sure (should not be necessary).
+		// Use the real 'this' instead of the currentThis from the artificial stack
+		return func.apply(this, _boxIterable(arguments));
 	}
 	return b;
 }
