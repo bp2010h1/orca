@@ -11,7 +11,7 @@ ProtoObject._addClassMethods({
 });
 ProtoObject._addInstanceMethods({
 	_equals_equals: function(anObject) { return bool(this === anObject); },
-	identityHash: function() { return number(this.instanceNumber$); }	
+	identityHash: function() { return number(this.instanceNumber$); }
 });
 
 _Object._addInstanceMethods({
