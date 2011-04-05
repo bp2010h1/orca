@@ -132,7 +132,13 @@ var _toArray = function(iterable) {
 };
 var _curried = function(func, boundArgs) { 
 	// Return a function with the first parameters bound to boundArgs. Function itself will be bound to this.
-	return function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
+	var f = function() { return func.apply(this, boundArgs.concat(_toArray(arguments))); };
+	
+	// The prototype of the curried function must be set to the prototype of the original function
+	// BECAUSE: the curried function will be used as constructor (with the new-keyword). There, the prototype
+	// of the newly created object (it's __proto__-slot) will be the prototype of the function applied on the new-operator.
+	f.prototype = func.prototype;
+	return f;
 };
 var _createInstance_ = function() {
 	// This is done to enable varargs-parameters for constructor-parameters

@@ -71,6 +71,8 @@ var boundBlock = function(func, that) {
 		// Use the actual 'this' instead of the stored 'that'
 		return func.apply(this, _unboxIterable(arguments));
 	}
+	// Why the prototype-slot is set, see _curried() in kernel_prototype.js
+	b.constructor$.prototype = func.prototype;
 	return b;
 }
 
