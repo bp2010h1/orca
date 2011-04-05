@@ -1,14 +1,14 @@
 
 var _Global = _boxObject(this); // Need global context to capture the global object
-var Js = {
+var _Document = _boxObject(document);
+Js._addClassMethods({
+	Document: function() {
+		return _Document;
+	},
 	Global: function() {
 		return _Global;
-	},
-	_Document: _boxObject(document),
-	Document: function() {
-		return this._Document;
 	}
-};
+});
 
 // Function called when a method with an unimplemented primitive declaration is called
 var primitiveDeclaration = function() {
