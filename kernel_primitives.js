@@ -233,7 +233,7 @@ _Array._addInstanceMethods({
 	   and nonlocal return */
 	includes_: function(anElement) {
 		for (var i = 0; i < this.original$.length; i++) {
-			if (this._privateGet(i)._equals(anElement))
+			if (_unboxObject(this._privateGet(i)._equals(anElement)))
 				return _true;
 		}
 		return _false;
@@ -261,6 +261,6 @@ _Array._addClassMethods({
 if (this.S2JWidget)
 S2JWidget._addInstanceMethods({
 	generateCssId: function() {
-		return string(Date.now());
+		return string("id" + Date.now());
 	}
 });
