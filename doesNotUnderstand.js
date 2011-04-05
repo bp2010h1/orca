@@ -1,3 +1,4 @@
+
 var _perform_ = function (aSTString){
 		var theArguments = _toArray(arguments);
 		theArguments.shift();
@@ -77,3 +78,12 @@ var _jsFunctionNameFor_ = (function (){
 		return escapeReservedWord(result);
 	};
 })();
+
+// This adds a function-name, that is handled by 
+var _addDoesNotUnderstand = function(methodName) {
+	var newMethods = {};
+	newMethods[_jsFunctionNameFor_(methodName)] = function() {
+		return this.doesNotUnderstand_(
+			Message.selector_arguments_(string(methodName), array(_toArray(arguments)))); };
+	_DoesNotUnderstandClass_._addInstanceMethods(newMethods);
+}
