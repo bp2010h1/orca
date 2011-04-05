@@ -77,9 +77,8 @@ var boundBlock = function(func, that) {
 // There are multiple js-'classes', that will be wrapped into a Squeak-Array
 var arrayConstructors = [Array, NodeList, HTMLCollection];
 var isArrayObject = function(anObject) {
-	var constructor = anObject.constructor;
-	for (index in arrayConstructors) {
-		if (arrayConstructors[index] == constructor) {
+	for (var index in arrayConstructors) {
+		if (anObject instanceof arrayConstructors[index] ) {
 			return true;
 		}
 	}
@@ -95,16 +94,16 @@ var _unboxObject = function(anyObject) {
 };
 var _unboxIterable = function(iterable) {
 	var unboxed = [];
-	for (index in iterable) {
-		unboxed.push(_unboxObject(iterable[index]));
+	for (var i = 0; i < iterable.length; i++) {
+		unboxed.push(_unboxObject(iterable[i]));
 	}
 	return unboxed;
 }
 var _unboxSlotObject = function(slotObject) {
 	// This unboxes all slot-values of the object. The value does not need to be returned.
 	// This is used in serialization of Slot-Objects (S2JSlotObject >> fillInstVars:guardedBy:)
-	for (index in slotObject) {
-		slotObject[index] = _unboxObject(slotObject[index]);
+	for (var slotName in slotObject) {
+		slotObject[slotName] = _unboxObject(slotObject[slotName]);
 	}
 }
 // The 'that' parameter is optional and will be undefined otherwise
@@ -135,8 +134,8 @@ var _boxObject = function(nativeObject, that) {
 };
 var _boxIterable = function(iterable) {
 	var boxed = [];
-	for (index in iterable) {
-		boxed.push(_boxObject(iterable[index]));
+	for (var i = 0; i < iterable.length; i++) {
+		boxed.push(_boxObject(iterable[i]));
 	}
 	return boxed;
 }
@@ -157,7 +156,7 @@ var _wrappingImpl = function(originalObject) {
 };
 // These boxing classes box variable values and are all added the same functionality.
 var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array];
-for (index in boxingClasses) {
+for (var index in boxingClasses) {
 	var aClass = boxingClasses[index];
 	aClass._addClassMethods({
 		_wrapping: _wrappingImpl
