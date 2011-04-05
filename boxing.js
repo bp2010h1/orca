@@ -14,6 +14,9 @@ _Object._addInstanceMethods({
 		throw msg;
 	},
 	// TODO if we're sure everything is fixed, remove these warnings.
+	jsEval: function() {
+		this.__giveError("jsEval (which is EVIL!!)");
+	},
 	js: function() {
 		this.__giveError("js");
 	},
