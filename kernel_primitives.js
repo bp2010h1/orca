@@ -35,6 +35,7 @@ _Object._addInstanceMethods({
 
 Exception._addInstanceMethods({
 	signal: function() { 
+		// TODO remove this alert and debugger;-keyword
 		alert(_unboxObject(this.messageText()));
 		//throw this;
 		debugger;
@@ -239,7 +240,8 @@ _Array._addInstanceMethods({
 			var anAssociation = this._privateGet(i);
 			newObject[_unboxObject(anAssociation.key())] = _unboxObject(anAssociation.value());
 		}
-		return newObject;
+		// Box the resulting primitive object, that is filled with unboxed values.
+		return _boxObject(newObject);
 	}
 });
 _Array._addClassMethods({
