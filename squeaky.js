@@ -4,7 +4,7 @@ var SqueakyJS = {
 	ALL_CLASSES: [],
 	
 	// If true, additional debugging functionality will be enabled.
-	DEBUG: false,
+	DEBUG: true,
 	
 	// If set to true, every method-call will be printed to console.
 	DEBUG_INFINITE_RECURSION: false,

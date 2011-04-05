@@ -35,10 +35,7 @@ _Object._addInstanceMethods({
 
 Exception._addInstanceMethods({
 	signal: function() { 
-		// TODO remove this alert and debugger;-keyword
-		alert(_unboxObject(this.messageText()));
-		//throw this;
-		debugger;
+		throw this;
 	}
 });
 
