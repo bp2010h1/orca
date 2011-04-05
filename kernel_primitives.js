@@ -226,7 +226,7 @@ _Array._addInstanceMethods({
 	   and nonlocal return */
 	includes_: function(anElement) {
 		for (var i = 0; i < this.original$.length; i++) {
-			if (this._privateGet(i)._equals(anElement))
+			if (_unboxObject(this._privateGet(i)._equals(anElement)))
 				return _true;
 		}
 		return _false;
