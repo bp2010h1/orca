@@ -1,15 +1,4 @@
 
-var _perform_ = function (aSTString){
-		var theArguments = _toArray(arguments);
-		theArguments.shift();
-		var aJSString = _jsFunctionNameFor_(_unboxObject(aSTString));
-		if(this[aJSString] !== undefined){
-			return this[aJSString].apply(this, theArguments);
-		} else {
-			return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
-		}
-};
-
 //this function is a paralleled reimplementation of S2JSqueakAstToJsAst class>>#jsFunctionNameFor:
 //to avoid filling the global namespace, I wrote a function which invoked will return the right function
 var _jsFunctionNameFor_ = (function (){

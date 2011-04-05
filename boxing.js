@@ -17,9 +17,6 @@ _Object._addInstanceMethods({
 	js: function() {
 		this.__giveError("js");
 	},
-	jsNew_: function() {
-		this.__giveError("jsNew:");
-	},
 	js_: function() {
 		this.__giveError("js:");
 	},
@@ -149,7 +146,7 @@ UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
 
 // This instance of Object is used by instances of _Box to retrieve methods to implement Squeaks Object-protocol
 // Methods are looked up here, when a queried slot/property is not found in the underlying native object.
-var _DummyObjectInstance = Object._newInstance();
+var _DummyObjectInstance = _Object._newInstance();
 _DummyObjectInstance.doesNotUnderstand_ = function(msg) { return nil; };
 // These boxing classes box variable values and are all added the same functionality.
 var boxingClasses = [_Box, ByteString, _Number, Character, BlockClosure, _Array];
@@ -160,7 +157,7 @@ for (var index in boxingClasses) {
 			var result = this._newInstance(); // Polymorphic for different kinds of boxes
 			result.original$ = originalObject;
 			return result;
-		};
+		}
 	});
 	aClass._addInstanceMethods({
 		_hiddenGetter_: function(slotName) {
@@ -192,6 +189,17 @@ for (var index in boxingClasses) {
 	});
 }
 
+var _perform_ = function (aSTString){
+	var theArguments = _toArray(arguments);
+	theArguments.shift();
+	var method = this[_jsFunctionNameFor_(_unboxObject(aSTString))];
+	if (method !== undefined) {
+		return method.apply(this, theArguments);
+	} else {
+		return this.doesNotUnderstand_(Message.selector_arguments_(aSTString, array(theArguments)));
+	}
+};
+
 _Box._addInstanceMethods({
 	_hiddenGetter_: function(slotName) {
 		var result = this.original$[slotName];
@@ -205,7 +213,6 @@ _Box._addInstanceMethods({
 		return result;
 	},
 	// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
-	// _perform_ defined in doesNotUnderstand.js
 	perform_: _perform_,
 	perform_with_: _perform_,
 	perform_with_with_: _perform_,
