@@ -252,6 +252,6 @@ _Array._addClassMethods({
 if (this.S2JWidget)
 S2JWidget._addInstanceMethods({
 	generateCssId: function() {
-		return string(Date.now());
+		return string("id" + Date.now());
 	}
 });
