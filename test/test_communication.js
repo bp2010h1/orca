@@ -14,12 +14,12 @@ Class("ConnectionTester", {
 		
 		testPull: function(){
 			var result = 0;
-			result = S2JServer.performOnServer("[ 42 ]");
+			result = OrcaServer.performOnServer("[ 42 ]");
 			assertEquals_(result, 42, "Answer from Server has been the wrong number");
 		}
 		
 		/*testPush: function(){
-			S2JServer.performOnServer("[ S2JTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
+			OrcaServer.performOnServer("[ OrcaTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
 			assert(this.__class.$connectionToClientSuccessful, "Server didn't poke this client.");
 		}*/
 	}

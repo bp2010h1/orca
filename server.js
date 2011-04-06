@@ -1,4 +1,4 @@
-var S2JServer = {
+var OrcaServer = {
 	
 	_waitingForResponse: null,
 	
@@ -23,7 +23,7 @@ var S2JServer = {
 		  // to make sure the arguments and code get sent properly we must url-encode them by escape
 			args += "&arg" + (i - 1) + "=" + this.realEscape(arguments[i]);
 		}
-		var result = S2JConnection.sendSynchronously("code=" + this.realEscape(squeakCode) + args);
+		var result = OrcaConnection.sendSynchronously("code=" + this.realEscape(squeakCode) + args);
 		
 		return eval(result);
 	}

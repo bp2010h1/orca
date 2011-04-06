@@ -1,6 +1,6 @@
 
 // This scripts uses blocks, which require Squeak-classes
-S2JTests.setupSqueakEnvironment();
+OrcaTests.setupSqueakEnvironment();
 
 // Make sure, the slots a and b are handled by doesNotUnderstand_. Add the slot-accessors.
 // Enables to test the _Box-code (as it relies on doesNotUnderstand_ working).

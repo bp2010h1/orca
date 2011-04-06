@@ -27,7 +27,7 @@ for (aClass in SqueakyJS.ALL_CLASSES) {
 	SqueakyJS.ALL_CLASSES[aClass]._initializeInstanceVariables(nil);
 }
 
-S2JConnection.doIt = function(source) {
+OrcaConnection.doIt = function(source) {
   return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
 }
 
@@ -40,6 +40,6 @@ var serverBlock = function (squeakCode) {
 		for (var i = 0; i < arguments.length; i++) {
 			args.push(_unboxObject(arguments[i]));
 		}
-		return S2JServer.performOnServer.apply(S2JServer, args);
+		return OrcaServer.performOnServer.apply(OrcaServer, args);
 	});
 }

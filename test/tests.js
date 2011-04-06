@@ -2,7 +2,7 @@
 // This script must be loaded after squeaky.js to apply this switch-setting!
 SqueakyJS.DEBUG = false;
 
-var S2JTestScripts = [
+var OrcaTestScripts = [
 	"test_squeakyJS.js", 
 	"test_primitives.js", 
 	"test_blocks.js", 
@@ -12,9 +12,9 @@ var S2JTestScripts = [
 	"test_doesNotUnderstand_.js" ];
 
 // This variable is used by tests to send some kind of result back to the server. This removes the need to load classes (like ByteString)
-var S2JmockTestResult = "abc123";
+var OrcamockTestResult = "abc123";
 
-var S2JTests = {
+var OrcaTests = {
 
 	// If this is set to true, a test, that fails (or throws an error) is executed again.
 	// Only works for the actual test, not the setup or if loading the script fails.
@@ -24,18 +24,18 @@ var S2JTests = {
 	// Test API
 	// 
 	
-	// Run all tests defined in the array S2JTestScripts
+	// Run all tests defined in the array OrcaTestScripts
 	runTests: function() {
 		// The tests are executed directly in these files
-		for (testScript in S2JTestScripts) {
-			var scriptName = S2JTestScripts[testScript];
+		for (testScript in OrcaTestScripts) {
+			var scriptName = OrcaTestScripts[testScript];
 			if (typeof scriptName == "string") {
 				this.runTestScript(scriptName);
 			}
 		}
 
 		// Send the results to the server
-		S2JServer.performOnServer("[ :failed :errors | S2JJavascriptTest reportJSResults: failed and: errors ]", this.TEST_RESULTS.fail.length, this.TEST_RESULTS.error.length);
+		OrcaServer.performOnServer("[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]", this.TEST_RESULTS.fail.length, this.TEST_RESULTS.error.length);
 	},
 	
 	// Simply load the resource (relative to root)
@@ -85,7 +85,7 @@ var S2JTests = {
 	// If the slot/function setUp is present, it is called before each test*-function.
 	// If the slot (string) testedApp is present, the named application is used to load scripts (instead of default test).
 	runTestScript: function(scriptName) {
-		S2JConsole.info("Running test-script " + scriptName + "...");
+		OrcaConsole.info("Running test-script " + scriptName + "...");
 		this.currentScript = scriptName;
 		this.currentTest = "(?)";
 		var tester = null;
@@ -115,7 +115,7 @@ var S2JTests = {
 								tester[mt].apply(tester);
 								this.testOk();
 							}, function(e) {
-								if (e.S2J_IS_ASSERT_FAIL === true) {
+								if (e.Orca_IS_ASSERT_FAIL === true) {
 									this.testFail(e.message);
 								} else {
 									this.testError(e);
@@ -144,7 +144,7 @@ var S2JTests = {
 	currentTest: null,
 	
 	// Exception-object to signalize assert-fails
-	ASSERT_FAIL: function(message) { this.S2J_IS_ASSERT_FAIL = true; this.message = message; },
+	ASSERT_FAIL: function(message) { this.Orca_IS_ASSERT_FAIL = true; this.message = message; },
 
 	TEST_RESULTS: {
 		ok: 0,
@@ -214,7 +214,7 @@ var S2JTests = {
 	logError: function(errorArray, exception_message, error_type) {
 		var message = this.currentTestName() + ": " + error_type + ". Message: " + exception_message;
 		errorArray.push(message);
-		S2JConsole.info(message);
+		OrcaConsole.info(message);
 		return message;
 	},
 
@@ -274,6 +274,6 @@ var S2JTests = {
 };
 
 // For shorter test-code. Must apply the method in the context of the namespace.
-var assert = function() { S2JTests.assert.apply(S2JTests, arguments); };
-var assertRaisesError_ = function () {S2JTests.assertRaisesError_.apply(S2JTests, arguments);};
-var assertEquals_ = function() {S2JTests.assertEquals_.apply(S2JTests, arguments);};
+var assert = function() { OrcaTests.assert.apply(OrcaTests, arguments); };
+var assertRaisesError_ = function () {OrcaTests.assertRaisesError_.apply(OrcaTests, arguments);};
+var assertEquals_ = function() {OrcaTests.assertEquals_.apply(OrcaTests, arguments);};

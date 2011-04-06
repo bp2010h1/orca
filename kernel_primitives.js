@@ -255,8 +255,8 @@ _Array._addClassMethods({
 });
 
 // this should be reorganized
-if (this.S2JWidget)
-S2JWidget._addInstanceMethods({
+if (this.OrcaWidget)
+OrcaWidget._addInstanceMethods({
 	generateCssId: function() {
 		return string("id" + Date.now());
 	}

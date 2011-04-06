@@ -103,7 +103,7 @@ var _unboxIterable = function(iterable) {
 }
 var _unboxSlotObject = function(slotObject) {
 	// This unboxes all slot-values of the object. The value does not need to be returned.
-	// This is used in serialization of Slot-Objects (S2JSlotObject >> fillInstVars:guardedBy:)
+	// This is used in serialization of Slot-Objects (OrcaSlotObject >> fillInstVars:guardedBy:)
 	for (var slotName in slotObject) {
 		slotObject[slotName] = _unboxObject(slotObject[slotName]);
 	}

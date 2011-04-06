@@ -1,5 +1,5 @@
 
-var S2JConsole = {
+var OrcaConsole = {
 
 	// 
 	// Settings

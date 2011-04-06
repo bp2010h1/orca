@@ -1,5 +1,5 @@
 
-var S2JConnection = {
+var OrcaConnection = {
 
 	// 
 	// Configuration
@@ -83,20 +83,20 @@ var S2JConnection = {
 		this.request = this.createXmlRequest();
 		this.request.open("GET", this.cometUrl(), true);
 		this.request.onreadystatechange = function() {
-			// this is S2JConnection.request
+			// this is OrcaConnection.request
 			if (this.readyState == 4) {
 				if (this.status == 200) {
 					var content = this.responseText;
-					S2JConnection.doIt(content);
-					S2JConsole.statusInfo(content, this.status);
-					S2JConnection.poll();
+					OrcaConnection.doIt(content);
+					OrcaConsole.statusInfo(content, this.status);
+					OrcaConnection.poll();
 				}
 				else if (this.status == 202) {
-					S2JConnection.identifier = this.responseText;
-					S2JConsole.info("Registered with id " + S2JConnection.identifier);
-					S2JConnection.poll();
+					OrcaConnection.identifier = this.responseText;
+					OrcaConsole.info("Registered with id " + OrcaConnection.identifier);
+					OrcaConnection.poll();
 				}
-				else S2JConsole.info("disconnected");
+				else OrcaConsole.info("disconnected");
 			}
 		}
 		this.request.send(null);
@@ -131,33 +131,33 @@ var S2JConnection = {
 		this.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
 	
 		this.webSocket.onopen = function(event) {
-			S2JConsole.info("Successfully opened WebSocket.");
+			OrcaConsole.info("Successfully opened WebSocket.");
 		};
 	
 		this.webSocket.onerror = function(event) {
-			S2JConsole.info("WebSocket failed.");
+			OrcaConsole.info("WebSocket failed.");
 		};
 	
 		this.webSocket.onmessage = function(event) {
-			   S2JConsole.statusInfo(200, event.data);
-			   S2JConnection.doIt(event.data);
+			   OrcaConsole.statusInfo(200, event.data);
+			   OrcaConnection.doIt(event.data);
 		};
 	
 		this.webSocket.onclose = function() {
-			S2JConsole.info("WebSocket received close event.");
+			OrcaConsole.info("WebSocket received close event.");
 		};
 	},
 
 	sendSocket: function(message) {
 		if (this.webSocket) {
 			this.webSocket.send(message);
-			S2JConsole.log(message, 200);
+			OrcaConsole.log(message, 200);
 		}
 	},
 
 	closeSocket: function() {
 		if (this.webSocket) {
-			S2JConsole.info("WebSocket closed by client.");
+			OrcaConsole.info("WebSocket closed by client.");
 			this.webSocket.close();
 			this.webSocket = null;
 		}

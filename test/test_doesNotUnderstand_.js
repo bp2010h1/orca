@@ -1,6 +1,6 @@
 // Here, we test the doesNotUnderstandSends
 
-S2JTests.setupSqueakEnvironment();
+OrcaTests.setupSqueakEnvironment();
 
 Class("DoesNotUnderstandTester", { 
 	superclass: _Object,

@@ -1,6 +1,6 @@
 
 // This scripts uses blocks, which require Squeak-classes
-S2JTests.setupSqueakEnvironment();
+OrcaTests.setupSqueakEnvironment();
 
 Class("BlocksTester", { instanceMethods: {
 	

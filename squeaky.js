@@ -152,9 +152,9 @@ var WithDebugging = function(method) {
 						indent += "  ";
 					}
 					if (this.__class == undefined) {
-						S2JConsole.log(indent + this._classname + "." + arguments.callee.methodName);
+						OrcaConsole.log(indent + this._classname + "." + arguments.callee.methodName);
 					} else {
-						S2JConsole.log(indent + this.__class._classname + "." + arguments.callee.methodName);
+						OrcaConsole.log(indent + this.__class._classname + "." + arguments.callee.methodName);
 					}
 				}
 				var result = method.apply(this, arguments);

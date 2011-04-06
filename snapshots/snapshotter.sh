@@ -59,7 +59,7 @@ function update {
 		password: 'qW[e!sMb/Ö')	
 		installQuietly: 'Squeak2JS'.
 	
-	(Smalltalk at: #S2JSilentInstaller) install.
+	(Smalltalk at: #OrcaSilentInstaller) install.
 
    SmalltalkImage current snapshot: true andQuit: true.
 EOF

@@ -1,5 +1,5 @@
 
-//this function is a paralleled reimplementation of S2JSqueakAstToJsAst class>>#jsFunctionNameFor:
+//this function is a paralleled reimplementation of OrcaSqueakAstToJsAst class>>#jsFunctionNameFor:
 //to avoid filling the global namespace, I wrote a function which invoked will return the right function
 var _jsFunctionNameFor_ = (function (){
 	
