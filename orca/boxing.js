@@ -12,6 +12,7 @@
 // st.unboxIterable(anIterable)
 // st.unboxSlots(anObject)
 
+// API for boxing a specific type of object:
 // st.bool(aBoolean)
 // st.character(aString)
 // st.string(aString)
@@ -41,15 +42,15 @@
 		}
 		if (!nativeObject._isBoxedObject) {
 			switch( typeof(nativeObject) ) {
-				case "number": return number(nativeObject); break;
-				case "string": return string(nativeObject); break;
-				case "boolean": return bool(nativeObject); break;
-				case "function": return boundBlock(nativeObject, that); break;
+				case "number": return st.number(nativeObject); break;
+				case "string": return st.string(nativeObject); break;
+				case "boolean": return st.bool(nativeObject); break;
+				case "function": return st.boundBlock(nativeObject, that); break;
 				case "object":
 					if (isArrayObject(nativeObject)) {
-						return array(nativeObject);
+						return st.array(nativeObject);
 					} else {
-						return object(nativeObject);
+						return st.object(nativeObject);
 					}
 					break;
 				default:
@@ -204,9 +205,9 @@
 	};
 
 	// These boxing classes box fixed, immutable values
-	False._addInstanceMethods( { _unbox: function() { return false; } } );
-	True._addInstanceMethods( { _unbox: function() { return true; } } );
-	UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
+	st.False._addInstanceMethods( { _unbox: function() { return false; } } );
+	st.True._addInstanceMethods( { _unbox: function() { return true; } } );
+	st.UndefinedObject._addInstanceMethods( { _unbox: function() { return null; } } );
 
 	// This instance of Object is used by instances of OrcaBox to retrieve methods to implement Squeaks Object-protocol
 	// Methods are looked up here, when a queried slot/property is not found in the underlying native object.
@@ -233,8 +234,8 @@
 				if (methodName[methodName.length - 1] == ':') {
 					// setter. Set the unboxed, native-js, value.
 					var value = aMessage._arguments();
-					if (value.size()._greater_equals(number(1))) // If more then one argument, ignore the rest!
-						value = value.at_(number(1));
+					if (value.size()._greater_equals(st.number(1))) // If more then one argument, ignore the rest!
+						value = value.at_(st.number(1));
 					else // No arguments given when invoking setter!? Don't set an empty array.
 						Exception.signal_(string("No sufficient arguments given on a box " + methodName));
 					

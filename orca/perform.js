@@ -9,7 +9,7 @@
 	// 
 
 	st.performImpl = function(aSmalltalkSelector) {
-		var theArguments = _toArray(arguments);
+		var theArguments = st.toArray(arguments);
 		theArguments.shift();
 		var method = this[jsFunctionNameFor(_unboxObject(aSmalltalkSelector))];
 		if (method !== undefined) {
