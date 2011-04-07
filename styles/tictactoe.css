@@ -1,0 +1,22 @@
+body {
+	font-family: Tahoma;
+}
+
+table {
+	width: auto;
+}
+
+td {
+	width: 100px;
+	height: 100px;
+	border: 3px solid black;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 60px;
+	margin: 2px;
+}
+
+td:hover {
+	background-color: lightyellow;
+	cursor: pointer;
+}
