@@ -1,17 +1,22 @@
 
+// Runtime depends on: boxing.js, helpers.js
+
 // API:
-// st.performImpl(aSmalltalkSelector)
+// st.perform(aSmalltalkSelector)
 
 (function() {
+
+	// Set up Namespace
+	var home = window.st ? window.st : (window.st = {});
 
 	// 
 	// API functions
 	// 
 
-	st.performImpl = function(aSmalltalkSelector) {
+	home.perform = function(aSmalltalkSelector) {
 		var theArguments = st.toArray(arguments);
 		theArguments.shift();
-		var method = this[jsFunctionNameFor(_unboxObject(aSmalltalkSelector))];
+		var method = this[jsFunctionNameFor(st.unbox(aSmalltalkSelector))];
 		if (method !== undefined) {
 			return method.apply(this, theArguments);
 		} else {
@@ -41,7 +46,9 @@
 		"switch": "", "synchronized": "", "this": "", "throw": "", 
 		"throws": "", "transient": "", "true": "", "try": "", 
 		"typeof": "", "use": "", "var": "", "void": "", 
-		"volatile": "", "while": "", "with": "", "arguments": ""
+		"volatile": "", "while": "", "with": "", "arguments": "",
+		
+		"st": "" // Our namespace
 	};
 
 	var characterList = {
@@ -51,7 +58,7 @@
 		"*": 'times',
 		"/": 'slash',
 		"\\": 'backslash',
-		"~": 'tilde';
+		"~": 'tilde',
 		"<": 'less',
 		">": 'greater',
 		"=": 'equals',

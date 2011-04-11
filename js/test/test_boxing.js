@@ -5,7 +5,7 @@ OrcaTests.setupSqueakEnvironment();
 // Make sure, the slots a and b are handled by doesNotUnderstand_. Add the slot-accessors.
 // Enables to test the _Box-code (as it relies on doesNotUnderstand_ working).
 // This simulates, that these 4 methods exist in the squeak-image.
-_DoesNotUnderstandClass_._addInstanceMethods({
+st.doesNotUnderstandClass._addInstanceMethods({
 	a: function(){
         return this.doesNotUnderstand_(Message.selector_arguments_(string("a"), array(_toArray(arguments)))); },
 	a_: function(){
@@ -16,7 +16,7 @@ _DoesNotUnderstandClass_._addInstanceMethods({
         return this.doesNotUnderstand_(Message.selector_arguments_(string("b:"), array(_toArray(arguments)))); }
 });
 
-Class("BoxingTester", { instanceMethods: {
+st.class("BoxingTester", { instanceMethods: {
 	
 	testNativeFunctionBoundBlock: function() {
 		var box = object( { a: 23, b: function(){ return this.a; } } );

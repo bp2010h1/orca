@@ -1,4 +1,8 @@
-// Script requires: communication.js or server.js, console.js
+
+// Setup depends on: -
+// Runtime depends on: (console.js)
+
+// This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
 // API:
 // st.classes = array
@@ -15,26 +19,30 @@
 (function(){
 
 	// Set up the namespace
-	if (!st) st = {};
+	var home = window.st ? window.st : (window.st = {});
+
+	// Set up foreign namespaces
+	if (!window.st) window.st = {};
+	if (!st.communication) st.communication = {};
 
 	// Settings
-	st.DEBUG = true;
-	st.PRINT_CALLS = false;
+	if (!home.DEBUG) home.DEBUG = true;
+	if (!home.PRINT_CALLS) home.PRINT_CALLS = false;
 
 	// Globals
-	st.classes = [];
+	home.classes = [];
 
 	// 
 	// API functions
 	// 
 
-	st.peekCallStack = function() {
+	home.peekCallStack = function() {
 		return callStack[callStack.length - 1];
 	};
 
-	st.super = function(methodName) {
+	home.super = function(methodName) {
 		return function() {
-			var currentContext = st.peekCallStack();
+			var currentContext = home.peekCallStack();
 			// Accessing .__proto__ here brings us one step higher in the class-hierarchy
 			// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
 			var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
@@ -42,20 +50,21 @@
 		};
 	};
 
-	st.nonLocalReturn = function(value) {
+	home.nonLocalReturn = function(value) {
 		var blockFunction = arguments.callee.caller;
 		var e = blockFunction.nonLocalReturnException;
 		e.nonLocalReturnValue = value;
 		throw e;
 	};
 
-	st.block = function(func) {
-		var b = BlockClosure._newInstance();
-		func.nonLocalReturnException = st.peekCallStack();
+	home.block = function(func) {
+		var b = st.BlockClosure._newInstance();
+		func.nonLocalReturnException = home.peekCallStack();
 		var currentThis = arguments.callee.caller.originalThis;
 		if (currentThis == undefined) {
 			// We are in the outer-most block of a method. The 'current this' is the top of the call-stack.
-			currentThis = st.peekCallStack() && st.peekCallStack().currentThis;
+			var callStackTop = home.peekCallStack();
+			currentThis = callStackTop && callStackTop.currentThis;
 		}
 		func.originalThis = currentThis;
 		// Unboxing a real block must give the same function as when evaluating it.
@@ -74,7 +83,7 @@
 	};
 
 	// This function creates a class with a given name and attributes.
-	st.class = function(classname, attrs) {
+	home.class = function(classname, attrs) {
 		var createHelpers = function(newClassPrototype) {
 			var createMethod = function(aPrototype, methodName, method) {
 				aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
@@ -157,7 +166,7 @@
 					return new newClass._instancePrototype();
 				}
 			});
-			newClass._addInstanceVariables(['__class'], newClass);
+			newClass._addInstanceVariables(['_theClass'], newClass);
 			newClass._classname = classname;
 			
 			return newClass;
@@ -192,7 +201,7 @@
 		addMethods(newClass);
 		
 		this[classname] = newClass;
-		st.classes[st.classes.length] = newClass;
+		home.classes.push(newClass);
 		
 		return newClass;
 	};
@@ -210,8 +219,8 @@
 
 	// From here on, messages from the server potentially contain non-local-returns
 	// and must be wrapped into the appropriate wrapper-function
-	comm_home.MESSAGE_HANDLER = function(source) {
-		return eval("WithNonLocalReturn(function(){" + source + "}).apply(nil);");
+	st.communication.MESSAGE_HANDLER = function(source) {
+		return eval("WithNonLocalReturn(function(){" + source + "}).apply(st.nil);");
 	};
 
 	var DontDebugMarker = {};
@@ -219,18 +228,20 @@
 
 	// A wrapper to enable several debugging-functionalities
 	var WithDebugging = function(method) {
-		if (st.DEBUG) {
+		if (home.DEBUG) {
 			return function() {
 				try {
-					if (st.PRINT_CALLS) {
+					if (home.PRINT_CALLS) {
 						var indent = "";
 						for (var i = 0; i < callStack.length; i++) {
 							indent += "  ";
 						}
-						if (this.__class == undefined) {
-							st.console.log(indent + this._classname + "." + arguments.callee.methodName);
-						} else {
-							st.console.log(indent + this.__class._classname + "." + arguments.callee.methodName);
+						if (window.st && st.console) {
+							if (this._theClass == undefined) {
+								st.console.log(indent + this._classname + "." + arguments.callee.methodName);
+							} else {
+								st.console.log(indent + this._theClass._classname + "." + arguments.callee.methodName);
+							}
 						}
 					}
 					var result = method.apply(this, arguments);
@@ -238,7 +249,7 @@
 				} catch (e) {
 					if (e.DontDebug === DontDebugMarker) {
 						throw e;
-					} else if (st.DEBUG) {
+					} else if (home.DEBUG) {
 						debugger;
 					}
 				}

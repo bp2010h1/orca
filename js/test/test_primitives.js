@@ -5,7 +5,7 @@ OrcaTests.setupSqueakEnvironment();
 
 //downside of these tests is that once the primitives change, these tests have to be updated
 
-Class("PrimitivesTester", { 
+st.class("PrimitivesTester", { 
 	
 	classInstanceVariables: [ ],
 	instanceVariables: [ "anObject", "aNumber", "aString", "aFloat", "anArray" ],

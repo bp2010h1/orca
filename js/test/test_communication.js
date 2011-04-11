@@ -2,14 +2,14 @@
 // This tests is meant to ensure that the server can push code.
 // Add more tests in general.
 
-Class("ConnectionTester", { 
+st.class("ConnectionTester", { 
 	
 	classInstanceVariables: [ "connectionToClientSuccessful" ],
 	
 	instanceMethods: {
 		
 		setUp: function(){
-			this.__class.$connectionToClientSuccessful = false;
+			this._theClass.$connectionToClientSuccessful = false;
 		},
 		
 		testPull: function(){
@@ -20,7 +20,7 @@ Class("ConnectionTester", {
 		
 		/*testPush: function(){
 			OrcaServer.performOnServer("[ OrcaTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
-			assert(this.__class.$connectionToClientSuccessful, "Server didn't poke this client.");
+			assert(this._theClass.$connectionToClientSuccessful, "Server didn't poke this client.");
 		}*/
 	}
 	

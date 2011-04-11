@@ -1,4 +1,7 @@
 
+// Setup depends on: -
+// Runtime depends on: -
+
 // API:
 // st.console.debug(text)
 // st.console.info(text)
@@ -12,25 +15,26 @@
 (function() {
 
 	// Set up the namespace
-	var console_home = st.console | (st.console = {});
+	if (!window.st) window.st = {};
+	var home = st.console ? st.console : (st.console = {});
 
 	// 
 	// Settings
 	// 
 
-	console_home.USE_FIREBUG = true;
+	if (!home.USE_FIREBUG) home.USE_FIREBUG = true;
 
 	// 
 	// API functions
 	// 
 
-	console_home.log = function(text) {
-		if (console_home.USE_FIREBUG) {
+	home.log = function(text) {
+		if (home.USE_FIREBUG) {
 			console.log(text);
 		}
 	};
 
-	console_home.statusInfo = function(text, httpStatus) {
+	home.statusInfo = function(text, httpStatus) {
 		if ((httpStatus == 200) || (httpStatus == 201)) {
 			logHTTP(text, httpStatus, "OK");
 		}
@@ -42,14 +46,18 @@
 		} 
 	};
 
-	console_home.print = function(obj) {
+	home.print = function(obj) {
 		for (index in obj) {
-			console_home.log(index + " = " + obj[index]);
+			home.log(index + " = " + obj[index]);
 		}
 	};
 
+	// 
+	// Private functions
+	// 
+
 	var logHTTP = function(text, httpStatus, statusText) {
-		console_home.log("HTTP -" + statusText + "(" + httpStatus + "). Content: " + text);
+		home.log("HTTP -" + statusText + "(" + httpStatus + "). Content: " + text);
 	}
 
 })();

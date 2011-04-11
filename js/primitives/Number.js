@@ -1,8 +1,10 @@
 
+// Runtime depends on: boxing.js
+
 (function() {
 
-	_Number._addInstanceMethods({
-		printString: function() { return string(this.original$.toString()); }
+	st.Number._addInstanceMethods({
+		printString: function() { return st.string(st.unbox(this).toString()); }
 	});
 
 })();

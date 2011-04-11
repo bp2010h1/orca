@@ -3,18 +3,19 @@
 // All relevant classes are enhanced by that functionality and there are 
 // several global functions to box or unbox objects.
 
-// This script adds the Global OrcaBox
+// Setup depends on: classes, classes.js, perform.js
+// Runtime depends on: bootstrap.js
 
 // API:
-// st.boxObject(anyObject)
-// st.unboxObject(anyObject)
+// st.box(anyObject)
+// st.unbox(anyObject)
 // st.boxIterable(anIterable)
 // st.unboxIterable(anIterable)
 // st.unboxSlots(anObject)
 
 // API for boxing a specific type of object:
 // st.bool(aBoolean)
-// st.character(aString)
+// st.char(aString)
 // st.string(aString)
 // st.number(aNumber)
 // st.array(anArray)
@@ -23,11 +24,14 @@
 
 (function() {
 
+	// Set up the namespace
+	var home = window.st ? window.st : (window.st = {});
+
 	// 
 	// API functions
 	// 
 
-	st.unboxObject = function(anyObject) {
+	home.unbox = function(anyObject) {
 		if (anyObject != undefined && anyObject != null && anyObject._isBoxedObject) {
 			return anyObject._unbox();
 		}
@@ -36,21 +40,21 @@
 
 	// The 'that' parameter is optional and will be undefined otherwise.
 	// It is relevant when boxing functions, to bind them to their containing object when invoking them.
-	st.boxObject = function(nativeObject, that) {
+	home.box = function(nativeObject, that) {
 		if (nativeObject === null || nativeObject === undefined) {
 			return st.nil;
 		}
 		if (!nativeObject._isBoxedObject) {
 			switch( typeof(nativeObject) ) {
-				case "number": return st.number(nativeObject); break;
-				case "string": return st.string(nativeObject); break;
-				case "boolean": return st.bool(nativeObject); break;
-				case "function": return st.boundBlock(nativeObject, that); break;
+				case "number": return home.number(nativeObject); break;
+				case "string": return home.string(nativeObject); break;
+				case "boolean": return home.bool(nativeObject); break;
+				case "function": return home.boundBlock(nativeObject, that); break;
 				case "object":
 					if (isArrayObject(nativeObject)) {
-						return st.array(nativeObject);
+						return home.array(nativeObject);
 					} else {
-						return st.object(nativeObject);
+						return home.object(nativeObject);
 					}
 					break;
 				default:
@@ -61,59 +65,59 @@
 		return nativeObject;
 	};
 
-	st.unboxIterable = function(iterable) {
+	home.unboxIterable = function(iterable) {
 		var unboxed = [];
 		for (var i = 0; i < iterable.length; i++) {
-			unboxed.push(st.unboxObject(iterable[i]));
+			unboxed.push(home.unbox(iterable[i]));
 		}
 		return unboxed;
 	}
 
-	st.boxIterable = function(iterable) {
+	home.boxIterable = function(iterable) {
 		var boxed = [];
 		for (var i = 0; i < iterable.length; i++) {
-			boxed.push(st.boxObject(iterable[i]));
+			boxed.push(home.box(iterable[i]));
 		}
 		return boxed;
 	}
 
-	st.unboxSlots = function(anObject) {
+	home.unboxSlots = function(anObject) {
 		// This unboxes all slot-values of the object. The value does not need to be returned.
 		// This is used in serialization of Slot-Objects (OrcaSlotObject >> fillInstVars:guardedBy:)
 		for (var slotName in anObject) {
-			anObject[slotName] = st.unboxObject(anObject[slotName]);
+			anObject[slotName] = home.unbox(anObject[slotName]);
 		}
 	}
 
 	// Functions to bootstrap primitive values and wrap them into 'squeak'-objects
-	// Most functions are used in translated code directly, to avoid switch-statement in st.boxObject()
-	// (Instead of bool(), compiled code uses _true/_false directly. bool() is used in kernel_primitives.js etc.)
+	// Most functions are used in translated code directly, to avoid switch-statement in st.box()
+	// (Instead of bool(), compiled code uses st.true/st.false directly. bool() is used in kernel_primitives.js etc.)
 
-	st.bool = function(aBool) { if (aBool) { return _true; } else { return _false; } };
+	home.bool = function(aBool) { if (aBool) { return st.true; } else { return st.false; } };
 
-	st.character = function(aString) { return Character._wrapping(aString); };
+	home.char = function(aString) { return st.char._wrapping(aString); };
 
-	st.string = function(aString) { return ByteString._wrapping(aString); };
+	home.string = function(aString) { return st.ByteString._wrapping(aString); };
 
-	st.number = function(aNumber) { return Float._wrapping(aNumber); };
+	home.number = function(aNumber) { return st.Float._wrapping(aNumber); };
 
-	st.array = function(anArray) { return _Array._wrapping(anArray); };
+	home.array = function(anArray) { return st.Array._wrapping(anArray); };
 
-	st.object = function(anObject) { return OrcaBox._wrapping(anObject); };
+	home.object = function(anObject) { return OrcaBox._wrapping(anObject); };
 
-	st.boundBlock = function(func, that) {
+	home.boundBlock = function(func, that) {
 		// if we box a javascript function into a smalltalk block we must bind it on creation
 		// Non-local-return handling is not required here
-		var b = BlockClosure._newInstance();
+		var b = st.BlockClosure._newInstance();
 		// This block is unboxed to func, but additional things happen on evaluation
 		b.original$ = func;
 		b.evaluated$ = function() {
-			return st.boxObject(func.apply(that, _unboxIterable(arguments)));
+			return home.box(func.apply(that, st.unboxIterable(arguments)));
 		}
 		b.constructor$ = function() {
 			// When using a library-function as constructor, unpack the arguments
 			// Use the actual 'this' instead of the stored 'that'
-			return func.apply(this, _unboxIterable(arguments));
+			return func.apply(this, st.unboxIterable(arguments));
 		}
 		// Why the prototype-slot is set, see _curried() in kernel_prototype.js
 		b.constructor$.prototype = func.prototype;
@@ -126,33 +130,7 @@
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
-	var deprecatedError = function(methodName) {
-		var msg = "We have an obsolete " + methodname + "()-call! Fix it.";
-		alert(msg);
-		throw msg;
-	};
-
 	st.Object._addInstanceMethods({
-		// TODO if we're sure everything is fixed, remove these warnings.
-		jsEval: function() {
-			deprecatedError("jsEval (which is EVIL!!)");
-		},
-		js: function() {
-			deprecatedError("js");
-		},
-		js_: function() {
-			deprecatedError("js:");
-		},
-		slot_be_: function() {
-			deprecatedError("slot:be:");
-		},
-		slot_: function() {
-			deprecatedError("slot:");
-		},
-		slot_apply_: function() {
-			deprecatedError("slot:apply:");
-		},
-		
 		_unbox: function() {
 			// Be tolerant: It's still possible to pass a pure-Squeak object into a library-function
 			return this;
@@ -165,8 +143,8 @@
 	// Class, that will wrap native javascript-objects to implement the Object-interface.
 	// Additionally, it adds accessor-methods for all fields to provide a squeak-API to
 	// set slots on javascript-objects.
-	Class("OrcaBox", { 
-		superclass: _DoesNotUnderstandClass_, 
+	st.class("OrcaBox", {
+		superclass: st.doesNotUnderstandClass,
 		instanceMethods: {
 			_isBoxedObject: isBoxedObject,
 			
@@ -183,15 +161,18 @@
 			},
 			
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
-			perform_: st.performImpl,
-			perform_with_: st.performImpl,
-			perform_with_with_: st.performImpl,
-			perform_with_with_with_: st.performImpl,
+			perform_: st.perform,
+			perform_with_: st.perform,
+			perform_with_with_: st.perform,
+			perform_with_with_with_: st.perform,
 			perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
-				return st.performImpl.apply(this, st.unboxObject(anArgumentsCollection));
+				return st.perform.apply(this, home.unbox(anArgumentsCollection));
 			}
 		}
 	});
+	// Remove the OrcaBox class from the st-namespace, make it local
+	var OrcaBox = st.OrcaBox;
+	delete st.OrcaBox;
 
 	// There are multiple js-'classes', that will be wrapped into a Squeak-Array
 	var arrayConstructors = [Array, NodeList, HTMLCollection];
@@ -215,7 +196,7 @@
 	dummyObjectInstance.doesNotUnderstand_ = function(msg) { return st.nil; };
 
 	// These boxing classes box variable values and are all added the same functionality.
-	var boxingClasses = [st.OrcaBox, st.ByteString, st.Number, st.Character, st.BlockClosure, st.Array];
+	var boxingClasses = [OrcaBox, st.ByteString, st.Number, st.Character, st.BlockClosure, st.Array];
 	for (var index in boxingClasses) {
 		var aClass = boxingClasses[index];
 		aClass._addClassMethods({
@@ -230,23 +211,23 @@
 				return this.original$[slotName];
 			},
 			doesNotUnderstand_: function(aMessage) {
-				var methodName = st.unboxObject(aMessage.selector());
+				var methodName = home.unbox(aMessage.selector());
 				if (methodName[methodName.length - 1] == ':') {
 					// setter. Set the unboxed, native-js, value.
 					var value = aMessage._arguments();
-					if (value.size()._greater_equals(st.number(1))) // If more then one argument, ignore the rest!
-						value = value.at_(st.number(1));
+					if (value.size()._greater_equals(home.number(1))) // If more then one argument, ignore the rest!
+						value = value.at_(home.number(1));
 					else // No arguments given when invoking setter!? Don't set an empty array.
 						Exception.signal_(string("No sufficient arguments given on a box " + methodName));
 					
-					this.original$[methodName.substring(0, methodName.length - 1)] = st.unboxObject(value);
+					this.original$[methodName.substring(0, methodName.length - 1)] = home.unbox(value);
 					return value;
 				} else {
 					// getter. Second parameter relevant, if slot contains a function.
 					// For most boxing classes, the javascript-native is hidden totally (this implementation).
 					// OrcaBox refines this method (_hiddenGetter_) to also check the underlying original$ for the slot
 					// An example is the slot 'value', which is important on a DOM-TextArea and also implemented in Object
-					return st.boxObject(this._hiddenGetter_(methodName), this.original$);
+					return home.box(this._hiddenGetter_(methodName), this.original$);
 				}
 			},
 			_unbox: function() {

@@ -1,4 +1,7 @@
 
+// Setup depends on: -
+// Runtime depends on: console.js
+
 // API:
 // st.communication.setup()
 // st.communication.connect()
@@ -17,17 +20,18 @@
 (function() {
 
 	// Set up the namespace
-	var comm_home = st.communication | (st.communication = {});
+	if (!window.st) window.st = {};
+	var home = st.communication ? st.communication : (st.communication = {});
 
 	// 
 	// Settings
 	// 
 
-	comm_home.PREFER_WS = true;
-	comm_home.METHOD_INVOCATION_PATH = "/mi";
-	comm_home.WEBSOCKET_PATH = "/ws";
-	comm_home.XHR_PATH = "/xhr";
-	comm_home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message) };
+	if (!home.PREFER_WS) home.PREFER_WS = true;
+	if (!home.METHOD_INVOCATION_PATH) home.METHOD_INVOCATION_PATH = "/mi";
+	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "/ws";
+	if (!home.XHR_PATH) home.XHR_PATH = "/xhr";
+	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message) };
 
 	// 
 	// Local variables
@@ -41,26 +45,26 @@
 	// 
 
 	// re-read the PREFER_WS-flag
-	comm_home.setup = function() {
+	home.setup = function() {
 		connectionHandler = useWs() ? createWsHandler() : createCometHandler();
 	};
 
-	comm_home.connect = function() {
+	home.connect = function() {
 		if (!connectionHandler.isOpen())
 			connectionHandler.open();
 	};
 
-	comm_home.send = function(data) {
+	home.send = function(data) {
 		if (connectionHandler.isOpen())
 			return connectionHandler.send(data);
 	};
 
-	comm_home.sendSynchronously = function(data) {
+	home.sendSynchronously = function(data) {
 		if (connectionHandler.isOpen())
 			return connectionHandler.sendSynchronously(data);
 	};
 
-	comm_home.disconnect = function() {
+	home.disconnect = function() {
 		if (synchronousRequest)
 			closeRequest(synchronousRequest);
 		if (connectionHandler.isOpen())
@@ -68,10 +72,10 @@
 	};
 
 	// Use the configured message-handler to evaluate and log the content
-	comm_home.handleMessage = function(content, status) {
+	home.handleMessage = function(content, status) {
 		var result;
 		try {
-			result = comm_home.MESSAGE_HANDLER(content);
+			result = home.MESSAGE_HANDLER(content);
 		} catch (e) {
 			st.console.log("Error handling the content of a server-message: " + e + 
 			"\rMessage was: " + content);
@@ -87,7 +91,7 @@
 	var sendSynchronouslyImpl = function(data) {
 		if (data) {
 			synchronousRequest = createXmlRequest();
-			synchronousRequest.open("POST", document.location.href + comm_home.METHOD_INVOCATION_PATH, false);
+			synchronousRequest.open("POST", document.location.href + home.METHOD_INVOCATION_PATH, false);
 			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			synchronousRequest.send(data);
 			var result = synchronousRequest.responseText;
@@ -97,7 +101,7 @@
 	}
 
 	var useWs = function() {
-		return comm_home.PREFER_WS && ("WebSocket" in window);
+		return home.PREFER_WS && ("WebSocket" in window);
 	};
 
 	var createXmlRequest = function() {
@@ -114,7 +118,7 @@
 		var identifier = null;
 
 		var cometUrl = function() {
-			return document.location.href + comm_home.XHR_PATH + (identifier ? ("?id=" + identifier) : "");
+			return document.location.href + home.XHR_PATH + (identifier ? ("?id=" + identifier) : "");
 		};
 
 		var poll = function() {
@@ -123,7 +127,7 @@
 			request.onreadystatechange = function() {
 				if (request.readyState == 4) {
 					if (request.status == 200) {
-						comm_home.handleMessage(request.responseText, request.status);
+						home.handleMessage(request.responseText, request.status);
 						poll();
 					}
 					else if (request.status == 202) {
@@ -154,7 +158,7 @@
 				closeRequest(request);
 				request = null;
 			},
-			isOpened: function() {
+			isOpen: function() {
 				return request;
 			}
 		};
@@ -165,7 +169,7 @@
 
 		return {
 			open: function() {
-				webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + comm_home.WEBSOCKET_PATH);
+				webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + home.WEBSOCKET_PATH);
 				webSocket.onopen = function(event) {
 					st.console.log("Successfully opened WebSocket: " + event);
 				};
@@ -173,7 +177,7 @@
 					st.console.log("WebSocket failed: " + event);
 				};
 				webSocket.onmessage = function(event) {					
-					comm_home.handleMessage(event.data, 200);
+					home.handleMessage(event.data, 200);
 				};
 				webSocket.onclose = function() {
 					st.console.log("WebSocket received close event.");
@@ -189,13 +193,13 @@
 				webSocket = null;
 				st.console.log("WebSocket closed by client.");
 			},
-			isOpened: function() {
+			isOpen: function() {
 				return webSocket;
 			}
 		};
 	};
 
 	// Once setup the default connectionHandler-object
-	comm_home.setup();
+	home.setup();
 
 })();

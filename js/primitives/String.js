@@ -1,14 +1,31 @@
 
 (function() {
 
-	_String._addInstanceMethods({
+	st.String._addInstanceMethods({
 		// This is not actually a primitive function, but behaves in the same way the #, method does
-		_comma: function(anotherString) { return string(this.original$ + anotherString.original$); },
-		_equals: function(anotherString) { return bool(this.original$ == anotherString.original$); },
-		_equals_equals: function(anotherString) { return this._equals(anotherString); },
-		isEmpty: function() { return bool(this.original$.length === 0); },
-		size: function() { return number(this.original$.length); },
-		at_: function(num) { return character(this.original$[num.original$ - 1]); }
+		_comma: function(anotherString) { 
+			return st.string(st.unbox(this) + st.unbox(anotherString));
+		},
+		
+		_equals: function(anotherString) { 
+			return st.bool(st.unbox(this) == st.unbox(anotherString));
+		},
+		
+		_equals_equals: function(anotherString) { 
+			return this._equals(anotherString);
+		},
+		
+		isEmpty: function() { 
+			return st.bool(st.unbox(this).length === 0);
+		},
+		
+		size: function() { 
+			return st.number(st.unbox(this).length);
+		},
+		
+		at_: function(num) { 
+			return st.char(st.unbox(this)[st.unbox(num) - 1]);
+		}
 	});
 
 	/*

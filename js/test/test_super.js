@@ -1,14 +1,14 @@
 
-Class("A", { instanceMethods: { a: function(r) { return "abc" + r; } }});
-	Class("A1", { superclass: A, instanceMethods: { a: function(r) { return _super('a')(r + "hehe"); } }});
-		Class("NoMethodsA1", { superclass: A1});
-			Class("A2", { superclass: NoMethodsA1, instanceMethods: { a: function(r) { return _super('a')(r + 2); } }});
-	Class("NoMethods1", { superclass: A});
-		Class("B", { superclass: NoMethods1, instanceMethods: { a: function(r) { return _super('a')(3333); } }});
-		Class("NoMethods2", { superclass: NoMethods1});
-			Class("A3", { superclass: NoMethods2, instanceMethods: { a: function(r) { return _super('a')(r + "hi"); } }});
-	Class("NewImplementation", { superclass: A, instanceMethods: { a: function() { return "ThisIsNew"; } }});
-		Class("A4", { superclass: NewImplementation, instanceMethods: { a: function(r) { return _super('a')() + r; } }});
+st.class("A", { instanceMethods: { a: function(r) { return "abc" + r; } }});
+	st.class("A1", { superclass: st.A, instanceMethods: { a: function(r) { return _super('a')(r + "hehe"); } }});
+		st.class("NoMethodsA1", { superclass: st.A1});
+			st.class("A2", { superclass: st.NoMethodsA1, instanceMethods: { a: function(r) { return _super('a')(r + 2); } }});
+	st.class("NoMethods1", { superclass: st.A});
+		st.class("B", { superclass: st.NoMethods1, instanceMethods: { a: function(r) { return _super('a')(3333); } }});
+		st.class("NoMethods2", { superclass: st.NoMethods1});
+			st.class("A3", { superclass: st.NoMethods2, instanceMethods: { a: function(r) { return _super('a')(r + "hi"); } }});
+	st.class("NewImplementation", { superclass: st.A, instanceMethods: { a: function() { return "ThisIsNew"; } }});
+		st.class("A4", { superclass: st.NewImplementation, instanceMethods: { a: function(r) { return _super('a')() + r; } }});
 
 // Build up convenience to create instances of the test-classes
 classes = [ "A", "A1", "NoMethodsA1", "A2", "NoMethods1", "B", "NoMethods2", "A3", "NewImplementation", "A4" ];
@@ -17,7 +17,7 @@ for (cl in classes) {
     return clazz._newInstance() }; })(this[classes[cl]]);
 }
 
-Class("SuperTester", {
+st.class("SuperTester", {
 	
 	instanceMethods: {
 		

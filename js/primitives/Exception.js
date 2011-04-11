@@ -1,7 +1,7 @@
 
 (function() {
 
-	Exception._addInstanceMethods({
+	st.Exception._addInstanceMethods({
 		signal: function() { 
 			throw this;
 		}

@@ -1,23 +1,30 @@
 
+// Runtime depends on: boxing.js
+
 (function() {
 
-	_Object._addInstanceMethods({
+	st.Object._addInstanceMethods({
+		
 		doesNotUnderstand_: function(message) {
 			// TODO implement this correctly
 			var msg = this + "(instance of " + this._class().name() + 
-					") did not understand " + _unboxObject(message.selector());
-			Exception.signal_(string(msg));
+					") did not understand " + st.unbox(message.selector());
+			st.Exception.signal_(st.string(msg));
 		},
-		_class: function() { return this.__class; },
+		
+		_class: function() { return this._theClass; },
+		
 		halt: function() { debugger; },
-		// _perform_ is implemented in boxing.js
-		perform_: _perform_,
-		perform_with_: _perform_,
-		perform_with_with_: _perform_,
-		perform_with_with_with_: _perform_,
+		
+		// st.perform is implemented in boxing.js
+		perform_: st.perform,
+		perform_with_: st.perform,
+		perform_with_with_: st.perform,
+		perform_with_with_with_: st.perform,
 		perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
-			return _perform_.apply(this, _unboxObject(anArgumentsCollection));
+			return st.perform.apply(this, st.unbox(anArgumentsCollection));
 		}
+		
 	});
 
 })();

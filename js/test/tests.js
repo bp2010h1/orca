@@ -176,7 +176,7 @@ var OrcaTests = {
 		}
 	},
 	assertEquals_: function (anObject, aReferenceObject, exceptionMessage) {
-    return assert(_unboxObject(anObject) == aReferenceObject, exceptionMessage);
+    return assert(st.unbox(anObject) == aReferenceObject, exceptionMessage);
 	},
 	assertRaisesError_: function (aFunction, exceptionMessage){
 		var errorRaised = false;

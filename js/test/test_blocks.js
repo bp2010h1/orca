@@ -2,7 +2,7 @@
 // This scripts uses blocks, which require Squeak-classes
 OrcaTests.setupSqueakEnvironment();
 
-Class("BlocksTester", { instanceMethods: {
+st.class("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {
 		this.instVar = string("instVar");
