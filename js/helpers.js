@@ -5,6 +5,7 @@
 // API:
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
+// st.getRandomInt(min, max)
 
 (function() {
 
@@ -28,6 +29,11 @@
 		// of the newly created object (it's __proto__-slot) will be the prototype of the function applied on the new-operator.
 		f.prototype = func.prototype;
 		return f;
+	};
+
+	// source: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Math/random
+	home.getRandomInt = function(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
 	};
 
 })();

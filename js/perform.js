@@ -3,6 +3,7 @@
 
 // API:
 // st.perform(aSmalltalkSelector)
+// st.performMethodFrom(aSmalltalkSelector, methodContainer)
 
 (function() {
 
@@ -14,15 +15,20 @@
 	// 
 
 	home.perform = function(aSmalltalkSelector) {
+		return home.performMethodFrom.call(this, aSmalltalkSelector, this);
+	};
+
+	// Perform a method on the current this, but look it up in a separate object
+	home.performMethodFrom = function(aSmalltalkSelector, methodContainer) {
 		var theArguments = st.toArray(arguments);
 		theArguments.shift();
-		var method = this[jsFunctionNameFor(st.unbox(aSmalltalkSelector))];
+		var method = methodContainer[jsFunctionNameFor(st.unbox(aSmalltalkSelector))];
 		if (method !== undefined) {
 			return method.apply(this, theArguments);
 		} else {
 			return this.doesNotUnderstand_(st.Message.selector_arguments_(aSmalltalkSelector, st.array(theArguments)));
 		}
-	};
+	}
 
 	// 
 	// Private functions and variables

@@ -280,6 +280,7 @@
 			}
 			catch( e ) {
 				callStack.pop();
+				e.method = method;
 				if ( e === lastCallee ) {
 					return e.nonLocalReturnValue;
 				} else {

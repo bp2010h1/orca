@@ -148,14 +148,14 @@
 		instanceMethods: {
 			_isBoxedObject: isBoxedObject,
 
-			_hiddenGetter_: function(slotName) {
-				var result = this.original$[slotName];
+			_hiddenGetter: function(selector) {
+				var result = this.original$[selector];
 				// First check, if the underlying object has this slot.
 				// If not, try to invoke the corresponding Method implemented on Object (e.g. ifNil:ifNotNil:)
 				// If this is not present, return nil.
 				if (result === undefined) {
-					// Get the method to be invoked from global "dummy-method-dictionary"; invoke it on ourselves.
-					result = dummyObjectInstance[slotName].apply(this);
+					// Get the method to be invoked from global "-method-dictionary"; invoke it on ourselves.
+					result = st.performMethodFrom(selector, dummyObjectInstance);
 				}
 				return result;
 			},
@@ -207,7 +207,7 @@
 			}
 		});
 		aClass._addInstanceMethods({
-			_hiddenGetter_: function(slotName) {
+			_hiddenGetter: function(slotName) {
 				return this.original$[slotName];
 			},
 			doesNotUnderstand_: function(aMessage) {
@@ -225,9 +225,9 @@
 				} else {
 					// getter. Second parameter relevant, if slot contains a function.
 					// For most boxing classes, the javascript-native is hidden totally (this implementation).
-					// OrcaBox refines this method (_hiddenGetter_) to also check the underlying original$ for the slot
+					// OrcaBox refines this method (_hiddenGetter) to also check the underlying original$ for the slot
 					// An example is the slot 'value', which is important on a DOM-TextArea and also implemented in Object
-					return home.box(this._hiddenGetter_(methodName), this.original$);
+					return home.box(this._hiddenGetter(methodName), this.original$);
 				}
 			},
 			_unbox: function() {

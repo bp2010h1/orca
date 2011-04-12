@@ -1,6 +1,6 @@
 
 // Setup depends on: -
-// Runtime depends on: console.js
+// Runtime depends on: console.js, helpers.js
 
 // API:
 // st.communication.setup()
@@ -12,7 +12,6 @@
 
 // Settings:
 // st.communication.PREFER_WS (boolean)
-// st.communication.METHOD_INVOCATION_PATH (string)
 // st.communication.WEBSOCKET_PATH (string)
 // st.communication.XHR_PATH (string)
 // st.communication.MESSAGE_HANDLER (function(string))
@@ -28,9 +27,8 @@
 	// 
 
 	if (!home.PREFER_WS) home.PREFER_WS = true;
-	if (!home.METHOD_INVOCATION_PATH) home.METHOD_INVOCATION_PATH = "/mi";
-	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "/ws";
-	if (!home.XHR_PATH) home.XHR_PATH = "/xhr";
+	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
+	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
 	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message) };
 
 	// 
@@ -39,6 +37,7 @@
 
 	var connectionHandler;
 	var synchronousRequest;
+	var identifier = st.getRandomInt(0, 4294967296);
 
 	// 
 	// API functions
@@ -59,9 +58,9 @@
 			return connectionHandler.send(data);
 	};
 
-	home.sendSynchronously = function(data) {
+	home.sendSynchronously = function(data, urlPath) {
 		if (connectionHandler.isOpen())
-			return connectionHandler.sendSynchronously(data);
+			return connectionHandler.sendSynchronously(data, urlPath);
 	};
 
 	home.disconnect = function() {
@@ -88,10 +87,10 @@
 	// Private functions
 	// 
 
-	var sendSynchronouslyImpl = function(data) {
+	var sendSynchronouslyImpl = function(data, url) {
 		if (data) {
 			synchronousRequest = createXmlRequest();
-			synchronousRequest.open("POST", document.location.href + home.METHOD_INVOCATION_PATH, false);
+			synchronousRequest.open("POST", fullURL(url), false);
 			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			synchronousRequest.send(data);
 			var result = synchronousRequest.responseText;
@@ -112,27 +111,25 @@
 		// TODO this is not pretty: this abort()-call always results in 
 		// a "Failed to load resource" in the browser...
 		request.abort();
-	}
+	};
+
+	var fullURL = function(urlPath) {
+		var baseUrl = document.location.href;
+		if (!(/\/$/.test(baseUrl))){
+			baseUrl = baseUrl + "/";
+		}
+		return baseUrl + urlPath + "?id=" + identifier;
+	};
 
 	var createCometHandler = function() {
-		var identifier = null;
-
-		var cometUrl = function() {
-			return document.location.href + home.XHR_PATH + (identifier ? ("?id=" + identifier) : "");
-		};
 
 		var poll = function() {
 			request = createXmlRequest();
-			request.open("GET", cometUrl(), true);
+			request.open("GET", fullURL(home.XHR_PATH), true);
 			request.onreadystatechange = function() {
 				if (request.readyState == 4) {
 					if (request.status == 200) {
 						home.handleMessage(request.responseText, request.status);
-						poll();
-					}
-					else if (request.status == 202) {
-						identifier = request.responseText;
-						st.console.log("This client registered with id " + identifier);
 						poll();
 					}
 					else st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
@@ -146,11 +143,11 @@
 				poll();
 			},
 			send: function(data) {
-				return this.sendSynchronously(data);
+				return this.sendSynchronously(data, home.XHR_PATH);
 			},
-			sendSynchronously: function(data) {
+			sendSynchronously: function(data, url) {
 				this.close();
-				var result = sendSynchronouslyImpl(data);
+				var result = sendSynchronouslyImpl(data, url);
 				this.poll();
 				return result;
 			},
@@ -169,7 +166,7 @@
 
 		return {
 			open: function() {
-				webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + home.WEBSOCKET_PATH);
+				webSocket = new WebSocket("ws://" + fullURL(home.WEBSOCKET_PATH).split("//")[1]);
 				webSocket.onopen = function(event) {
 					st.console.log("Successfully opened WebSocket: " + event);
 				};
