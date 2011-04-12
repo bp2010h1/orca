@@ -7,11 +7,13 @@
 ProtoObject._addClassMethods({
 	basicNew: function() { return this._newInstance(); },
 	_new: function() { return this.basicNew().initialize(); },
-	name: function() { return this._classname; }
+	name: function() { return string(this._classname); },
+	isBehavior: function() { return _true; }
 });
 ProtoObject._addInstanceMethods({
 	_equals_equals: function(anObject) { return bool(this === anObject); },
-	identityHash: function() { return number(this.instanceNumber$); }
+	identityHash: function() { return number(this.instanceNumber$); },
+	isBehavior: function() { return _false; }
 });
 
 _Object._addInstanceMethods({
@@ -30,6 +32,12 @@ _Object._addInstanceMethods({
 	perform_with_with_with_: _perform_,
 	perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
 		return _perform_.apply(this, _unboxObject(anArgumentsCollection));
+	}
+});
+
+_Object._addClassMethods({
+	newOnServer: function() {
+		return OrcaServer.passMessage(this, Message.selector_(string("newOnServer")));
 	}
 });
 

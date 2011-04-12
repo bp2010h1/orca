@@ -13,7 +13,7 @@ var OrcaConnection = {
 	
 	webSocket: null,
 	request: null,
-	identifier: null,
+	identifier: getRandomInt(0, 4294967296),
 
 	// 
 	// API
@@ -37,11 +37,11 @@ var OrcaConnection = {
 		}
 	},
 	
-	sendSynchronously: function(data) {
+	sendSynchronously: function(data, url) {
 		if (data) {
 			if (!this.useWs()) this.closeComet();
 			this.request = this.createXmlRequest();
-			this.request.open("POST", this.methodInvocationUrl(), false);
+			this.request.open("POST", url, false);
 			this.request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			this.request.send(data);
 			var result = this.request.responseText;
@@ -67,16 +67,27 @@ var OrcaConnection = {
 	},
 
 	cometUrl: function() {
-		if (this.identifier) return document.location.href + "/xhr?id=" + this.identifier;
-		return document.location.href+"/xhr";
+		return this.serverUrl() + "xhr?id=" + this.identifier;
 	},
 
 	openComet: function() {
 		if (!this.request) this.poll();
 	},
 	
-	methodInvocationUrl: function() {
-		return document.location.href+"/mi";
+	codeExecutionUrl: function() {
+		return this.serverUrl() + "mi";
+	},
+	
+	remoteMessageSendUrl: function() {
+		return this.serverUrl() + "send?id=" + this.identifier;
+	},
+	
+	serverUrl: function() {
+		var baseUrl = document.location.href
+		if (/\/$/.test(baseUrl)){
+			return baseUrl;
+		}
+		return baseUrl + "/";
 	},
 	
 	poll: function() {
@@ -89,11 +100,6 @@ var OrcaConnection = {
 					var content = this.responseText;
 					OrcaConnection.doIt(content);
 					OrcaConsole.statusInfo(content, this.status);
-					OrcaConnection.poll();
-				}
-				else if (this.status == 202) {
-					OrcaConnection.identifier = this.responseText;
-					OrcaConsole.info("Registered with id " + OrcaConnection.identifier);
 					OrcaConnection.poll();
 				}
 				else OrcaConsole.info("disconnected");
@@ -128,7 +134,7 @@ var OrcaConnection = {
 	
 	openSocket: function() {
 	
-		this.webSocket = new WebSocket("ws://" + document.location.href.split("//")[1] + "/ws");
+		this.webSocket = new WebSocket("ws://" + this.serverUrl().split("//")[1] + "/ws");
 	
 		this.webSocket.onopen = function(event) {
 			OrcaConsole.info("Successfully opened WebSocket.");

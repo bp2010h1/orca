@@ -207,6 +207,7 @@ var WithNonLocalReturn = function(method) {
 		}
 		catch( e ) {
 			CALL_STACK.pop();
+			e.method = method;
 			if ( e === lastCallee ) {
 				return e.nonLocalReturnValue;
 			} else {
