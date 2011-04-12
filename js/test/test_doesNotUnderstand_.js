@@ -1,12 +1,13 @@
 // Here, we test the doesNotUnderstandSends
 
-OrcaTests.setupSqueakEnvironment();
+st.tests.setupSqueakEnvironment();
 
 st.class("DoesNotUnderstandTester", { 
+
 	superclass: st.Object,
 	classInstanceVariables: [ ],
 	instanceVariables: [ "lastDoesNotUnderstand", "lastArguments" ],
-	
+
 	instanceMethods: {
 		
 		setUp: function(){
@@ -16,43 +17,42 @@ st.class("DoesNotUnderstandTester", {
 		
 		testdoesNotUnderstand: function (){
 			this.ifTrue_();
-			assert(st.unbox(this.$lastDoesNotUnderstand._equals(string("ifTrue_")).not()), 
+			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("ifTrue_")).not()), 
 				"Although we are within the JavaScriptWorld, the doesNotUnderstand comes from Smalltalk and therefore, the symbol should be the Smalltalk selector-Name.");
-			assert(st.unbox(this.$lastDoesNotUnderstand._equals(string("ifTrue:"))));
+			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("ifTrue:"))));
 		},
 		
 		testPerform: function (){
-			this.perform_(string("thisTest"));
-			assert(st.unbox(this.$lastDoesNotUnderstand._equals(string("thisTest"))));
+			this.perform_(st.string("thisTest"));
+			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("thisTest"))));
 		},
 
 		testPerformWith: function (){
-			this.perform_with_(string("thisTest_"), string("thisTest"));
-			assert(st.unbox(this.$lastDoesNotUnderstand._equals(string("thisTest_"))));
-			assert(st.unbox(this.$lastArguments.at_(number(1))._equals(string("thisTest"))), "Arguments are not transfered correctly.");
+			this.perform_with_(st.string("thisTest_"), st.string("thisTest"));
+			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("thisTest_"))));
+			st.tests.assert(st.unbox(this.$lastArguments.at_(st.number(1))._equals(st.string("thisTest"))), "Arguments are not transfered correctly.");
 		},
-		
+
 		testPerformReturnValue: function (){
-			assert(st.unbox(this.perform_(string("aTestMethod"))) == 2);
+			st.tests.assert(st.unbox(this.perform_(st.string("aTestMethod"))) == 2);
 		},
 		aTestMethod: function (){
-			return number(2);
+			return st.number(2);
 		},
 
 		testSelectorTranslation: function (){
-			this.perform_(string("aSecondTestMethod:"), number(1));
-			assert(this.$lastDoesNotUnderstand === "");
+			this.perform_(st.string("aSecondTestMethod:"), st.number(1));
+			st.tests.assert(this.$lastDoesNotUnderstand === "");
 		},
-		
+
 		testPerformDynamicReturnValue: function (){
-			assert(st.unbox(this.perform_with_(string("aSecondTestMethod:"), number(4))) == 4);
+			st.tests.assert(st.unbox(this.perform_with_(st.string("aSecondTestMethod:"),st.number(4))) == 4);
 			
 		},
 		aSecondTestMethod_: function (anObject){
 			return anObject;
 		},
 
-		
 		doesNotUnderstand_: function (aMessage){
 			this.$lastDoesNotUnderstand = aMessage.selector();
 			this.$lastArguments = aMessage._arguments();
@@ -61,4 +61,4 @@ st.class("DoesNotUnderstandTester", {
 	
 });
 
-DoesNotUnderstandTester._newInstance();
+st.DoesNotUnderstandTester._newInstance();

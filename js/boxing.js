@@ -1,6 +1,6 @@
-	
+
 // This file sets up boxing of javascript native objects into squeak objects
-// All relevant classes are enhanced by that functionality and there are 
+// All relevant classes are enhanced by that functionality and there are
 // several global functions to box or unbox objects.
 
 // Setup depends on: classes, classes.js, perform.js
@@ -27,9 +27,9 @@
 	// Set up the namespace
 	var home = window.st ? window.st : (window.st = {});
 
-	// 
+	//
 	// API functions
-	// 
+	//
 
 	home.unbox = function(anyObject) {
 		if (anyObject != undefined && anyObject != null && anyObject._isBoxedObject) {
@@ -124,9 +124,9 @@
 		return b;
 	};
 
-	// 
+	//
 	// Private functions
-	// 
+	//
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
@@ -135,7 +135,7 @@
 			// Be tolerant: It's still possible to pass a pure-Squeak object into a library-function
 			return this;
 		},
-		
+
 		// This never gets called, we just need a true-ish slot in each box-instance
 		_isBoxedObject: isBoxedObject
 	});
@@ -147,7 +147,7 @@
 		superclass: st.doesNotUnderstandClass,
 		instanceMethods: {
 			_isBoxedObject: isBoxedObject,
-			
+
 			_hiddenGetter_: function(slotName) {
 				var result = this.original$[slotName];
 				// First check, if the underlying object has this slot.
@@ -159,7 +159,7 @@
 				}
 				return result;
 			},
-			
+
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
 			perform_: st.perform,
 			perform_with_: st.perform,
@@ -219,7 +219,7 @@
 						value = value.at_(home.number(1));
 					else // No arguments given when invoking setter!? Don't set an empty array.
 						Exception.signal_(string("No sufficient arguments given on a box " + methodName));
-					
+
 					this.original$[methodName.substring(0, methodName.length - 1)] = home.unbox(value);
 					return value;
 				} else {

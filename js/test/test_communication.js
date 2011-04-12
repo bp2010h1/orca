@@ -3,9 +3,9 @@
 // Add more tests in general.
 
 st.class("ConnectionTester", { 
-	
+
 	classInstanceVariables: [ "connectionToClientSuccessful" ],
-	
+
 	instanceMethods: {
 		
 		setUp: function(){
@@ -14,16 +14,16 @@ st.class("ConnectionTester", {
 		
 		testPull: function(){
 			var result = 0;
-			result = OrcaServer.performOnServer("[ 42 ]");
-			assertEquals_(result, 42, "Answer from Server has been the wrong number");
+			result = st.communication.performOnServer("[ 42 ]");
+			st.tests.assertEquals(result, 42, "Answer from Server has been the wrong number: " + result);
 		}
 		
 		/*testPush: function(){
-			OrcaServer.performOnServer("[ OrcaTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
-			assert(this._theClass.$connectionToClientSuccessful, "Server didn't poke this client.");
+			st.communication.performOnServer("[ OrcaTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
+			st.tests.assert(this._theClass.$connectionToClientSuccessful, "Server didn't poke this client.");
 		}*/
 	}
-	
+
 });
 
-ConnectionTester._newInstance();
+st.ConnectionTester._newInstance();

@@ -1,109 +1,109 @@
 
 // This scripts uses blocks, which require Squeak-classes
-OrcaTests.setupSqueakEnvironment();
+st.tests.setupSqueakEnvironment();
 
 st.class("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {
-		this.instVar = string("instVar");
-		this.instanceVar = string("Ins");
-		this.counter = number(0);
-		this.counterBack = number(0);
+		this.instVar = st.string("instVar");
+		this.instanceVar = st.string("Ins");
+		this.counter = st.number(0);
+		this.counterBack = st.number(0);
 	},
 	
-	instMethod: function() { return string("methodRes"); },
+	instMethod: function() { return st.string("methodRes"); },
 	
 	// Basic, multiple blocks, instance var
 	test1: function() {
-		var _block = block(function(){ return 1; });
-		assert(_block.value() == 1);
+		var _block = st.block(function(){ return 1; });
+		st.tests.assert(_block.value() == 1);
 	},
 	test2: function() {
-		var _block = block(function(){
+		var _block = st.block(function(){
 			var a = "c"; // Random stuff in here
 			var _block = 1; // shadow the variable...
 			return _block; });
-		assert(_block.value() == 1);
+		st.tests.assert(_block.value() == 1);
 	},
 	test3: function() {
-		var _block = block(function(){
-			var inner = block(function(){ return "inner"; });
+		var _block = st.block(function(){
+			var inner = st.block(function(){ return "inner"; });
 			return inner.value(); });
-		assert(_block.value() == "inner");
+		st.tests.assert(_block.value() == "inner");
 	},
 	test4: function() {
-		var _block = block(function(){
-			var inner = block(function(){ 
-				var innerinner = block(function(){ return "innerinner"; });
+		var _block = st.block(function(){
+			var inner = st.block(function(){ 
+				var innerinner = st.block(function(){ return "innerinner"; });
 				return innerinner.value(); });
 			return inner.value(); });
-		assert(_block.value() == "innerinner");
+		st.tests.assert(_block.value() == "innerinner");
 	},
 	test5: function() {
-		var _block = block(function(){ return this.instVar; });
-		assert(_block.value().original$ == "instVar");
+		var _block = st.block(function(){ return this.instVar; });
+		st.tests.assert(_block.value().original$ == "instVar");
 	},
 	test6: function() {
-		var _block = block(function(){ return this.instMethod(); });
-		assert(_block.value().original$ == "methodRes");
+		var _block = st.block(function(){ return this.instMethod(); });
+		st.tests.assert(_block.value().original$ == "methodRes");
 	},
 	
 	// Parameters
 	test7: function() {
-		var _block = block(function(arg1, arg2){ return arg1._comma(string("22")); });
-		assert(_block.value_value_("abc", "def").original$ == "abc22");
+		var _block = st.block(function(arg1, arg2){ return arg1._comma(st.string("22")); });
+		st.tests.assert(_block.value_value_("abc", "def").original$ == "abc22");
 	},
 	test8: function() {
-		var _block = block(function(arg1, arg2){
-			var inner = block(function(arg1, arg2){
-				return arg2._comma(string("d"));
+		var _block = st.block(function(arg1, arg2){
+			var inner = st.block(function(arg1, arg2){
+				return arg2._comma(st.string("d"));
 			});
-			return inner.value_value_(number(2), arg1);
+			return inner.value_value_(st.number(2), arg1);
 		});
-		assert(_block.value_value_("abc", "def").original$ == "abcd");
+		st.tests.assert(_block.value_value_("abc", "def").original$ == "abcd");
 	},
 	test9: function() {
-		var local = string("outer");
-		var local1 = string("outer1");
-		var _block = block(function(local1, arg2){ var local = string("inner"); return local1._comma(local); });
-		assert(_block.value_value_("abc", "def").original$ == "abcinner");
+		var local = st.string("outer");
+		var local1 = st.string("outer1");
+		var _block = st.block(function(local1, arg2){ var local = st.string("inner"); return local1._comma(local); });
+		st.tests.assert(_block.value_value_("abc", "def").original$ == "abcinner");
 	},
 	
 	// non local return
 	test10: function() {
-		assert(this.helper10() == 2);
+		st.tests.assert(this.helper10() == 2);
 	},
 	helper10: function() {
-		return block(function(){ nonLocalReturn(2); }).value();
+		return st.block(function(){ st.nonLocalReturn(2); }).value();
 	},
 	test11: function() {
-		assert(this.helper11() == 1);
+		st.tests.assert(this.helper11() == 1);
 	},
 	helper11: function() {
-		return block(function(){
-			var inner = block(function() {
+		return st.block(function(){
+			var inner = st.block(function() {
 				return 1;
 			});
-			nonLocalReturn(inner.value());
+			st.nonLocalReturn(inner.value());
 			return 100; }).value();
 	},
 	test12: function() {
-		assert(this.helper12() == 1);
+		st.tests.assert(this.helper12() == 1);
 	},
 	helper12: function() {
-		return block(function(){
-			var inner = block(function() {
-				nonLocalReturn(1);
+		return st.block(function(){
+			var inner = st.block(function() {
+				st.nonLocalReturn(1);
 			});
 			inner.value();
-			nonLocalReturn(100);
+			st.nonLocalReturn(100);
 			return 200; }).value();
 	},
 	test13: function() {
-		assert(this.helper13().original$ == "instVarmethodRes");
+		st.tests.assert(this.helper13().original$ == "instVarmethodRes");
 	},
 	helper13: function() {
-		return block(function(){ nonLocalReturn(this.instVar._comma(this.instMethod())); }).value();
+		return st.block(function(){ st.nonLocalReturn(this.instVar._comma(this.instMethod())); }).value();
 	},
 	test14: function() {
 		var _block = this.blockSource();
@@ -115,27 +115,27 @@ st.class("BlocksTester", { instanceMethods: {
 			error = e;
 		}
 		
-		assert(error != "no Error");
-		assert(result == "before");
+		st.tests.assert(error != "no Error");
+		st.tests.assert(result == "before");
 	},
-	blockSource: function(){ return block(function() { nonLocalReturn("This should cause an error."); }); },
+	blockSource: function(){ return st.block(function() { st.nonLocalReturn("This should cause an error."); }); },
 	test15: function() {
 		this.counter = 0;
 		this.counterBack = 0;
-		assert(this.helper15() == "returned");
-		assert(this.counter == 3);
-		assert(this.counterBack == 3);
+		st.tests.assert(this.helper15() == "returned");
+		st.tests.assert(this.counter == 3);
+		st.tests.assert(this.counterBack == 3);
 	},
 	helper15: function() {
 		var result = "unreturned";
-		block(function(){
+		st.block(function(){
 			if (this.counter < 3) {
 				this.counter++;
 				result = this.helper15();
 				this.counterBack++;
 			} else {
 				// Return only from the inner-most invokation
-				nonLocalReturn("returned");
+				st.nonLocalReturn("returned");
 		}}).value();
 		return result;
 	},
@@ -143,11 +143,11 @@ st.class("BlocksTester", { instanceMethods: {
 		this.counter = 0;
 		this.counterBack = 0;
 		this.helper16();
-		assert(this.counter == 3);
-		assert(this.counterBack == 0); // !!
+		st.tests.assert(this.counter == 3);
+		st.tests.assert(this.counterBack == 0); // !!
 	},
 	helper16: function() {
-		var _block = block(function() { nonLocalReturn("abc"); });
+		var _block = st.block(function() { st.nonLocalReturn("abc"); });
 		var result = this.innerhelper16(_block);
 		this.counter = 100; // Should also not happen
 	},
@@ -165,12 +165,12 @@ st.class("BlocksTester", { instanceMethods: {
 		this.counter = 0;
 		this.counterBack = 0;
 		this.helper17();
-		assert(this.counter == 3);
-		assert(this.counterBack == 0); // !!
+		st.tests.assert(this.counter == 3);
+		st.tests.assert(this.counterBack == 0); // !!
 	},
 	helper17: function() {
 		if (this.blockVar == undefined) {
-			this.blockVar = block(function() { nonLocalReturn("returning from outer context"); });
+			this.blockVar = st.block(function() { st.nonLocalReturn("returning from outer context"); });
 		}
 		if (this.counter < 3) {
 			this.counter++;
@@ -186,93 +186,93 @@ st.class("BlocksTester", { instanceMethods: {
 		var result = (function(){
 			return 1;
 		}).apply(this);
-		assert(result == 1);
+		st.tests.assert(result == 1);
 	},
 	test19: function() {
-		var local = string("Lokal");
+		var local = st.string("Lokal");
 		var result = (function(){
-			var receiver = string("Ab");
+			var receiver = st.string("Ab");
 			receiver = receiver._comma(this.instanceVar);
 			return receiver._comma(local);
 		}).apply(this);
-		assert(result.original$ == "AbInsLokal"); // ^^
+		st.tests.assert(result.original$ == "AbInsLokal"); // ^^
 	},
 	test20: function() {
 		// Block in cascade
 		var result = (function(){
-			return block(function(){
+			return st.block(function(){
 				return this.instanceVar;
 			}).value();
 		}).apply(this);
-		assert(result.original$ == "Ins");
+		st.tests.assert(result.original$ == "Ins");
 	},
 	test21: function() {
 		// Cascade in block
-		var result = block(function(){
+		var result = st.block(function(){
 			return (function() {
 				return this.instanceVar;
 			}).apply(this);
 		}).value();
-		assert(result.original$ == "Ins");
+		st.tests.assert(result.original$ == "Ins");
 	},
 	test22: function() {
 		// "cascade" in Block with arguments
-		var lokalouter = string("Outer");
-		var result = block(function(arg1, arg2){
-			var lokal = string("Inner");
+		var lokalouter = st.string("Outer");
+		var result = st.block(function(arg1, arg2){
+			var lokal = st.string("Inner");
 			return (function() {
 				return this.instanceVar._comma(arg1)._comma(arg2)._comma(lokal)._comma(lokalouter);
 			}).apply(this);
-		}).value(string("First"), string("Second"));
-		assert(result.original$ == "InsFirstSecondInnerOuter");
+		}).value(st.string("First"), st.string("Second"));
+		st.tests.assert(result.original$ == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
 		// Block with arguments in cascade
-		var outer = string("Outer");
-		var outerParam = string("OuterParam");
+		var outer = st.string("Outer");
+		var outerParam = st.string("OuterParam");
 		var result = (function(){
-			var inner = string("Inner");
-			var innerParam = string("InnerParam");
-			return block(function(arg1, arg2){
+			var inner = st.string("Inner");
+			var innerParam = st.string("InnerParam");
+			return st.block(function(arg1, arg2){
 				return this.instanceVar._comma(arg1)._comma(arg2)._comma(outer)._comma(inner);
 			}).value(outerParam, innerParam);
 		}).apply(this);
-		assert(result.original$ == "InsOuterParamInnerParamOuterInner");
+		st.tests.assert(result.original$ == "InsOuterParamInnerParamOuterInner");
 	},
 	
 	test24: function() {
-		var _block = block( function() { return this.instVar; } );
-		var otherTester = BlocksTester._newInstance();
-		otherTester.instVar = string("otherInstVar");
-		assert("instVar" == otherTester.evaluateBlock(_block).original$);
+		var _block = st.block( function() { return this.instVar; } );
+		var otherTester = st.BlocksTester._newInstance();
+		otherTester.instVar = st.string("otherInstVar");
+		st.tests.assert("instVar" == otherTester.evaluateBlock(_block).original$);
 	},
 	evaluateBlock: function(aBlock) {
 		return aBlock.value();
 	},
 	test25: function() {
-		var otherTester = BlocksTester._newInstance();
-		otherTester.instVar = string("otherInstVar");
-		var _block = block(function(){
-			var inner = block(function(){ 
-				var innerinner = block(function(){
+		var otherTester = st.BlocksTester._newInstance();
+		otherTester.instVar = st.string("otherInstVar");
+		var _block = st.block(function(){
+			var inner = st.block(function(){ 
+				var innerinner = st.block(function(){
 				  return this.instVar; });
 				return innerinner.value(); });
 			return inner.value(); });
-		assert("instVar" == otherTester.evaluateBlock(_block).original$);
+		st.tests.assert("instVar" == otherTester.evaluateBlock(_block).original$);
 	},
 	
 	testWhileTrue: function() {
 		var result = this._testWhileTrueBlock();
-		assert(result == "OKAAY", "Result was: " + result);
+		st.tests.assert(result == "OKAAY", "Result was: " + result);
 	},
 	_testWhileTrueBlock: function(blockParameter) {
 		var i = 0;
-		block(function(){
+		st.block(function(){
 				i++;
-				return bool(i < 10);
+				return st.bool(i < 10);
 			})
-			.whileTrue_(block(function(){
-				if (i >= 5) { nonLocalReturn("OKAAY"); }
+			.whileTrue_(st.block(function(){
+				if (i >= 5) { st.nonLocalReturn("OKAAY"); }
 			}));
 		return "Sollte nicht";
 	},
@@ -284,12 +284,12 @@ st.class("BlocksTester", { instanceMethods: {
 		} catch (e) {
 			exception = e;
 		}
-		assert(exception != null);
+		st.tests.assert(exception != null);
 	},
 	helper_testErrorWhenClosureIsAlreadyLeft: function() {
-		return block(function(){ nonLocalReturn("This should throw error"); });
+		return st.block(function(){ st.nonLocalReturn("This should throw error"); });
 	}
 	
 }});
 
-BlocksTester._newInstance();
+st.BlocksTester._newInstance();

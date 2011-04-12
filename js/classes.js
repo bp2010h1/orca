@@ -71,13 +71,13 @@
 		b.original$ = b.evaluated$ = function() {
 			// Use the callStack to get the object, this block should be executed in.
 			// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
-			return func.apply(currentThis, _boxIterable(arguments));
+			return func.apply(currentThis, st.boxIterable(arguments));
 		}
 		b.constructor$ = function() {
 			// When using real blocks as constructor, don't unpack the constructor-parameters, 
 			// but box them to be sure (should not be necessary).
 			// Use the real 'this' instead of the currentThis from the artificial stack
-			return func.apply(this, _boxIterable(arguments));
+			return func.apply(this, st.boxIterable(arguments));
 		}
 		return b;
 	};
@@ -86,7 +86,7 @@
 	home.class = function(classname, attrs) {
 		var createHelpers = function(newClassPrototype) {
 			var createMethod = function(aPrototype, methodName, method) {
-				aPrototype[methodName] = WithDebugging(WithNonLocalReturn(method));
+				aPrototype[methodName] = wrapFunction(method);
 				aPrototype[methodName].methodName = methodName;
 				aPrototype[methodName].originalMethod = method;
 				method.methodName = methodName;
@@ -210,6 +210,12 @@
 	// Private functions
 	// 
 
+	var wrapFunction = function(aFunc) {
+		return WithDebugging(WithNonLocalReturn(aFunc));
+	}
+	// This is not part of the API, but must be exposed to access it in the eval()-call below
+	st.wrapFunction = wrapFunction;
+
 	// Each time an object (excluding classes) is created, this is incremented
 	var instanceCount = 0;
 
@@ -220,7 +226,7 @@
 	// From here on, messages from the server potentially contain non-local-returns
 	// and must be wrapped into the appropriate wrapper-function
 	st.communication.MESSAGE_HANDLER = function(source) {
-		return eval("WithNonLocalReturn(function(){" + source + "}).apply(st.nil);");
+		return eval("st.wrapFunction(function(){" + source + "}).apply(st.nil);");
 	};
 
 	var DontDebugMarker = {};

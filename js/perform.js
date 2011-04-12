@@ -1,5 +1,5 @@
 
-// Runtime depends on: boxing.js, helpers.js
+// Runtime depends on: classes, boxing.js, helpers.js
 
 // API:
 // st.perform(aSmalltalkSelector)
@@ -20,7 +20,7 @@
 		if (method !== undefined) {
 			return method.apply(this, theArguments);
 		} else {
-			return this.doesNotUnderstand_(Message.selector_arguments_(aSmalltalkSelector, array(theArguments)));
+			return this.doesNotUnderstand_(st.Message.selector_arguments_(aSmalltalkSelector, st.array(theArguments)));
 		}
 	};
 
@@ -84,7 +84,7 @@
 	// this function is a paralleled reimplementation of OrcaSqueakAstToJsAst class>>#jsFunctionNameFor:
 	var jsFunctionNameFor = function(aJsString) {
 		var result = aJsString.replace(replacedChars, function(c) {
-			return escapeCharacter + characterList(c);
+			return escapeCharacter + characterList[c];
 		});
 		return escapeReservedWord(result);
 	};

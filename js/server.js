@@ -23,8 +23,8 @@
 			// to make sure the arguments and code get sent properly we must url-encode them by escape
 			args += "&arg" + (i - 1) + "=" + realEscape(arguments[i]);
 		}
-		var result = home.sendSynchronously("code=" + realEscape(squeakCode) + args);
-		return home.handleMessage(result);
+		var result = st.communication.sendSynchronously("code=" + realEscape(squeakCode) + args);
+		return st.communication.handleMessage(result);
 	};
 
 	home.serverBlock = function (squeakCode) {

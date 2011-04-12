@@ -176,7 +176,7 @@
 				webSocket.onerror = function(event) {
 					st.console.log("WebSocket failed: " + event);
 				};
-				webSocket.onmessage = function(event) {					
+				webSocket.onmessage = function(event) {
 					home.handleMessage(event.data, 200);
 				};
 				webSocket.onclose = function() {
