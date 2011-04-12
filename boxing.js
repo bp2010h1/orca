@@ -211,7 +211,11 @@ _Box._addInstanceMethods({
 		// If this is not present, return nil.
 		if (result === undefined) {
 			// Get the method to be invoked from global "dummy-method-dictionary"; invoke it on ourselves.
-			result = _DummyObjectInstance[slotName].apply(this);
+			var jsFunctionName = _jsFunctionNameFor_(slotName);
+			if (_DummyObjectInstance[jsFunctionName] === undefined) {
+				return this.doesNotUnderstand_(Message.selector_(string(slotName)));
+			}
+			result = _DummyObjectInstance[jsFunctionName].apply(this);
 		}
 		return result;
 	},
