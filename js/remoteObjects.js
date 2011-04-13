@@ -25,7 +25,7 @@
 			// // for test purposes just for unary messages now
 			// data = "messageSendFor=" + st.communication.realEscape(receiver._remoteID) 
 			// + "&withSelector=" + st.communication.realEscape(st.unbox(message.selector()));
-			// 		} else {
+		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
 				data = "newObjectOfClassNamed=" + st.communication.realEscape(receiver.name()._unbox());
 			} else {
