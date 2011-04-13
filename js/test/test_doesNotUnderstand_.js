@@ -28,9 +28,13 @@ st.class("DoesNotUnderstandTester", {
 		},
 
 		testPerformWith: function (){
+			debugger;
 			this.perform_with_(st.string("thisTest_"), st.string("thisTest"));
 			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("thisTest_"))));
-			st.tests.assert(st.unbox(this.lastArguments.at_(st.number(1))._equals(st.string("thisTest"))), "Arguments are not transfered correctly.");
+			var actual = this.lastArguments.at_(st.number(1));
+			st.tests.assert(st.unbox(actual._equals(st.string("thisTest"))), 
+					"Arguments are not transfered correctly. Was: " + 
+					st.unbox(actual) + ", expected: thisTest");
 		},
 
 		testPerformReturnValue: function (){
@@ -58,7 +62,7 @@ st.class("DoesNotUnderstandTester", {
 			this.lastArguments = aMessage._arguments();
 		}
 	}
-	
+
 });
 
 st.DoesNotUnderstandTester._newInstance();

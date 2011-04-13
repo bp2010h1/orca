@@ -15,13 +15,16 @@
 	// 
 
 	home.perform = function(aSmalltalkSelector) {
-		return home.performMethodFrom.call(this, aSmalltalkSelector, this);
+		var args = st.toArray(arguments);
+		args.shift();
+		return home.performMethodFrom.apply(this, [aSmalltalkSelector, this].concat(args));
 	};
 
 	// Perform a method on the current this, but look it up in a separate object
 	home.performMethodFrom = function(aSmalltalkSelector, methodContainer) {
 		var theArguments = st.toArray(arguments);
-		theArguments.shift();
+		theArguments.shift(); // aSmalltalkSelector
+		theArguments.shift(); // methodContainer
 		var method = methodContainer[jsFunctionNameFor(st.unbox(aSmalltalkSelector))];
 		if (method !== undefined) {
 			return method.apply(this, theArguments);
