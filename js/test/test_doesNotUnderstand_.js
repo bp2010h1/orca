@@ -28,7 +28,6 @@ st.class("DoesNotUnderstandTester", {
 		},
 
 		testPerformWith: function (){
-			debugger;
 			this.perform_with_(st.string("thisTest_"), st.string("thisTest"));
 			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("thisTest_"))));
 			var actual = this.lastArguments.at_(st.number(1));
