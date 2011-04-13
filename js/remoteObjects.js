@@ -7,7 +7,7 @@
 // st.box(anyObject)
 
 // Settings:
-// home.METHOD_INVOKATION_URL (String)
+// st.METHOD_INVOKATION_URL (String)
 
 
 (function() {
@@ -15,6 +15,8 @@
 	// Set up the namespace
 	var home = window.st ? window.st : (window.st = {});	
 
+	home.
+	
 	// 
 	// API functions
 	//
