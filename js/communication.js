@@ -122,7 +122,8 @@
 	};
 
 	var createCometHandler = function() {
-
+		var request = null;
+		
 		var poll = function() {
 			request = createXmlRequest();
 			request.open("GET", fullURL(home.XHR_PATH), true);
@@ -156,7 +157,7 @@
 				request = null;
 			},
 			isOpen: function() {
-				return request;
+				return request === null;
 			}
 		};
 	}
