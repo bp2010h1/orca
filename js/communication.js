@@ -153,7 +153,7 @@
 				request = null;
 			},
 			isOpen: function() {
-				return request;
+				return request === null;
 			}
 		};
 	}
