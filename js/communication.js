@@ -149,7 +149,7 @@
 			sendSynchronously: function(data, url) {
 				this.close();
 				var result = sendSynchronouslyImpl(data, url);
-				this.poll();
+				poll();
 				return result;
 			},
 			close: function() {
@@ -157,10 +157,10 @@
 				request = null;
 			},
 			isOpen: function() {
-				return request === null;
+				return request ? true : false;
 			}
 		};
-	}
+	};
 
 	var createWsHandler = function() {
 		var webSocket = null;
