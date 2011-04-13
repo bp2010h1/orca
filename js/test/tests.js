@@ -25,7 +25,7 @@
 	home.DEBUG_ON_ERROR = false;
 
 	home.ORCA_TESTS = [
-		"test_squeakyJS.js", 
+		"test_classes.js", 
 		"test_primitives.js", 
 		"test_blocks.js", 
 		"test_super.js", 
