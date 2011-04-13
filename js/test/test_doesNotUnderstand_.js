@@ -11,26 +11,26 @@ st.class("DoesNotUnderstandTester", {
 	instanceMethods: {
 		
 		setUp: function(){
-			this.$lastDoesNotUnderstand = "";
-			this.$lastArguments = "";
+			this.lastDoesNotUnderstand = "";
+			this.lastArguments = "";
 		},
 		
 		testdoesNotUnderstand: function (){
 			this.ifTrue_();
-			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("ifTrue_")).not()), 
+			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("ifTrue_")).not()), 
 				"Although we are within the JavaScriptWorld, the doesNotUnderstand comes from Smalltalk and therefore, the symbol should be the Smalltalk selector-Name.");
-			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("ifTrue:"))));
+			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("ifTrue:"))));
 		},
 		
 		testPerform: function (){
 			this.perform_(st.string("thisTest"));
-			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("thisTest"))));
+			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("thisTest"))));
 		},
 
 		testPerformWith: function (){
 			this.perform_with_(st.string("thisTest_"), st.string("thisTest"));
-			st.tests.assert(st.unbox(this.$lastDoesNotUnderstand._equals(st.string("thisTest_"))));
-			st.tests.assert(st.unbox(this.$lastArguments.at_(st.number(1))._equals(st.string("thisTest"))), "Arguments are not transfered correctly.");
+			st.tests.assert(st.unbox(this.lastDoesNotUnderstand._equals(st.string("thisTest_"))));
+			st.tests.assert(st.unbox(this.lastArguments.at_(st.number(1))._equals(st.string("thisTest"))), "Arguments are not transfered correctly.");
 		},
 
 		testPerformReturnValue: function (){
@@ -42,7 +42,7 @@ st.class("DoesNotUnderstandTester", {
 
 		testSelectorTranslation: function (){
 			this.perform_(st.string("aSecondTestMethod:"), st.number(1));
-			st.tests.assert(this.$lastDoesNotUnderstand === "");
+			st.tests.assert(this.lastDoesNotUnderstand === "");
 		},
 
 		testPerformDynamicReturnValue: function (){
@@ -54,8 +54,8 @@ st.class("DoesNotUnderstandTester", {
 		},
 
 		doesNotUnderstand_: function (aMessage){
-			this.$lastDoesNotUnderstand = aMessage.selector();
-			this.$lastArguments = aMessage._arguments();
+			this.lastDoesNotUnderstand = aMessage.selector();
+			this.lastArguments = aMessage._arguments();
 		}
 	}
 	

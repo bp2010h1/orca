@@ -9,7 +9,7 @@ st.class("ConnectionTester", {
 	instanceMethods: {
 		
 		setUp: function(){
-			this._theClass.$connectionToClientSuccessful = false;
+			this._theClass.connectionToClientSuccessful = false;
 		},
 		
 		testPull: function(){
@@ -20,7 +20,7 @@ st.class("ConnectionTester", {
 		
 		/*testPush: function(){
 			st.communication.performOnServer("[ OrcaTestApp sendCode: 'JsGlobal js ConnectionTester js connectionToClientSuccessful js: true'. false ]");
-			st.tests.assert(this._theClass.$connectionToClientSuccessful, "Server didn't poke this client.");
+			st.tests.assert(this._theClass.connectionToClientSuccessful, "Server didn't poke this client.");
 		}*/
 	}
 
