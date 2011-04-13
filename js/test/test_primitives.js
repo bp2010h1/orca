@@ -21,11 +21,11 @@ st.class("PrimitivesTester", {
 		},
 		
 		testJsFunctions: function(){
-			st.tests.assertEquals(this.$aNumber.original$, 1);
-			st.tests.assertEquals(this.$aString.original$, "Hello World!");
-			st.tests.assertEquals(this.$aFloat.original$, 4.2);
+			st.tests.assertEquals(this.$aNumber._original, 1);
+			st.tests.assertEquals(this.$aString._original, "Hello World!");
+			st.tests.assertEquals(this.$aFloat._original, 4.2);
 			
-			var arr = this.$anArray.original$;
+			var arr = this.$anArray._original;
 			var arr2 = [1, 2, 3];
 			for (index in arr) {
 				st.tests.assertEquals(arr[index], arr2[index]);
@@ -95,11 +95,11 @@ st.class("PrimitivesTester", {
 			this.blockPrimitivesImpl(func);
 		},
 		blockPrimitivesImpl: function(func) {
-			st.tests.assert(func.value().original$ == "abc", "Calling a BlockClosure with value.");
-			st.tests.assert(func.value_(st.number(1)).original$ == 1, "Calling a BlockClosure with value_.");
-			st.tests.assert(func.value_value_(st.number(1),st.number(2)).original$ == 2, "Calling a BlockClosure with value_value_.");
-			st.tests.assert(func.valueWithArguments_(st.array([st.number(1)])).original$ == 1, "Calling a BlockClosure with valueWithArguments. 1");
-			st.tests.assert(func.valueWithArguments_(st.array([st.number(1),st.number(2)])).original$ == 2, "Calling a BlockClosure with valueWithArguments. 2");
+			st.tests.assert(func.value()._original == "abc", "Calling a BlockClosure with value.");
+			st.tests.assert(func.value_(st.number(1))._original == 1, "Calling a BlockClosure with value_.");
+			st.tests.assert(func.value_value_(st.number(1),st.number(2))._original == 2, "Calling a BlockClosure with value_value_.");
+			st.tests.assert(func.valueWithArguments_(st.array([st.number(1)]))._original == 1, "Calling a BlockClosure with valueWithArguments. 1");
+			st.tests.assert(func.valueWithArguments_(st.array([st.number(1),st.number(2)]))._original == 2, "Calling a BlockClosure with valueWithArguments. 2");
 		},
 		
 		testJsNewPrimitives: function() {
@@ -122,14 +122,14 @@ st.class("PrimitivesTester", {
 		},
 		jsNewPrimitivesImpl: function(block) {
 			// Here are just basic checks for jsNew-functionality. Extended tests regarding boxing are done elsewhere.
-			st.tests.assert(block.jsNew().original$.a == "a", "jsNew() on BlockClosure. 1");
-			st.tests.assert(block.jsNew().original$.b == undefined, "jsNew() on BlockClosure. 2");
+			st.tests.assert(block.jsNew()._original.a == "a", "jsNew() on BlockClosure. 1");
+			st.tests.assert(block.jsNew()._original.b == undefined, "jsNew() on BlockClosure. 2");
 			
 			var b = block.jsNew_("b");
-			st.tests.assert(b.original$.a == "a" && b.original$.b == "b", "jsNew_() on BlockClosure");
+			st.tests.assert(b._original.a == "a" && b._original.b == "b", "jsNew_() on BlockClosure");
 			
 			b = block.jsNewWithArgs_(["b"]);
-			st.tests.assert(b.original$.a == "a" && b.original$.b == "b", "jsNewWithArgs_() on BlockClosure");
+			st.tests.assert(b._original.a == "a" && b._original.b == "b", "jsNewWithArgs_() on BlockClosure");
 		}
 		
 	}

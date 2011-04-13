@@ -3,9 +3,7 @@
 // Runtime depends on: -
 
 // API:
-// st.console.debug(text)
-// st.console.info(text)
-// st.console.error(text)
+// st.console.log(text)
 // st.console.statusInfo(content, httpStatus)
 // st.console.print(object)
 

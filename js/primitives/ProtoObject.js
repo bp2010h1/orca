@@ -10,7 +10,7 @@
 	});
 	st.ProtoObject._addInstanceMethods({
 		_equals_equals: function(anObject) { return st.bool(this === anObject); },
-		identityHash: function() { return st.number(this.instanceNumber$); },
+		identityHash: function() { return st.number(this._instanceNumber); },
 		isBehavior: function() { return st.false; }
 	});
 

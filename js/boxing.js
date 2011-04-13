@@ -110,17 +110,17 @@
 		// Non-local-return handling is not required here
 		var b = st.BlockClosure._newInstance();
 		// This block is unboxed to func, but additional things happen on evaluation
-		b.original$ = func;
-		b.evaluated$ = function() {
+		b._original = func;
+		b._evaluated = function() {
 			return home.box(func.apply(that, st.unboxIterable(arguments)));
 		}
-		b.constructor$ = function() {
+		b._constructor = function() {
 			// When using a library-function as constructor, unpack the arguments
 			// Use the actual 'this' instead of the stored 'that'
 			return func.apply(this, st.unboxIterable(arguments));
 		}
 		// Why the prototype-slot is set, see _curried() in kernel_prototype.js
-		b.constructor$.prototype = func.prototype;
+		b._constructor.prototype = func.prototype;
 		return b;
 	};
 
@@ -149,7 +149,7 @@
 			_isBoxedObject: isBoxedObject,
 
 			_hiddenGetter: function(selector) {
-				var result = this.original$[selector];
+				var result = this._original[selector];
 				// First check, if the underlying object has this slot.
 				// If not, try to invoke the corresponding Method implemented on Object (e.g. ifNil:ifNotNil:)
 				// If this is not present, return nil.
@@ -202,13 +202,13 @@
 		aClass._addClassMethods({
 			_wrapping: function(originalObject) {
 				var result = this._newInstance(); // Polymorphic for different kinds of boxes
-				result.original$ = originalObject;
+				result._original = originalObject;
 				return result;
 			}
 		});
 		aClass._addInstanceMethods({
 			_hiddenGetter: function(slotName) {
-				return this.original$[slotName];
+				return this._original[slotName];
 			},
 			doesNotUnderstand_: function(aMessage) {
 				var methodName = home.unbox(aMessage.selector());
@@ -220,18 +220,18 @@
 					else // No arguments given when invoking setter!? Don't set an empty array.
 						Exception.signal_(string("No sufficient arguments given on a box " + methodName));
 
-					this.original$[methodName.substring(0, methodName.length - 1)] = home.unbox(value);
+					this._original[methodName.substring(0, methodName.length - 1)] = home.unbox(value);
 					return value;
 				} else {
 					// getter. Second parameter relevant, if slot contains a function.
 					// For most boxing classes, the javascript-native is hidden totally (this implementation).
-					// OrcaBox refines this method (_hiddenGetter) to also check the underlying original$ for the slot
+					// OrcaBox refines this method (_hiddenGetter) to also check the underlying _original for the slot
 					// An example is the slot 'value', which is important on a DOM-TextArea and also implemented in Object
-					return home.box(this._hiddenGetter(methodName), this.original$);
+					return home.box(this._hiddenGetter(methodName), this._original);
 				}
 			},
 			_unbox: function() {
-				return this.original$;
+				return this._original;
 			}
 		});
 	}

@@ -41,17 +41,17 @@ st.class("BlocksTester", { instanceMethods: {
 	},
 	test5: function() {
 		var _block = st.block(function(){ return this.instVar; });
-		st.tests.assert(_block.value().original$ == "instVar");
+		st.tests.assert(_block.value()._original == "instVar");
 	},
 	test6: function() {
 		var _block = st.block(function(){ return this.instMethod(); });
-		st.tests.assert(_block.value().original$ == "methodRes");
+		st.tests.assert(_block.value()._original == "methodRes");
 	},
 	
 	// Parameters
 	test7: function() {
 		var _block = st.block(function(arg1, arg2){ return arg1._comma(st.string("22")); });
-		st.tests.assert(_block.value_value_("abc", "def").original$ == "abc22");
+		st.tests.assert(_block.value_value_("abc", "def")._original == "abc22");
 	},
 	test8: function() {
 		var _block = st.block(function(arg1, arg2){
@@ -60,13 +60,13 @@ st.class("BlocksTester", { instanceMethods: {
 			});
 			return inner.value_value_(st.number(2), arg1);
 		});
-		st.tests.assert(_block.value_value_("abc", "def").original$ == "abcd");
+		st.tests.assert(_block.value_value_("abc", "def")._original == "abcd");
 	},
 	test9: function() {
 		var local = st.string("outer");
 		var local1 = st.string("outer1");
 		var _block = st.block(function(local1, arg2){ var local = st.string("inner"); return local1._comma(local); });
-		st.tests.assert(_block.value_value_("abc", "def").original$ == "abcinner");
+		st.tests.assert(_block.value_value_("abc", "def")._original == "abcinner");
 	},
 	
 	// non local return
@@ -100,7 +100,7 @@ st.class("BlocksTester", { instanceMethods: {
 			return 200; }).value();
 	},
 	test13: function() {
-		st.tests.assert(this.helper13().original$ == "instVarmethodRes");
+		st.tests.assert(this.helper13()._original == "instVarmethodRes");
 	},
 	helper13: function() {
 		return st.block(function(){ st.nonLocalReturn(this.instVar._comma(this.instMethod())); }).value();
@@ -195,7 +195,7 @@ st.class("BlocksTester", { instanceMethods: {
 			receiver = receiver._comma(this.instanceVar);
 			return receiver._comma(local);
 		}).apply(this);
-		st.tests.assert(result.original$ == "AbInsLokal"); // ^^
+		st.tests.assert(result._original == "AbInsLokal"); // ^^
 	},
 	test20: function() {
 		// Block in cascade
@@ -204,7 +204,7 @@ st.class("BlocksTester", { instanceMethods: {
 				return this.instanceVar;
 			}).value();
 		}).apply(this);
-		st.tests.assert(result.original$ == "Ins");
+		st.tests.assert(result._original == "Ins");
 	},
 	test21: function() {
 		// Cascade in block
@@ -213,7 +213,7 @@ st.class("BlocksTester", { instanceMethods: {
 				return this.instanceVar;
 			}).apply(this);
 		}).value();
-		st.tests.assert(result.original$ == "Ins");
+		st.tests.assert(result._original == "Ins");
 	},
 	test22: function() {
 		// "cascade" in Block with arguments
@@ -224,7 +224,7 @@ st.class("BlocksTester", { instanceMethods: {
 				return this.instanceVar._comma(arg1)._comma(arg2)._comma(lokal)._comma(lokalouter);
 			}).apply(this);
 		}).value(st.string("First"), st.string("Second"));
-		st.tests.assert(result.original$ == "InsFirstSecondInnerOuter");
+		st.tests.assert(result._original == "InsFirstSecondInnerOuter");
 	},
 	test23: function() {
 		// Block with arguments in cascade
@@ -237,14 +237,14 @@ st.class("BlocksTester", { instanceMethods: {
 				return this.instanceVar._comma(arg1)._comma(arg2)._comma(outer)._comma(inner);
 			}).value(outerParam, innerParam);
 		}).apply(this);
-		st.tests.assert(result.original$ == "InsOuterParamInnerParamOuterInner");
+		st.tests.assert(result._original == "InsOuterParamInnerParamOuterInner");
 	},
 	
 	test24: function() {
 		var _block = st.block( function() { return this.instVar; } );
 		var otherTester = st.BlocksTester._newInstance();
 		otherTester.instVar = st.string("otherInstVar");
-		st.tests.assert("instVar" == otherTester.evaluateBlock(_block).original$);
+		st.tests.assert("instVar" == otherTester.evaluateBlock(_block)._original);
 	},
 	evaluateBlock: function(aBlock) {
 		return aBlock.value();
@@ -258,7 +258,7 @@ st.class("BlocksTester", { instanceMethods: {
 				  return this.instVar; });
 				return innerinner.value(); });
 			return inner.value(); });
-		st.tests.assert("instVar" == otherTester.evaluateBlock(_block).original$);
+		st.tests.assert("instVar" == otherTester.evaluateBlock(_block)._original);
 	},
 	
 	testWhileTrue: function() {
