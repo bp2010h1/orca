@@ -12,6 +12,19 @@
 // st.block(function)
 // st.class(classname, attributes)
 
+// API defined on classes:
+// _addInstanceMethods(methodDictionary)
+// _addClassMethods(methodDictionary)
+// _initializeInstanceVariables(defaultValue)
+// _addInstanceVariables(aStringArray)
+// _addClassInstanceVariables(aStringArray)
+// _addClassVariables(aStringArray)
+// _newInstance()
+// _classname
+
+// API defined on instances of classes:
+// _theClass
+
 // Settings:
 // st.DEBUG (boolean)
 // st.PRINT_CALLS (boolean)
@@ -68,12 +81,12 @@
 		}
 		func.originalThis = currentThis;
 		// Unboxing a real block must give the same function as when evaluating it.
-		b.original$ = b.evaluated$ = function() {
+		b._original = b._evaluated = function() {
 			// Use the callStack to get the object, this block should be executed in.
 			// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
 			return func.apply(currentThis, st.boxIterable(arguments));
 		}
-		b.constructor$ = function() {
+		b._constructor = function() {
 			// When using real blocks as constructor, don't unpack the constructor-parameters, 
 			// but box them to be sure (should not be necessary).
 			// Use the real 'this' instead of the currentThis from the artificial stack
@@ -142,7 +155,7 @@
 		
 		var createClassAndLinkPrototypes = function() {
 			var newClassPrototype = function(){};
-			var newInstancePrototype = function(){ instanceCount++; this.instanceNumber$ = instanceCount; };
+			var newInstancePrototype = function(){ instanceCount++; this._instanceNumber = instanceCount; };
 			var newClass;
 			
 			if ('superclass' in attrs) {

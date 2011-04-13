@@ -45,7 +45,25 @@
 		});
 	};
 
-	home.realEscape = function(string) {
+	// 
+	// Private functions
+	// 
+
+	// TODO this method is not finished and not used.
+	var passMessage = function(receiver, message) {
+		if (false) { //(receiver.isRemote()){
+			// transparent message passing
+		} else {
+			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
+				var data = "newObjectOfClassNamed=" + this.realEscape(st.unbox(receiver.name()));
+				st.communication.sendSynchronously(data, home.MESSAGE_SEND_URL);
+			} else {
+				receiver.error_(string("Unexpected remote message send."));
+			}
+		}
+	}
+
+	var realEscape = function(string) {
 		// * @ - _ + . / are not escaped by this default js-function
 		var result = escape(string);
 		result = result.replace(/(\*)/g, "%2A");

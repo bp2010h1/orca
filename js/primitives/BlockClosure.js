@@ -3,17 +3,17 @@
 
 (function() {
 
-	// We distinct an evaluated$-function and an original$-function in case of blocks.
-	// evaluated$ is the version, that is evaluated in the squeak-world, original$ is the function inside javascript
+	// We distinct an _evaluated-function and an _original-function in case of blocks.
+	// _evaluated is the version, that is evaluated in the squeak-world, _original is the function inside javascript
 	var blockValue = function() { 
-		return this.evaluated$.apply(this, st.toArray(arguments)); };
+		return this._evaluated.apply(this, st.toArray(arguments)); };
 
 	var createInstance = function() {
 		// This is done to enable varargs-parameters for constructor-parameters
 		// First bind all constructor-parameters, then call the curried function without arguments
 		// (Bind the curried function to the original function itself. Seemed necessary.)
 		// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and squeaky.js -> block())
-		var newObject = new (st.curried(this.constructor$, st.toArray(arguments))) ();
+		var newObject = new (st.curried(this._constructor, st.toArray(arguments))) ();
 		st.unboxSlots(newObject); // unbox each slot on the new object
 		return st.box(newObject); // but box the object itself
 	};
