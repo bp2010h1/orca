@@ -8,7 +8,8 @@
 // st.communication.realEscape(string)
 
 // Settings:
-// home.METHOD_INVOKATION_URL (String)
+// st.CODE_EXECUTION_URL (String)
+// st.MESSAGE_SEND_URL (String)
 
 (function() {
 
