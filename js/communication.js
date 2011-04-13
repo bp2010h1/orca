@@ -122,25 +122,22 @@
 	};
 
 	var createCometHandler = function() {
-
-		var poll = function() {
-			request = createXmlRequest();
-			request.open("GET", fullURL(home.XHR_PATH), true);
-			request.onreadystatechange = function() {
-				if (request.readyState == 4) {
-					if (request.status == 200) {
-						home.handleMessage(request.responseText, request.status);
-						poll();
-					}
-					else st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
-				}
-			}
-			request.send(null);
-		};
+		var request = null;
 
 		return {
 			open: function() {
-				poll();
+				request = createXmlRequest();
+				request.open("GET", fullURL(home.XHR_PATH), true);
+				request.onreadystatechange = function() {
+					if (request.readyState == 4) {
+						if (request.status == 200) {
+							home.handleMessage(request.responseText, request.status);
+							this.open();
+						}
+						else st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
+					}
+				}
+				request.send(null);
 			},
 			send: function(data) {
 				return this.sendSynchronously(data, home.XHR_PATH);
@@ -148,7 +145,7 @@
 			sendSynchronously: function(data, url) {
 				this.close();
 				var result = sendSynchronouslyImpl(data, url);
-				this.poll();
+				this.open();
 				return result;
 			},
 			close: function() {
