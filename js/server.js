@@ -5,6 +5,7 @@
 // API:
 // st.communication.performOnServer(squeakCode)
 // st.communication.serverBlock(squeakCodeEvaluatingToABlock)
+// st.communication.realEscape(string)
 
 // Settings:
 // home.METHOD_INVOKATION_URL (String)
@@ -28,9 +29,9 @@
 		var args = "";
 		for (var i = 1; i < arguments.length; i++) {
 			// to make sure the arguments and code get sent properly we must url-encode them by escape
-			args += "&arg" + (i - 1) + "=" + realEscape(arguments[i]);
+			args += "&arg" + (i - 1) + "=" + home.realEscape(arguments[i]);
 		}
-		var data = "code=" + realEscape(squeakCode) + args;
+		var data = "code=" + home.realEscape(squeakCode) + args;
 		var result = st.communication.sendSynchronously(data, home.CODE_EXECUTION_URL);
 		return st.communication.handleMessage(result);
 	};
@@ -44,25 +45,7 @@
 		});
 	};
 
-	// 
-	// Private functions
-	// 
-
-	// TODO this method is not finished and not used.
-	var passMessage = function(receiver, message) {
-		if (false) { //(receiver.isRemote()){
-			// transparent message passing
-		} else {
-			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				var data = "newObjectOfClassNamed=" + this.realEscape(receiver.name()._unbox());
-				st.communication.sendSynchronously(data, home.MESSAGE_SEND_URL);
-			} else {
-				receiver.error_(string("Unexpected remote message send."));
-			}
-		}
-	}
-
-	var realEscape = function(string) {
+	home.realEscape = function(string) {
 		// * @ - _ + . / are not escaped by this default js-function
 		var result = escape(string);
 		result = result.replace(/(\*)/g, "%2A");
