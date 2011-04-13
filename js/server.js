@@ -54,7 +54,7 @@
 			// transparent message passing
 		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				var data = "newObjectOfClassNamed=" + this.realEscape(receiver.name()._unbox());
+				var data = "newObjectOfClassNamed=" + this.realEscape(st.unbox(receiver.name()));
 				st.communication.sendSynchronously(data, home.MESSAGE_SEND_URL);
 			} else {
 				receiver.error_(string("Unexpected remote message send."));
