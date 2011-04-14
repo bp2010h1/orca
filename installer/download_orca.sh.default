@@ -1,0 +1,13 @@
+
+# Set common values
+export mc_http "http://www.hpi.uni-potsdam.de/hirschfeld/squeaksource/bp2010h1"
+export mc_packages "Orca-Core Orca-Tools Orca-Widgets Orca-Examples Orca-Tests"
+
+# Set user specific values
+export vm_path ""
+export image_arg ""
+export mc_user ""
+export mc_password ""
+
+# Execute the downloader-script
+installer

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 function run {
-   vm_path="/Users/robert/Desktop/Projekte/bp2010h1/Squeak.app/Contents/MacOS/Croquet"
    image_arg="$1"
    args=$@
 
@@ -16,10 +15,11 @@ function run {
    fi
 
    if [[ -n $IMAGE ]]; then
-      exec "${vm_path}" "$args"
+      eval "${VM_PATH}" "$args"
    else
-      exec "${vm_path}" "$(pwd)/$(ls Squeak*image | head -1)" "$args"
+      eval "${VM_PATH}" "$(pwd)/$(ls Squeak*image | head -1)" "$args"
    fi
+
 }
 
 function download {
@@ -34,6 +34,7 @@ function download {
       unzip Squeak*zip
       gunzip Squeak*sources.gz
       rm Squeak*zip
+	
       if [[ -z $(ls | grep Squeak.*image) ]]; then
          possible_squeak_dir="$(ls | grep -m1 Squeak)"
          if [[ -d $possible_squeak_dir ]]; then
@@ -44,36 +45,77 @@ function download {
    fi
 }
 
-function update {
-   echo "Updating to Trunk..."
-   update_file="__squeak_update.st"
-   cat <<EOF> $update_file
-   MCMcmUpdater updateFromDefaultRepository.
+function setup {
+   echo "Setting up image.."
+   setup_file="__squeak_setup.st"
+   cat <<EOF> $setup_file
+   Utilities setAuthorInitials: 'setup'.
    World color: Preferences defaultWorldColor.
    Preferences swapMouseButtons.
    SystemWindow subclasses collect: [:k | k allInstances] thenDo: [:iary | iary do: [:each | each delete]].
    
+	Installer squeaksource
+    	project: 'MetacelloRepository';
+    	install: 'ConfigurationOfMetacello'. 
+	
+	(Smalltalk at: #ConfigurationOfMetacello) perform: #load.
+
 	((Installer monticello) 
 		http: 'http://www.hpi.uni-potsdam.de/hirschfeld/squeaksource/bp2010h1'
-		user: 'lw'
-		password: 'qW[e!sMb/Ö')	
-		installQuietly: 'Squeak2JS'.
-	
-	(Smalltalk at: #OrcaSilentInstaller) install.
+		user: '${USERNAME}'
+		password: '${PASSWORD}')	
+		installQuietly: 'ConfigurationOfOrca'.
+			
+	(ConfigurationOfOrca project lastVersion) load.
 
-   SmalltalkImage current snapshot: true andQuit: true.
+	SmalltalkImage current snapshot: true andQuit: true.
 EOF
-   run $1 $update_file
-   rm $update_file
+   run $1 $setup_file
 }
 
-if [ "$1" == "download" ]; then
-   download
-   update
-else if [ "$2" == "download" ]; then
-   download
-   update $@
-else
-   run $@
-fi fi
+function usage {
+	E_OPTERROR=65
+	echo "Usage: `basename $0` -u <USERNAME> -p <PASSWORD> -v <BUILD_VM_PATH>"
+	exit $E_OPTERROR	
+}
 
+if [ $# -le 5 ] # print usage if there are not enough arguments
+then
+	usage
+fi
+
+while getopts ":u:p:v:" OPTION
+do
+	case $OPTION in
+		u) USERNAME="$OPTARG" ;;
+		p) PASSWORD="$OPTARG" ;;
+		v) VM_PATH="$OPTARG" ;;
+		*) usage ;;
+	esac
+done
+
+mkdir temp
+cd temp
+download
+setup
+
+DATE_STRING=`date +%Y%m%d`
+
+mkdir "orca_${DATE_STRING}"
+cd "orca_${DATE_STRING}"
+
+for i in ../*.image; do mv $i "Squeak.image"; done
+for i in ../*.changes; do mv $i "Squeak.changes"; done
+mv ../SqueakV41.sources ./
+
+git clone git@github.com:bp2010h1/orca.git
+cat <<EOF> INSTALL
+Put the orca/ directory into your resources directory.
+EOF
+
+cd ..
+
+tar cfz "../orca_${DATE_STRING}.tar.gz" "orca_${DATE_STRING}"
+
+cd ..
+rm -rf temp
