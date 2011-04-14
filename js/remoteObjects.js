@@ -14,8 +14,6 @@
 	
 	// Set up the namespace
 	var home = window.st ? window.st : (window.st = {});	
-
-	home.
 	
 	// 
 	// API functions
@@ -37,12 +35,33 @@
 		var remoteObject = OrcaRemoteObject._newInstance();
 		remoteObject._remoteID = st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL);
 		return remoteObject;
-	}
+	};
+	
+	var standardMessageHandler = home.MESSAGE_HANDLER;
+	home.MESSAGE_HANDLER = function (message){
+		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[0];
+		var remoteId;
+		
+		if(className){
+			if(st[className]){
+				remoteId = remoteObjectTable.length;
+				remoteObjectTable[remoteId] = st[className]._new();
+				return remoteId;
+			} else {
+				return "error=ClassNotFound";
+			}
+		}
+		//TODO: Handle remote Message Send
+		return standardMessageHandler(message);
+	};
 	
 	// 
 	// Private
 	//	
 	
+	// Set up the Remote Object Map
+	var remoteObjectMap = [];
+
 	// Class, that will ...
 	st.class("OrcaRemoteObject", {
 		superclass: st.doesNotUnderstandClass,

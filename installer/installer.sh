@@ -29,19 +29,10 @@ function download {
       SOURCES="ftp://ftp.squeak.org/sources_files/"
       SQUEAK_IMAGE_FILES=$(curl ${TRUNK} | grep "Squeak.*zip" | tail -1 | awk '{print $NF}')
       SQUEAK_SOURCES_FILE=$(curl ${SOURCES} | grep "sources.gz" | tail -1 | awk '{print $NF}')
-      wget "${SOURCES}${SQUEAK_SOURCES_FILE}"
-      wget "${TRUNK}${SQUEAK_IMAGE_FILES}"
+      curl -O "${SOURCES}${SQUEAK_SOURCES_FILE}"
+      curl -O "${TRUNK}${SQUEAK_IMAGE_FILES}"
       unzip Squeak*zip
       gunzip Squeak*sources.gz
-      rm Squeak*zip
-	
-      if [[ -z $(ls | grep Squeak.*image) ]]; then
-         possible_squeak_dir="$(ls | grep -m1 Squeak)"
-         if [[ -d $possible_squeak_dir ]]; then
-            mv "$possible_squeak_dir"/* .
-            rmdir "$possible_squeak_dir"
-         fi
-      fi
    fi
 }
 
