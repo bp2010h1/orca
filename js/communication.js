@@ -29,7 +29,7 @@
 	if (!home.PREFER_WS) home.PREFER_WS = true;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
-	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message) };
+	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message); };
 
 	// 
 	// Local variables
@@ -125,19 +125,20 @@
 		var request = null;
 
 		return {
-			open: function() {
+			open: function(optionalAnswer) {
 				request = createXmlRequest();
 				request.open("GET", fullURL(home.XHR_PATH), true);
 				request.onreadystatechange = function() {
 					if (request.readyState == 4) {
 						if (request.status == 200) {
-							home.handleMessage(request.responseText, request.status);
-							this.open();
+							var answer = home.handleMessage(request.responseText, request.status);
+							this.open(answer);
+						} else {
+							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
 						}
-						else st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
 					}
-				}
-				request.send(null);
+				};
+				request.send(optionalAnswer ? optionalAnswer : null);
 			},
 			send: function(data) {
 				return this.sendSynchronously(data, home.XHR_PATH);
