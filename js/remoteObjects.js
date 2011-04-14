@@ -9,6 +9,8 @@
 // Settings:
 // st.METHOD_INVOKATION_URL (String)
 
+// Wrapps the old
+// st.communication.MESSAGE_HANDLER
 
 (function() {
 	
@@ -37,15 +39,15 @@
 		return remoteObject;
 	};
 	
-	var standardMessageHandler = home.MESSAGE_HANDLER;
-	home.MESSAGE_HANDLER = function (message){
-		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[0];
+	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
+	home.communication.MESSAGE_HANDLER = function (message){
+		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[1];
 		var remoteId;
 		
 		if(className){
 			if(st[className]){
-				remoteId = remoteObjectTable.length;
-				remoteObjectTable[remoteId] = st[className]._new();
+				remoteId = remoteObjectMap.length;
+				remoteObjectMap[remoteId] = st[className]._new();
 				return remoteId;
 			} else {
 				return "error=ClassNotFound";

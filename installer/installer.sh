@@ -95,13 +95,14 @@ DATE_STRING=`date +%Y%m%d`
 mkdir "orca_${DATE_STRING}"
 cd "orca_${DATE_STRING}"
 
-for i in ../*.image; do mv $i "Squeak.image"; done
-for i in ../*.changes; do mv $i "Squeak.changes"; done
+
+eval "mv $(ls ../*.image | head -1)" "Squeak.image"
+eval "mv $(ls ../*.changes | head -1)" "Squeak.changes"
 mv ../SqueakV41.sources ./
 
 git clone git@github.com:bp2010h1/orca.git
 cat <<EOF> INSTALL
-Put the orca/ directory into your resources directory.
+Move this content into your Resources directory.
 EOF
 
 cd ..
