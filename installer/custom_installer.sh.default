@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Put your own values here
+USER = "aUser"
+PW = "aPw"
+VM = "/aPath/to/vm"
+
+./installer.sh -u "$USER" -p "$PW" -v "$VM"
