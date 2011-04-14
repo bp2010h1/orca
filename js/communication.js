@@ -1,6 +1,6 @@
 
 // Setup depends on: -
-// Runtime depends on: console.js, helpers.js
+// Runtime depends on: console.js, helpers.js, server.js
 
 // API:
 // st.communication.setup()
@@ -125,28 +125,29 @@
 		var request = null;
 
 		return {
-			open: function(optionalAnswer) {
+			open: function() {
+				var optionalArgument = arguments[0] ? "&answer=" + home.realEscape(arguments[0]) : '';
 				request = createXmlRequest();
-				request.open("GET", fullURL(home.XHR_PATH), true);
+				request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
 				request.onreadystatechange = function() {
 					if (request.readyState == 4) {
 						if (request.status == 200) {
 							var answer = home.handleMessage(request.responseText, request.status);
-							this.open(answer);
+							connectionHandler.open(answer);
 						} else {
 							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
 						}
 					}
 				};
-				request.send(optionalAnswer ? optionalAnswer : null);
+				request.send(null);
 			},
 			send: function(data) {
-				return this.sendSynchronously(data, home.XHR_PATH);
+				return connectionHandler.sendSynchronously(data, home.XHR_PATH);
 			},
 			sendSynchronously: function(data, url) {
-				this.close();
+				connectionHandler.close();
 				var result = sendSynchronouslyImpl(data, url);
-				this.open();
+				connectionHandler.open();
 				return result;
 			},
 			close: function() {
