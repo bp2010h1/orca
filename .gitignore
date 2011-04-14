@@ -1,3 +1,4 @@
 *~
 installer/custom_installer.sh
 installer/temp/*
+installer/*.tar.gz
