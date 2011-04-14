@@ -4,10 +4,7 @@
 // Runtime depends on: communication.js, server.js
 
 // API:
-// st.box(anyObject)
-
-// Settings:
-// st.METHOD_INVOKATION_URL (String)
+// TOTO add API-functions
 
 // Wrapps the old
 // st.communication.MESSAGE_HANDLER
