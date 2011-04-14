@@ -59,6 +59,8 @@ function setup {
 			
 	(ConfigurationOfOrca project lastVersion) load.
 
+	MCMcmUpdater updateFromDefaultRepository.
+	
 	SmalltalkImage current snapshot: true andQuit: true.
 EOF
    run $1 $setup_file
