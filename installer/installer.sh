@@ -42,7 +42,7 @@ function setup {
    cat <<EOF> $setup_file
    Utilities setAuthorInitials: 'setup'.
    World color: Preferences defaultWorldColor.
-   Preferences swapMouseButtons.
+   Preferences setPreference: #swapMouseButtons toValue: false.
    SystemWindow subclasses collect: [:k | k allInstances] thenDo: [:iary | iary do: [:each | each delete]].
    
 	Installer squeaksource
