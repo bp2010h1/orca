@@ -41,9 +41,6 @@ function setup {
    setup_file="__squeak_setup.st"
    cat <<EOF> $setup_file
    Utilities setAuthorInitials: 'OrcaSetup'.
-   World color: Preferences defaultWorldColor.
-   Preferences setPreference: #swapMouseButtons toValue: false.
-   SystemWindow subclasses collect: [:k | k allInstances] thenDo: [:iary | iary do: [:each | each delete]].
    
 	Installer squeaksource
     	project: 'MetacelloRepository';
@@ -55,11 +52,13 @@ function setup {
 		http: 'http://www.hpi.uni-potsdam.de/hirschfeld/squeaksource/bp2010h1'
 		user: '${USERNAME}'
 		password: '${PASSWORD}')	
-		installQuietly: 'ConfigurationOfOrca'.
+		installQuietly: '${CONFIG}'.
 			
-	(Smalltalk at: #ConfigurationOfOrca) load.
+	(Smalltalk at: #${CONFIG}) load.
 
 	MCMcmUpdater updateFromDefaultRepository.
+	
+	SystemWindow subclasses collect: [:k | k allInstances] thenDo: [:iary | iary do: [:each | each delete]].
 	
 	SmalltalkImage current snapshot: true andQuit: true.
 EOF
@@ -68,7 +67,7 @@ EOF
 
 function usage {
 	E_OPTERROR=65
-	echo "Usage: `basename $0` -u <USERNAME> -p <PASSWORD> -v <BUILD_VM_PATH>"
+	echo "Usage: `basename $0` -u <USERNAME> -p <PASSWORD> -v <BUILD_VM_PATH> -c <METACELLO_CONFIGURATION>"
 	exit $E_OPTERROR	
 }
 
@@ -77,12 +76,13 @@ then
 	usage
 fi
 
-while getopts ":u:p:v:" OPTION
+while getopts ":u:p:v:c:" OPTION
 do
 	case $OPTION in
 		u) USERNAME="$OPTARG" ;;
 		p) PASSWORD="$OPTARG" ;;
 		v) VM_PATH="$OPTARG" ;;
+		c) CONFIG="$OPTARG" ;;
 		*) usage ;;
 	esac
 done

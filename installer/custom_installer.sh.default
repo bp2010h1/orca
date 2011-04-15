@@ -3,6 +3,7 @@
 # Put your own values here
 USER="aUser"
 PW="aPw"
-VM = "/aPath/to/vm"
+VM="/aPath/to/vm"
+CONFIG="ConfigurationOfOrca"
 
-./installer.sh -u "$USER" -p "$PW" -v "$VM"
+./installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
