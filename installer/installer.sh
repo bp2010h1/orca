@@ -40,7 +40,7 @@ function setup {
    echo "Setting up image.."
    setup_file="__squeak_setup.st"
    cat <<EOF> $setup_file
-   Utilities setAuthorInitials: 'setup'.
+   Utilities setAuthorInitials: 'OrcaSetup'.
    World color: Preferences defaultWorldColor.
    Preferences setPreference: #swapMouseButtons toValue: false.
    SystemWindow subclasses collect: [:k | k allInstances] thenDo: [:iary | iary do: [:each | each delete]].
@@ -49,7 +49,7 @@ function setup {
     	project: 'MetacelloRepository';
     	install: 'ConfigurationOfMetacello'. 
 	
-	(Smalltalk at: #ConfigurationOfMetacello) perform: #load.
+	(Smalltalk at: #ConfigurationOfMetacello) load.
 
 	((Installer monticello) 
 		http: 'http://www.hpi.uni-potsdam.de/hirschfeld/squeaksource/bp2010h1'
@@ -57,7 +57,7 @@ function setup {
 		password: '${PASSWORD}')	
 		installQuietly: 'ConfigurationOfOrca'.
 			
-	(ConfigurationOfOrca project lastVersion) load.
+	(Smalltalk at: #ConfigurationOfOrca) load.
 
 	MCMcmUpdater updateFromDefaultRepository.
 	

@@ -2,3 +2,4 @@
 installer/custom_installer.sh
 installer/temp/*
 installer/*.tar.gz
+installer/.DS_Store
