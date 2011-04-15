@@ -4,6 +4,9 @@
 USER="aUser"
 PW="aPw"
 VM="/aPath/to/vm"
-CONFIG="ConfigurationOfOrca"
+
+CONFIG="ConfigurationOfOrca" 
+# test image 	=>  ConfigurationOfOrca				(only Orca packages and their dependencies)
+# dev image 	=>	ConfigurationOfBP2010H1		(Orca packages with dependencies, Preferences, OmniBrowser, OCompletion, Shout)
 
 ./installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
