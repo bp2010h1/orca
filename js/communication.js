@@ -26,7 +26,7 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = false;
+	if (!home.PREFER_WS) home.PREFER_WS = true;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
 	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message); };
@@ -148,9 +148,7 @@
 				return connectionHandler.sendSynchronously(data, home.XHR_PATH);
 			},
 			sendSynchronously: function(data, url) {
-				// connectionHandler.close();
 				var result = sendSynchronouslyImpl(data, url);
-				// connectionHandler.open();
 				return result;
 			},
 			close: function() {
@@ -176,7 +174,10 @@
 					st.console.log("WebSocket failed: " + event);
 				};
 				webSocket.onmessage = function(event) {
-					home.handleMessage(event.data, 200);
+					var answer = home.handleMessage(event.data, 200);
+					if (answer !== undefined){
+						webSocket.send(answer);
+					}
 				};
 				webSocket.onclose = function() {
 					st.console.log("WebSocket received close event.");
