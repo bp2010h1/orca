@@ -19,10 +19,18 @@
 	// Function called when a method with an unimplemented primitive declaration is called
 	home.primitiveDeclaration = function() {
 		var current = st.peekCallStack();
-		throw("Primitive has been called!!! The method containing it is: \n\n" + 
-			current.currentThis._theClass._classname + "." +
-			current.currentMethod.methodName + "\n(implemented in class " + 
-			current.currentMethod.methodHome._theClass._classname + ")");
+		var msg = "Primitive has been called!!! The method containing it is: \n" +
+			"\n" +
+			current.currentThis._theClass._classname + "." + current.currentMethod.methodName + "\n" +
+			"(implemented in class " + current.currentMethod.methodHome._theClass._classname + ")\n" +
+			"\n" +
+			"You can either rely on the software-implementation of this primitive " +
+			" and add this method to the list in OrcaSqueakAstToJsAst class >> #ignoredPrimitives\n" +
+			"Or you implement the primitive in a Javascript-file in the primitives/-subfolder.\n" +
+			"The file must be called <name of the home-class of the primitive>.js and is included automatically.\n" +
+			"If it is not there, create it.";
+		alert(msg)
+		throw msg;
 	};
 
 	// Set up immutable globals
