@@ -40,11 +40,10 @@
 	home.communication.MESSAGE_HANDLER = function (message){
 		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[1];
 		var remoteId;
-		
 		if(className){
 			if(st[className]){
-				remoteId = remoteObjectMap.length;
-				remoteObjectMap[remoteId] = st[className]._new();
+				remoteId = reachableObjectMap.length;
+				reachableObjectMap[remoteId] = st[className]._new();
 				return remoteId;
 			} else {
 				return "error=ClassNotFound";
@@ -59,7 +58,7 @@
 	//	
 	
 	// Set up the Remote Object Map
-	var remoteObjectMap = [];
+	var reachableObjectMap = [];
 
 	// Class, that will ...
 	st.class("OrcaRemoteObject", {

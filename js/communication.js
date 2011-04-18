@@ -26,7 +26,7 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = true;
+	if (!home.PREFER_WS) home.PREFER_WS = false;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
 	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message); };
@@ -126,7 +126,10 @@
 
 		return {
 			open: function() {
-				var optionalArgument = arguments[0] ? "&answer=" + home.realEscape(arguments[0]) : '';
+				var optionalArgument = '';
+				if (arguments[0] !== undefined) {
+					optionalArgument = "&answer=" + home.realEscape(arguments[0]);
+				}
 				request = createXmlRequest();
 				request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
 				request.onreadystatechange = function() {
@@ -145,9 +148,9 @@
 				return connectionHandler.sendSynchronously(data, home.XHR_PATH);
 			},
 			sendSynchronously: function(data, url) {
-				connectionHandler.close();
+				// connectionHandler.close();
 				var result = sendSynchronouslyImpl(data, url);
-				connectionHandler.open();
+				// connectionHandler.open();
 				return result;
 			},
 			close: function() {

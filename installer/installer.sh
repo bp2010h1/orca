@@ -15,9 +15,9 @@ function run {
    fi
 
    if [[ -n $IMAGE ]]; then
-      eval "${VM_PATH}" "$args"
+      eval "\"${VM_PATH}\"" "$args"
    else
-      eval "${VM_PATH}" "$(pwd)/$(ls Squeak*image | head -1)" "$args"
+      eval "\"${VM_PATH}\"" "$(pwd)/$(ls Squeak*image | head -1)" "$args"
    fi
 
 }
