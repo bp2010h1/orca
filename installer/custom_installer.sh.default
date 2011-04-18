@@ -5,8 +5,15 @@ USER="aUser"
 PW="aPw"
 VM="/aPath/to/vm"
 
+# Choose which Configuration you want to load into the new image
+
+# test image 	=>  ConfigurationOfOrca
+# (only Orca packages and their dependencies)
+
+# dev image 	=>	ConfigurationOfBP2010H1
+# (Orca packages with dependencies, Preferences, OmniBrowser, Refactoring for OB, 
+# OCompletion, OCforOB, Shout)
+
 CONFIG="ConfigurationOfOrca" 
-# test image 	=>  ConfigurationOfOrca				(only Orca packages and their dependencies)
-# dev image 	=>	ConfigurationOfBP2010H1		(Orca packages with dependencies, Preferences, OmniBrowser, Refactoring for OB, OCompletion, OCforOB, Shout)
 
 ./installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
