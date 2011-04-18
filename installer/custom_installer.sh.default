@@ -7,6 +7,6 @@ VM="/aPath/to/vm"
 
 CONFIG="ConfigurationOfOrca" 
 # test image 	=>  ConfigurationOfOrca				(only Orca packages and their dependencies)
-# dev image 	=>	ConfigurationOfBP2010H1		(Orca packages with dependencies, Preferences, OmniBrowser, OCompletion, Shout)
+# dev image 	=>	ConfigurationOfBP2010H1		(Orca packages with dependencies, Preferences, OmniBrowser, Refactoring for OB, OCompletion, OCforOB, Shout)
 
 ./installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
