@@ -32,7 +32,7 @@
 			}
 		}
 		var remoteObject = OrcaRemoteObject._newInstance();
-		remoteObject._remoteID = st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL);
+		remoteObject._remoteID = parseInt(st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL));
 		return remoteObject;
 	};
 	
