@@ -20,10 +20,13 @@
 	
 	home.passMessage = function(receiver, message) {
 		var data;
+		var answerString;
+		var resultObject;
 		if (st.unbox(receiver.isRemote())) { 
-			// // for test purposes just for unary messages now
-			// data = "messageSendFor=" + st.communication.realEscape(receiver._remoteID) 
-			// + "&withSelector=" + st.communication.realEscape(st.unbox(message.selector()));
+			 // for test purposes just for unary messages now
+			 // TODO: other messages
+			 data =  "rid=" + st.communication.realEscape(receiver._remoteID) +
+			 	"&selector=" + st.communication.realEscape(st.unbox(message.selector()));
 		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
 				data = "newObjectOfClassNamed=" + st.communication.realEscape(st.unbox(receiver.name()));
@@ -31,9 +34,9 @@
 				receiver.error_(string("Unexpected remote message send."));
 			}
 		}
-		var remoteObject = OrcaRemoteObject._newInstance();
-		remoteObject._remoteID = parseInt(st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL));
-		return remoteObject;
+		answerString = st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL);
+		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
+		return convertAnswer(eval("st.wrapFunction(function(){ return " + answerString + "}).apply(st.nil);"));
 	};
 	
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
@@ -45,9 +48,9 @@
 			if(st[className]){
 				remoteId = reachableObjectMap.length;
 				reachableObjectMap[remoteId] = st[className]._new();
-				return "{ remoteId: " + remoteId + " }";
+				return '{ "remoteId": ' + remoteId + " }";
 			} else {
-				return "error=ClassNotFound";
+				return '{ "error": "ClassNotFound" }';
 			}
 		}
 		var passedMessage = message.match(/rid=([0-9]+)&selector=([a-zA-Z0-9:]+)/);
@@ -59,7 +62,7 @@
 				var answer = reachableObjectMap[remoteId].perform_(st.string(selector));
 				return serializeOrExpose(answer);
 			} else {
-				return "error=RemoteObjectNotAvailable";
+				return '{ "error": "RemoteObjectNotAvailable" }';
 			}
 		}
 		return standardMessageHandler(message);
@@ -71,19 +74,19 @@
 	
 	var serializeOrExpose = function (anObject){
 		if (anObject.isRemote && st.unbox(anObject.isRemote())){
-			return "{ remoteId: " + anObject._remoteId + "}";
+			return '{ "remoteId": ' + anObject._remoteId + " }";
 		}
 		if (anObject.isNumber && st.unbox(anObject.isNumber())){
-			return "{ number: " + st.unbox(anObject) + " }";
+			return st.unbox(anObject).toString();
 		}
 		if (anObject.isString && st.unbox(anObject.isString())){
-			return "{ string: " + st.unbox(anObject) + " }";
+			return '"' + st.unbox(anObject).toString() + '"';
 		}
 		if (anObject === st.true || anObject === st.false){
-			return "{ boolean: " + st.unbox(anObject) + "}";
+			return st.unbox(anObject).toString();
 		}
 		if (anObject === st.nil){
-			return "{ specialValue: null }";
+			return "null";
 		}
 		//besser: Klassenvergleich? isArray?
 		if (st.unbox(anObject.isArray())){
@@ -99,7 +102,38 @@
 		//else
 		var remoteId = reachableObjectMap.length;
 		reachableObjectMap[remoteId] = anObject;
-		return "{ remoteId: " + remoteId + "}";
+		return '{ "remoteId": ' + remoteId + " }";
+	};
+	
+	var convertAnswer = function (anObject){
+		// these are the tree json-types: array, object, primitive
+		if (typeof anObject == "Array") {
+			return convertArrayAnswer(anObject);
+		}
+		if (typeof anObject == "object") {
+			return convertObjectAnswer(anObject);
+		}
+		return anObject;
+		
+	};
+	var convertArrayAnswer = function (anArray){
+		var result = [];
+		for(var i = 0; i < anArray.length; i++){
+			result[i] = convertAnswer(anArray[i]);
+		}
+		return result;
+	};
+	var convertObjectAnswer = function (anObject){
+		for (var aProperty in anObject){
+			if (aProperty == "remoteId") {
+				var remoteObject = OrcaRemoteObject._newInstance();
+				remoteObject._remoteID = anObject.remoteId;
+				return remoteObject;
+			}
+			if (aProperty == "error") {
+				return st.Error.signal_(st.string(anObject.error));
+			}
+		}
 	};
 	
 	// Set up the Remote Object Map
@@ -114,7 +148,7 @@
 				return st.true; 
 			},
 			doesNotUnderstand_: function(message) {
-				home.passMessage(this, message);
+				return home.passMessage(this, message);
 			}
 		}
 	});
