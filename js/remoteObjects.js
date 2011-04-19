@@ -45,7 +45,7 @@
 			if(st[className]){
 				remoteId = reachableObjectMap.length;
 				reachableObjectMap[remoteId] = st[className]._new();
-				return remoteId;
+				return "{ remoteId: " + remoteId + " }";
 			} else {
 				return "error=ClassNotFound";
 			}
@@ -56,7 +56,8 @@
 			var selector = passedMessage[2];
 			if (reachableObjectMap[remoteId]) {
 				// TODO: it works only for unary message sends until now
-				return reachableObjectMap[remoteId].perform_(selector);
+				var answer = reachableObjectMap[remoteId].perform_(st.string(selector));
+				return serializeOrExpose(answer);
 			} else {
 				return "error=RemoteObjectNotAvailable";
 			}
@@ -67,6 +68,38 @@
 	// 
 	// Private
 	//	
+	
+	var serializeOrExpose = function (anObject){
+		if (anObject.isRemote && anObject.isRemote()){
+			return "{ remoteId: " + anObject._remoteId + "}";
+		}
+		if (anObject.isNumber && anObject.isNumber()){
+			return "{ number: " + st._unbox(anObject.asString()) + " }";
+		}
+		if (anObject.isString && anObject.isString()){
+			return "{ string: " + st._unbox(anObject) + " }";
+		}
+		if (anObject === st.true || anObject === st.false){
+			return "{ boolean: " + st._unbox(anObject.asString()) + "}";
+		}
+		if (anObject === st.nil){
+			return "{ specialValue: null }";
+		}
+		//besser: Klassenvergleich? isArray?
+		if (anObject.isArray()){
+			result = "[";
+			for (var i = 0; i < st._unbox(anObject.size()); i++){
+				result += serializeOrExpose(anObject.at(st.number(i+1)));
+				if(i < st._unbox(anObject.size()) - 1 ){
+					result += ", ";
+				}
+			}
+			return result + "]";
+		}
+		//else
+		reachableObjectMap[reachableObjectMap.length] = anObject;
+		return "{ remoteId: " + reachableObjectMap.length + "}";
+	};
 	
 	// Set up the Remote Object Map
 	var reachableObjectMap = [];
