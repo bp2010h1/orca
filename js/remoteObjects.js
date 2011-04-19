@@ -26,7 +26,7 @@
 			// + "&withSelector=" + st.communication.realEscape(st.unbox(message.selector()));
 		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				data = "newObjectOfClassNamed=" + st.communication.realEscape(receiver.name()._unbox());
+				data = "newObjectOfClassNamed=" + st.communication.realEscape(st.unbox(receiver.name()));
 			} else {
 				receiver.error_(string("Unexpected remote message send."));
 			}
@@ -70,35 +70,36 @@
 	//	
 	
 	var serializeOrExpose = function (anObject){
-		if (anObject.isRemote && anObject.isRemote()){
+		if (anObject.isRemote && st.unbox(anObject.isRemote())){
 			return "{ remoteId: " + anObject._remoteId + "}";
 		}
-		if (anObject.isNumber && anObject.isNumber()){
-			return "{ number: " + st._unbox(anObject.asString()) + " }";
+		if (anObject.isNumber && st.unbox(anObject.isNumber())){
+			return "{ number: " + st.unbox(anObject%%) + " }";
 		}
-		if (anObject.isString && anObject.isString()){
-			return "{ string: " + st._unbox(anObject) + " }";
+		if (anObject.isString && st.unbox(anObject.isString())){
+			return "{ string: " + st.unbox(anObject) + " }";
 		}
 		if (anObject === st.true || anObject === st.false){
-			return "{ boolean: " + st._unbox(anObject.asString()) + "}";
+			return "{ boolean: " + st.unbox(anObject%%) + "}";
 		}
 		if (anObject === st.nil){
 			return "{ specialValue: null }";
 		}
 		//besser: Klassenvergleich? isArray?
-		if (anObject.isArray()){
+		if (st.unbox(anObject.isArray())){
 			result = "[";
-			for (var i = 0; i < st._unbox(anObject.size()); i++){
+			for (var i = 0; i < st.unbox(anObject.size()); i++){
 				result += serializeOrExpose(anObject.at(st.number(i+1)));
-				if(i < st._unbox(anObject.size()) - 1 ){
+				if(i < st.unbox(anObject.size()) - 1 ){
 					result += ", ";
 				}
 			}
 			return result + "]";
 		}
 		//else
-		reachableObjectMap[reachableObjectMap.length] = anObject;
-		return "{ remoteId: " + reachableObjectMap.length + "}";
+		var remoteId = reachableObjectMap.length;
+		reachableObjectMap[remoteId] = anObject;
+		return "{ remoteId: " + remoteId + "}";
 	};
 	
 	// Set up the Remote Object Map
