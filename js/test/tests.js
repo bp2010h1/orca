@@ -1,6 +1,6 @@
 
 // Setup dependencies: -
-// Runtime dependencies: boxing.js, console.js, server.js
+// Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js
 
 // API:
 // st.tests.assert(boolean)
@@ -31,7 +31,8 @@
 		"test_super.js", 
 		"test_communication.js",
 		"test_boxing.js",
-		"test_doesNotUnderstand_.js" ];
+		"test_doesNotUnderstand_.js",
+		"test_remoteObjects.js" ];
 
 	// 
 	// API functions
@@ -57,7 +58,7 @@
 		if (!squeakEnvironmentLoaded) {
 			loadClasses();
 			
-			var scripts = [ "js/perform.js", "js/boxing.js", "js/bootstrap.js", 
+			var scripts = [ "js/perform.js", "js/boxing.js", "js/bootstrap.js", "js/remoteObjects.js",
 			// The primitives of all classes. TODO must be refactored.
 			"js/primitives/Array.js", "js/primitives/BlockClosure.js", "js/primitives/Exception.js",
 			"js/primitives/Float.js", "js/primitives/Js.js", "js/primitives/Number.js",
