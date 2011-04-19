@@ -74,13 +74,13 @@
 			return "{ remoteId: " + anObject._remoteId + "}";
 		}
 		if (anObject.isNumber && st.unbox(anObject.isNumber())){
-			return "{ number: " + st.unbox(anObject%%) + " }";
+			return "{ number: " + st.unbox(anObject) + " }";
 		}
 		if (anObject.isString && st.unbox(anObject.isString())){
 			return "{ string: " + st.unbox(anObject) + " }";
 		}
 		if (anObject === st.true || anObject === st.false){
-			return "{ boolean: " + st.unbox(anObject%%) + "}";
+			return "{ boolean: " + st.unbox(anObject) + "}";
 		}
 		if (anObject === st.nil){
 			return "{ specialValue: null }";
