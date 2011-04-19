@@ -12,8 +12,8 @@ st.class("RemoteObjectTester", {
 		
 		testNewOnServer: function (){
 			var remoteObject = st.Object.newOnServer();
-			st.tests.assert(remoteObject.isRemote());
-			st.tests.assert((typeof remoteObject._remoteID) === "number");
+			st.tests.assert(remoteObject.isRemote(), "Object created through st.Object.newOnServer() is not remote.");
+			st.tests.assert((typeof remoteObject._remoteID) === "number", "Returned RemoteID for the created RemoteObject is not a number.");
 		},
 
 	}
