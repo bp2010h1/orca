@@ -32,15 +32,16 @@
 			}
 		}
 		var remoteObject = OrcaRemoteObject._newInstance();
-		remoteObject._remoteID = st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL);
+		remoteObject._remoteID = parseInt(st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL));
 		return remoteObject;
 	};
 	
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
-	home.communication.MESSAGE_HANDLER = function (message){
-		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[1];
-		var remoteId;
-		if(className){
+	home.communication.MESSAGE_HANDLER = function(message){
+		var newOnClientCall = message.match(/newObjectOfClassNamed=([A-Za-z]+)/);
+		if (newOnClientCall !== null) {
+			var className = newOnClientCall[1];
+			var remoteId;
 			if(st[className]){
 				remoteId = reachableObjectMap.length;
 				reachableObjectMap[remoteId] = st[className]._new();
@@ -49,7 +50,17 @@
 				return "error=ClassNotFound";
 			}
 		}
-		//TODO: Handle remote Message Send
+		var passedMessage = message.match(/rid=([0-9]+)&selector=([a-zA-Z0-9:]+)/);
+		if (passedMessage !== null) {
+			var remoteId = parseInt(passedMessage[1]);
+			var selector = passedMessage[2];
+			if (reachableObjectMap[remoteId]) {
+				// TODO: it works only for unary message sends until now
+				return reachableObjectMap[remoteId].perform_(selector);
+			} else {
+				return "error=RemoteObjectNotAvailable";
+			}
+		}
 		return standardMessageHandler(message);
 	};
 	
