@@ -113,6 +113,7 @@
 		if (typeof anObject == "object") {
 			return convertObjectAnswer(anObject);
 		}
+		//TODO: convert anObject to st.string or st.number or st.true, st.false, st.nil, ...
 		return anObject;
 		
 	};
