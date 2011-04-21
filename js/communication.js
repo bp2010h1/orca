@@ -32,7 +32,6 @@
 	if (!home.PREFER_WS) home.PREFER_WS = true;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
-	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message); };
 	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
 		eval(message); };
@@ -43,7 +42,6 @@
 
 	var connectionHandler;
 	var synchronousRequest;
-	var identifier = st.getRandomInt(0, 4294967296);
 	var session_id = -1;
 
 	// 
@@ -133,7 +131,6 @@
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
 		}
-		return baseUrl + urlPath + "?id=" + identifier;
 		return baseUrl + urlPath + "?id=" + session_id;
 	};
 
@@ -164,10 +161,9 @@
 				return this.sendSynchronously(data, home.XHR_PATH);
 			},
 			sendSynchronously: function(data, url) {
-				// connectionHandler.close();
+				// It might be, that comet needs to close it's open connection before opening a new one
 				// this.close();
 				var result = sendSynchronouslyImpl(data, url);
-				// connectionHandler.open();
 				// this.open();
 				return result;
 			},
