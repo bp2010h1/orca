@@ -152,8 +152,7 @@
 
 	var createCometHandler = function() {
 		var request = null;
-
-		return {
+		var self = {
 			open: function() {
 				var optionalArgument = '';
 				if (arguments[0] !== undefined) {
@@ -165,7 +164,7 @@
 					if (request.readyState == 4) {
 						if (request.status == 200) {
 							var answer = home.handleMessage(request.responseText, request.status);
-							this.open(answer);
+							self.open(answer);
 						} else {
 							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
 						}
@@ -191,6 +190,8 @@
 				return request ? true : false;
 			}
 		};
+
+		return self;
 	};
 
 	var createWsHandler = function() {
