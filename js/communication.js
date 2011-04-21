@@ -83,7 +83,6 @@
 			st.console.log("Error handling the content of a server-message: " + e + ".\r\n" +
 			"Message was: " + content);
 		}
-		st.console.statusInfo(content, status);
 		return result;
 	};
 
