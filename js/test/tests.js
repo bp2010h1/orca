@@ -56,14 +56,16 @@
 	// Load all resources needed to setup the squeak-environment on the client
 	home.setupSqueakEnvironment = function() {
 		if (!squeakEnvironmentLoaded) {
-			loadClasses();
+			st.communication.loadScript("classes");
+			st.communication.loadScript("primitives");
 			
-			var scripts = [ "js/perform.js", "js/boxing.js", "js/bootstrap.js", "js/remoteObjects.js",
-			// The primitives of all classes. TODO must be refactored.
-			"js/primitives/Array.js", "js/primitives/BlockClosure.js", "js/primitives/Exception.js",
-			"js/primitives/Float.js", "js/primitives/Js.js", "js/primitives/Number.js",
-			"js/primitives/Object.js", "js/primitives/OrcaWidget.js", "js/primitives/Point.js",
-			"js/primitives/ProtoObject.js", "js/primitives/String.js" ]
+			var scripts = [
+			"js/server.js",
+			"js/perform.js", 
+			"js/boxing.js", 
+			"js/bootstrap.js", 
+			"js/remoteObjects.js",
+			];
 			
 			for (var i = 0; i < scripts.length; i++) {
 				loadScript(scripts[i]);
@@ -111,14 +113,10 @@
 	// Disable debugging-support when executing tests
 	st.DEBUG = false;
 
-	// Load and evaluate the compiled squeak-classes
-	var loadClasses = function() {
-		return st.loadScript("classes");
-	};
-
 	// Load the resource distributed from our file-handler in the image
 	var loadScript = function(scriptName) {
-		return st.loadScript("file/" + scriptName);
+		st.console.log("Loading script " + scriptName);
+		return st.communication.loadScript("file/" + scriptName);
 	};
 
 	// Run one test-script.
@@ -133,7 +131,7 @@
 		currentTest = "(?)";
 		var tester = null;
 		startNewTest(scriptName);
-				
+		
 		tryCatch(function() {
 			applicationName = "test";
 			tester = loadScript("js/test/" + scriptName);

@@ -1,4 +1,6 @@
 
+debugger;
+
 // This test is meant to execute the primitives shipped with classes.js
 // Therefore it needs the Squeak-Classes salted with these primitives and the Primitives itself:
 st.tests.setupSqueakEnvironment();

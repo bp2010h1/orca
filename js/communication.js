@@ -9,6 +9,8 @@
 // st.communication.sendSynchronously(data)
 // st.communication.disconnect()
 // st.communication.handleMessage(content, status)
+// st.GET(path)
+// st.loadScript(path)
 
 // (st.setup_session_id(int) can be called only once)
 
@@ -28,7 +30,6 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = false;
 	if (!home.PREFER_WS) home.PREFER_WS = true;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
@@ -81,14 +82,29 @@
 		try {
 			result = home.MESSAGE_HANDLER(content);
 		} catch (e) {
-			st.console.log("Error handling the content of a server-message: " + e + 
-			"\rMessage was: " + content);
 			st.console.log("Error handling the content of a server-message: " + e + ".\r\n" +
 			"Message was: " + content);
 		}
-		st.console.statusInfo(content, status);
 		return result;
 	};
+
+	home.GET = function(path) {
+		var req = createXmlRequest();
+		req.open("GET", fullURL(path), false);
+		req.send(null);
+		if (req.status == 200) {
+			return req.responseText;
+		} else {
+			throw "Could not load file: " + path;
+		}
+	};
+
+	// Load the resource and evaluate it in global context. Return the evaluated result.
+	home.loadScript = function(path) {
+		var script = home.GET(path);
+		// The scripts need global context
+		return (function() { return window.eval(script); })();
+	}
 
 	home.setup_session_id = function(id) {
 		// Allow calling this function only once - delete after usage
