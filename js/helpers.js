@@ -6,6 +6,8 @@
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
 // st.getRandomInt(min, max)
+// st.GET(path)
+// st.loadScript(path)
 
 (function() {
 
@@ -35,5 +37,23 @@
 	home.getRandomInt = function(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	};
+
+	home.GET = function(path) {
+		var req = new XMLHttpRequest();
+		req.open("GET", path, false);
+		req.send(null);
+		if (req.status == 200) {
+			return req.responseText;
+		} else {
+			throw "Could not load file: " + path;
+		}
+	};
+
+	// Load the resource and evaluate it in global context. Return the evaluated result.
+	home.loadScript = function(path) {
+		var script = st.GET(path);
+		// The scripts need global context
+		return (function() { return window.eval(script); })();
+	}
 
 })();

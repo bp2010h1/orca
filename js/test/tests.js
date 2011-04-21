@@ -110,32 +110,14 @@
 	// Disable debugging-support when executing tests
 	st.DEBUG = false;
 
-	// Simply load the resource (relative to root)
-	var GET = function(path) {
-		var req = new XMLHttpRequest();
-		req.open("GET", path, false);
-		req.send(null);
-		if (req.status == 200) {
-			return req.responseText;
-		} else {
-			throw "Could not load file: " + path;
-		}
-	};
-
-	// Load the resource and evaluate it in global context. Return the evaluated result.
-	var loadFile = function(fileName) {
-		var script = GET(fileName);
-		return (function() { return window.eval(script); })(); // The scripts need global context
-	};
-
 	// Load and evaluate the compiled squeak-classes
 	var loadClasses = function() {
-		return loadFile("classes");
+		return st.loadScript("classes");
 	};
 
 	// Load the resource distributed from our file-handler in the image
 	var loadScript = function(scriptName) {
-		return loadFile("file/" + scriptName);
+		return st.loadScript("file/" + scriptName);
 	};
 
 	// Run one test-script.

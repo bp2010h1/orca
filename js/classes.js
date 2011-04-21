@@ -238,8 +238,11 @@
 
 	// From here on, messages from the server potentially contain non-local-returns
 	// and must be wrapped into the appropriate wrapper-function
+	var originalMessageHandler = st.communication.MESSAGE_HANDLER;
 	st.communication.MESSAGE_HANDLER = function(source) {
-		return eval("st.wrapFunction(function(){" + source + "}).apply(st.nil);");
+		return originalMessageHandler(
+			"st.wrapFunction(function() {" + 
+			source + "}).apply(st.nil);" );
 	};
 
 	var DontDebugMarker = {};

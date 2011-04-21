@@ -37,16 +37,19 @@
 	};
 	
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
-	home.communication.MESSAGE_HANDLER = function (message){
-		var className = message.match(/newObjectOfClassNamed=([A-Za-z]*)/)[1];
-		var remoteId;
-		if(className){
-			if(st[className]){
-				remoteId = reachableObjectMap.length;
-				reachableObjectMap[remoteId] = st[className]._new();
-				return remoteId;
-			} else {
-				return "error=ClassNotFound";
+	home.communication.MESSAGE_HANDLER = function (message) {
+		var results = message.match(/newObjectOfClassNamed=([A-Za-z]*)/);
+		if (results) {
+			var className = results[1];
+			var remoteId;
+			if(className){
+				if(st[className]){
+					remoteId = reachableObjectMap.length;
+					reachableObjectMap[remoteId] = st[className]._new();
+					return remoteId;
+				} else {
+					return "error=ClassNotFound";
+				}
 			}
 		}
 		//TODO: Handle remote Message Send

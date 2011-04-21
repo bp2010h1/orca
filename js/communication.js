@@ -10,6 +10,8 @@
 // st.communication.disconnect()
 // st.communication.handleMessage(content, status)
 
+// (st.setup_session_id(int) can be called only once)
+
 // Settings:
 // st.communication.PREFER_WS (boolean)
 // st.communication.WEBSOCKET_PATH (string)
@@ -26,10 +28,12 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = false;
+	if (!home.PREFER_WS) home.PREFER_WS = true;
 	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
 	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
-	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) { st.console.log("Received message: " + message); };
+	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) {
+		st.console.log("Received message: " + message);
+		eval(message); };
 
 	// 
 	// Local variables
@@ -37,7 +41,7 @@
 
 	var connectionHandler;
 	var synchronousRequest;
-	var identifier = st.getRandomInt(0, 4294967296);
+	var session_id = -1;
 
 	// 
 	// API functions
@@ -76,11 +80,17 @@
 		try {
 			result = home.MESSAGE_HANDLER(content);
 		} catch (e) {
-			st.console.log("Error handling the content of a server-message: " + e + 
-			"\rMessage was: " + content);
+			st.console.log("Error handling the content of a server-message: " + e + ".\r\n" +
+			"Message was: " + content);
 		}
 		st.console.statusInfo(content, status);
 		return result;
+	};
+
+	home.setup_session_id = function(id) {
+		// Allow calling this function only once - delete after usage
+		session_id = id;
+		delete home.setup_session_id;
 	};
 
 	// 
@@ -118,7 +128,7 @@
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
 		}
-		return baseUrl + urlPath + "?id=" + identifier;
+		return baseUrl + urlPath + "?id=" + session_id;
 	};
 
 	var createCometHandler = function() {
@@ -136,7 +146,7 @@
 					if (request.readyState == 4) {
 						if (request.status == 200) {
 							var answer = home.handleMessage(request.responseText, request.status);
-							connectionHandler.open(answer);
+							this.open(answer);
 						} else {
 							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
 						}
@@ -145,12 +155,12 @@
 				request.send(null);
 			},
 			send: function(data) {
-				return connectionHandler.sendSynchronously(data, home.XHR_PATH);
+				return this.sendSynchronously(data, home.XHR_PATH);
 			},
 			sendSynchronously: function(data, url) {
-				// connectionHandler.close();
+				// this.close();
 				var result = sendSynchronouslyImpl(data, url);
-				// connectionHandler.open();
+				// this.open();
 				return result;
 			},
 			close: function() {
@@ -170,6 +180,7 @@
 			open: function() {
 				webSocket = new WebSocket("ws://" + fullURL(home.WEBSOCKET_PATH).split("//")[1]);
 				webSocket.onopen = function(event) {
+					this.send(""); // Tell the server, that the connection is up
 					st.console.log("Successfully opened WebSocket: " + event);
 				};
 				webSocket.onerror = function(event) {
@@ -183,8 +194,7 @@
 				};
 			},
 			send: function(data) {
-				webSocket.send(message);
-				st.console.statusInfo(message, 200);
+				webSocket.send(data);
 			},
 			sendSynchronously: sendSynchronouslyImpl,
 			close: function() {
@@ -193,7 +203,7 @@
 				st.console.log("WebSocket closed by client.");
 			},
 			isOpen: function() {
-				return webSocket;
+				return webSocket ? true : false;
 			}
 		};
 	};
