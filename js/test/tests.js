@@ -5,12 +5,11 @@
 // API:
 // st.tests.assert(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
-// st.tests.runTests()
+// st.tests.runTests(testScripts)
 // st.tests.setupSqueakEnvironment()
 
 // Settings:
 // st.tests.DEBUG_ON_ERROR (boolean)
-// st.tests.ORCA_TESTS (Array of Strings)
 
 (function() {
 
@@ -24,33 +23,22 @@
 
 	home.DEBUG_ON_ERROR = false;
 
-	home.ORCA_TESTS = [
-		"test_classes.js", 
-		"test_primitives.js", 
-		"test_blocks.js", 
-		"test_super.js", 
-		"test_communication.js",
-		"test_boxing.js",
-		"test_doesNotUnderstand_.js",
-		"test_remoteObjects.js" ];
-
 	// 
 	// API functions
 	// 
 
-	home.runTests = function() {
+	home.runTests = function(testScripts) {
 		// The tests are executed directly in these files
-		for (testScript in home.ORCA_TESTS) {
-			var scriptName = home.ORCA_TESTS[testScript];
-			if (typeof scriptName == "string") {
-				runTestScript(scriptName);
-			}
+		for (testScript in testScripts) {
+			debugger;
+			runTestScript(testScripts[testScript]);
 		}
-		
 		// Send the results to the server
+		/*
 		st.communication.performOnServer(
 			"[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]",
 			testResults.fail.length, testResults.error.length);
+		*/
 	};
 
 	// Load all resources needed to setup the squeak-environment on the client
@@ -60,15 +48,15 @@
 			st.communication.loadScript("primitives");
 			
 			var scripts = [
-			"js/server.js",
-			"js/perform.js", 
-			"js/boxing.js", 
-			"js/bootstrap.js", 
-			"js/remoteObjects.js",
+			"server.js",
+			"perform.js", 
+			"boxing.js", 
+			"bootstrap.js", 
+			"remoteObjects.js",
 			];
 			
 			for (var i = 0; i < scripts.length; i++) {
-				loadScript(scripts[i]);
+				loadJsScript(scripts[i]);
 			}
 			
 			squeakEnvironmentLoaded = true;
@@ -114,9 +102,9 @@
 	st.DEBUG = false;
 
 	// Load the resource distributed from our file-handler in the image
-	var loadScript = function(scriptName) {
-		st.console.log("Loading script " + scriptName);
-		return st.communication.loadScript("file/" + scriptName);
+	var loadJsScript = function(scriptName) {
+		st.console.log("Loading script for tests: " + scriptName);
+		return st.communication.loadScript("file/js/" + scriptName);
 	};
 
 	// Run one test-script.
@@ -134,7 +122,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = loadScript("js/test/" + scriptName);
+			tester = loadJsScript("test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});
