@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Put your own values here
+# The credentials are for your Monticello-account
 USER="aUser"
 PW="aPw"
 VM="/aPath/to/vm"

@@ -4,3 +4,4 @@ installer/temp/*
 installer/*.tar.gz
 installer/.DS_Store
 .DS_Store
+*.orig
