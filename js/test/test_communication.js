@@ -14,7 +14,7 @@ st.class("ConnectionTester", {
 		
 		testPull: function(){
 			var result = 0;
-			result = st.communication.performOnServer("[ 42 ]");
+			result = st.communication.performOnServer("42");
 			st.tests.assertEquals(result, 42, "Answer from Server has been the wrong number: " + result);
 		}
 		
