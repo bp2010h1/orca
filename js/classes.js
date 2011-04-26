@@ -185,6 +185,26 @@
 			return newClass;
 		};
 		
+		var createMetaclassAndInstantiate = function() {
+			if ('superclass' in attrs)
+				var metaSuperClass = attrs.superclass + ' class';
+			else {
+				// if there is no superclass, the metaSuperClass is ProtoType
+				// this is important for ProtoObject class superclass
+				var metaSuperClass = 'Class';
+			}				
+			
+			// metaclasses are actually anonymous but when getting accessed
+			// the naming convention for class "X" is "X class"
+			var metaClass = class(classname + ' class', {
+					superclass: metaSuperClass,
+					instanceVariables: attrs.classVariables,
+					instanceMethods: attrs.classMethods
+			});
+				
+			return metaClass._newInstance();
+		};
+		
 		var addVariables = function(newClass) {
 			if('classInstanceVariables' in attrs) {
 				newClass._addClassInstanceVariables(attrs.classInstanceVariables, null);
@@ -209,7 +229,7 @@
 			}
 		};
 		
-		var newClass = createClassAndLinkPrototypes();
+		var newClass = createMetaclassAndInstantiate();//createClassAndLinkPrototypes();
 		addVariables(newClass);
 		addMethods(newClass);
 		
