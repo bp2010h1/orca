@@ -92,7 +92,7 @@ cd $TEMP
 download
 setup
 
-DATE_STRING=`date +%Y%m%d`
+DATE_STRING=`date +%Y%m%d_%H%M%S`
 
 mkdir "orca_${DATE_STRING}"
 cd "orca_${DATE_STRING}"
