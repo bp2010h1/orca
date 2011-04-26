@@ -20,7 +20,7 @@
 	// Settings
 	// 
 
-	if (!home.USE_FIREBUG) home.USE_FIREBUG = true;
+	if (!"USE_FIREBUG" in home) home.USE_FIREBUG = true;
 
 	// 
 	// API functions

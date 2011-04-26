@@ -30,7 +30,6 @@
 	home.runTests = function(testScripts) {
 		// The tests are executed directly in these files
 		for (testScript in testScripts) {
-			debugger;
 			runTestScript(testScripts[testScript]);
 		}
 		// Send the results to the server
@@ -44,20 +43,27 @@
 	// Load all resources needed to setup the squeak-environment on the client
 	home.setupSqueakEnvironment = function() {
 		if (!squeakEnvironmentLoaded) {
-			st.communication.loadScript("classes");
-			st.communication.loadScript("primitives");
+			// The scripts are loaded in the same ordering as the real initialization
+			// (preload -> ) classes -> postload -> (required: none) -> primitives
+			// See OrcaSession >> #scriptsForClientInitialization
 			
-			var scripts = [
+			st.console.log("Loading classes...");
+			st.communication.loadScript("classes");
+			
+			var postloadScripts = [
 			"server.js",
 			"perform.js", 
 			"boxing.js", 
 			"bootstrap.js", 
-			"remoteObjects.js",
+			"remoteObjects.js"
 			];
 			
-			for (var i = 0; i < scripts.length; i++) {
-				loadJsScript(scripts[i]);
+			for (var i = 0; i < postloadScripts.length; i++) {
+				loadJsScript(postloadScripts[i]);
 			}
+			
+			st.console.log("Loading primitives...");
+			st.communication.loadScript("primitives");
 			
 			squeakEnvironmentLoaded = true;
 		}

@@ -30,10 +30,10 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = true;
-	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
-	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
-	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) {
+	if (!"PREFER_WS" in home) home.PREFER_WS = true;
+	if (!"WEBSOCKET_PATH" in home) home.WEBSOCKET_PATH = "ws";
+	if (!"XHR_PATH" in home) home.XHR_PATH = "xhr";
+	if (!"MESSAGE_HANDLER" in home) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
 		eval(message); };
 

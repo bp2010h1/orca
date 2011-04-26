@@ -18,8 +18,8 @@
 	var home = st.communication ? st.communication : (st.communication = {});
 
 	// Settings
-	if (!home.CODE_EXECUTION_URL) home.CODE_EXECUTION_URL = "mi";
-	if (!home.MESSAGE_SEND_URL) home.MESSAGE_SEND_URL = "send";
+	if (!"CODE_EXECUTION_URL" in home) home.CODE_EXECUTION_URL = "mi";
+	if (!"MESSAGE_SEND_URL" in home) home.MESSAGE_SEND_URL = "send";
 
 	// 
 	// API functions

@@ -1,5 +1,5 @@
 
-// Runtime depends on: boxing.js
+// Runtime depends on: boxing.js, perform.js
 
 (function() {
 
@@ -16,7 +16,6 @@
 		
 		halt: function() { debugger; },
 		
-		// st.perform is implemented in boxing.js
 		perform_: st.perform,
 		perform_with_: st.perform,
 		perform_with_with_: st.perform,
