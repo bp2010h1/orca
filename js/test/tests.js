@@ -3,7 +3,7 @@
 // Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js
 
 // API:
-// st.tests.assert(boolean)
+// st.tests.assert(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
 // st.tests.runTests()
 // st.tests.setupSqueakEnvironment()

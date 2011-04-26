@@ -89,7 +89,7 @@
 	};
 
 	home.GET = function(path) {
-		var req = createXmlRequest();
+		var req = createRequest();
 		req.open("GET", fullURL(path), false);
 		req.send(null);
 		if (req.status == 200) {
@@ -118,7 +118,7 @@
 
 	var sendSynchronouslyImpl = function(data, url) {
 		if (data) {
-			synchronousRequest = createXmlRequest();
+			synchronousRequest = createRequest();
 			synchronousRequest.open("POST", fullURL(url), false);
 			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			synchronousRequest.send(data);
@@ -132,7 +132,7 @@
 		return home.PREFER_WS && ("WebSocket" in window);
 	};
 
-	var createXmlRequest = function() {
+	var createRequest = function() {
 		return new XMLHttpRequest();
 	};
 
@@ -158,7 +158,7 @@
 				if (arguments[0] !== undefined) {
 					optionalArgument = "&answer=" + home.realEscape(arguments[0]);
 				}
-				request = createXmlRequest();
+				request = createRequest();
 				request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
 				request.onreadystatechange = function() {
 					if (request.readyState == 4) {
