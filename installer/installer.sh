@@ -120,4 +120,3 @@ if [ "$BUILD_ARCHIVE" = "yes" ]; then
 fi
 
 cd ..
-rm -rf $TEMP

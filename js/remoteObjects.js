@@ -1,23 +1,31 @@
-// FILE DESCRIPTION
 
 // Setup depends on: classes
-// Runtime depends on: communication.js, server.js
+// Runtime depends on: communication.js, helpers.js
 
 // API:
-// TOTO add API-functions
+// st.passMessage(receiver, message)
+
+// Settings:
+// st.communication.MESSAGE_SEND_URL
 
 // Wrapps the old
 // st.communication.MESSAGE_HANDLER
 
 (function() {
-	
+
 	// Set up the namespace
 	var home = window.st ? window.st : (window.st = {});	
-	
+
+	// 
+	// Settings
+	// 
+
+	if (!("MESSAGE_SEND_URL" in home)) home.MESSAGE_SEND_URL = "send";
+
 	// 
 	// API functions
 	//
-	
+
 	home.passMessage = function(receiver, message) {
 		var data;
 		var answerString;
@@ -25,22 +33,27 @@
 		if (st.unbox(receiver.isRemote())) { 
 			 // for test purposes just for unary messages now
 			 // TODO: other messages
-			 data =  "rid=" + st.communication.realEscape(receiver._remoteID) +
-			 	"&selector=" + st.communication.realEscape(st.unbox(message.selector()));
+			 data =  "rid=" + st.escapeAll(receiver._remoteID) +
+			 	"&selector=" + st.escapeAll(st.unbox(message.selector()));
 		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				data = "newObjectOfClassNamed=" + st.communication.realEscape(st.unbox(receiver.name()));
+				data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
 			} else {
 				receiver.error_(string("Unexpected remote message send."));
 			}
 		}
-		answerString = st.communication.sendSynchronously(data, st.communication.MESSAGE_SEND_URL);
+		answerString = st.communication.sendSynchronously(data, home.MESSAGE_SEND_URL);
 		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
 		return convertAnswer(eval("st.wrapFunction(function(){ return " + answerString + "}).apply(st.nil);"));
 	};
-	
+
+	// 
+	// Private
+	// 
+
+	// Set the message-handler to handle remote-message-calls
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
-	home.communication.MESSAGE_HANDLER = function(message){
+	st.communication.MESSAGE_HANDLER = function(message){
 		var newOnClientCall = message.match(/newObjectOfClassNamed=([A-Za-z]+)/);
 		if (newOnClientCall) {
 			var className = newOnClientCall[1];
@@ -55,11 +68,7 @@
 		}
 		return standardMessageHandler(message);
 	};
-	
-	// 
-	// Private
-	//	
-	
+
 	var serializeOrExpose = function (anObject){
 		if (anObject.isRemote && st.unbox(anObject.isRemote())){
 			return '{ "remoteId": ' + anObject._remoteId + " }";
@@ -92,7 +101,7 @@
 		reachableObjectMap[remoteId] = anObject;
 		return '{ "remoteId": ' + remoteId + " }";
 	};
-	
+
 	var convertAnswer = function (anObject){
 		// these are the tree json-types: array, object, primitive
 		if (typeof anObject == "Array") {
@@ -124,7 +133,7 @@
 			}
 		}
 	};
-	
+
 	// Set up the Remote Object Map
 	var reachableObjectMap = [];
 

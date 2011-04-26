@@ -36,4 +36,17 @@
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	};
 
+	home.escapeAll = function(string) {
+		// * @ - _ + . / are not escaped by this default js-function
+		var result = escape(string);
+		result = result.replace(/(\*)/g, "%2A");
+		result = result.replace(/(\@)/g, "%40");
+		result = result.replace(/(\-)/g, "%2D");
+		result = result.replace(/(\_)/g, "%5F");
+		result = result.replace(/(\+)/g, "%2B");
+		result = result.replace(/(\.)/g, "%2E");
+		result = result.replace(/(\/)/g, "%2F");
+		return result;
+	};
+
 })();

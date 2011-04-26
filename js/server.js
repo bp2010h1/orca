@@ -1,15 +1,13 @@
 
 // Setup depends on: -
-// Runtime depends on: communication.js, classes.js
+// Runtime depends on: communication.js, classes.js, helpers.js
 
 // API:
 // st.communication.performOnServer(squeakCode)
 // st.communication.serverBlock(squeakCodeEvaluatingToABlock)
-// st.communication.realEscape(string)
 
 // Settings:
 // st.CODE_EXECUTION_URL (String)
-// st.MESSAGE_SEND_URL (String)
 
 (function() {
 
@@ -19,7 +17,6 @@
 
 	// Settings
 	if (!("CODE_EXECUTION_URL" in home)) home.CODE_EXECUTION_URL = "mi";
-	if (!("MESSAGE_SEND_URL" in home)) home.MESSAGE_SEND_URL = "send";
 
 	// 
 	// API functions
@@ -30,9 +27,9 @@
 		var args = "";
 		for (var i = 1; i < arguments.length; i++) {
 			// to make sure the arguments and code get sent properly we must url-encode them by escape
-			args += "&arg" + (i - 1) + "=" + home.realEscape(arguments[i]);
+			args += "&arg" + (i - 1) + "=" + st.escapeAll(arguments[i]);
 		}
-		var data = "code=" + home.realEscape(squeakCode) + args;
+		var data = "code=" + st.escapeAll(squeakCode) + args;
 		var result = st.communication.sendSynchronously(data, home.CODE_EXECUTION_URL);
 		return st.communication.handleMessage(result);
 	};
@@ -44,19 +41,6 @@
 			var args = [ squeakCode ].concat(st.unboxIterable(arguments));
 			return home.performOnServer.apply(home, args);
 		});
-	};
-	
-	home.realEscape = function(string) {
-		// * @ - _ + . / are not escaped by this default js-function
-		var result = escape(string);
-		result = result.replace(/(\*)/g, "%2A");
-		result = result.replace(/(\@)/g, "%40");
-		result = result.replace(/(\-)/g, "%2D");
-		result = result.replace(/(\_)/g, "%5F");
-		result = result.replace(/(\+)/g, "%2B");
-		result = result.replace(/(\.)/g, "%2E");
-		result = result.replace(/(\/)/g, "%2F");
-		return result;
 	};
 
 })();
