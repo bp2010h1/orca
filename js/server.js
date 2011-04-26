@@ -30,7 +30,7 @@
 			args += "&arg" + (i - 1) + "=" + st.escapeAll(arguments[i]);
 		}
 		var data = "code=" + st.escapeAll(squeakCode) + args;
-		var result = st.communication.sendSynchronously(data, home.CODE_EXECUTION_URL);
+		var result = st.communication.sendAndWait(data, home.CODE_EXECUTION_URL);
 		return st.communication.handleMessage(result);
 	};
 

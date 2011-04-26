@@ -6,7 +6,7 @@
 // st.communication.setup()
 // st.communication.connect()
 // st.communication.send(data)
-// st.communication.sendSynchronously(data)
+// st.communication.sendAndWait(data)
 // st.communication.disconnect()
 // st.communication.handleMessage(content, status)
 // st.GET(path)
@@ -64,9 +64,9 @@
 			return connectionHandler.send(data);
 	};
 
-	home.sendSynchronously = function(data, urlPath) {
+	home.sendAndWait = function(data, urlPath) {
 		if (connectionHandler.isOpen())
-			return connectionHandler.sendSynchronously(data, urlPath);
+			return connectionHandler.sendAndWait(data, urlPath);
 	};
 
 	home.disconnect = function() {
@@ -77,7 +77,7 @@
 	};
 
 	// Use the configured message-handler to evaluate and log the content
-	home.handleMessage = function(content, status) {
+	home.handleMessage = function(content) {
 		var result;
 		try {
 			result = home.MESSAGE_HANDLER(content);
@@ -104,7 +104,28 @@
 		var script = home.GET(path);
 		// The scripts need global context
 		return (function() { return window.eval(script); })();
-	}
+	};
+
+	home.addScriptTags = function(scriptNames) {
+		var i = 0;
+		var callback = function() {
+			if (i < scriptNames.length) {
+				home.addScriptTag(scriptNames[i++], callback);
+			}
+		};
+		callback();
+	};
+
+	home.addScriptTag = function(url, callback) {
+		// Copied from http://stackoverflow.com/questions/950087/include-javascript-file-inside-javascript-file
+		var head= document.getElementsByTagName('head')[0];
+		var script= document.createElement('script');
+		script.type= 'text/javascript';
+		script.src= url;
+		script.onreadystatechange = callback;
+		script.onload = callback;
+		head.appendChild(script);
+	};
 
 	home.setup_session_id = function(id) {
 		// Allow calling this function only once - delete after usage
@@ -116,7 +137,7 @@
 	// Private functions
 	// 
 
-	var sendSynchronouslyImpl = function(data, url) {
+	var sendAndWaitImpl = function(data, url) {
 		if (data) {
 			synchronousRequest = createRequest();
 			synchronousRequest.open("POST", fullURL(url), false);
@@ -163,7 +184,7 @@
 				request.onreadystatechange = function() {
 					if (request.readyState == 4) {
 						if (request.status == 200) {
-							var answer = home.handleMessage(request.responseText, request.status);
+							var answer = home.handleMessage(request.responseText);
 							self.open(answer);
 						} else {
 							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
@@ -173,12 +194,12 @@
 				request.send(null);
 			},
 			send: function(data) {
-				return this.sendSynchronously(data, home.XHR_PATH);
+				return this.sendAndWait(data, home.XHR_PATH);
 			},
-			sendSynchronously: function(data, url) {
+			sendAndWait: function(data, url) {
 				// It might be, that comet needs to close it's open connection before opening a new one
 				// this.close();
-				var result = sendSynchronouslyImpl(data, url);
+				var result = sendAndWaitImpl(data, url);
 				// this.open();
 				return result;
 			},
@@ -208,10 +229,9 @@
 					st.console.log("WebSocket failed: " + event);
 				};
 				webSocket.onmessage = function(event) {
-					var answer = home.handleMessage(event.data, 200);
-					if (answer !== undefined){
-						webSocket.send(answer);
-					}
+					var answer = home.handleMessage(event.data);
+					// TODO should not answer always! Server receives unnecessary requests!
+					webSocket.send(answer == undefined ? "" : answer);
 				};
 				webSocket.onclose = function() {
 					st.console.log("WebSocket received close event.");
@@ -220,7 +240,7 @@
 			send: function(data) {
 				webSocket.send(data);
 			},
-			sendSynchronously: sendSynchronouslyImpl,
+			sendAndWait: sendAndWaitImpl,
 			close: function() {
 				webSocket.close();
 				webSocket = null;

@@ -42,7 +42,7 @@
 				receiver.error_(string("Unexpected remote message send."));
 			}
 		}
-		answerString = st.communication.sendSynchronously(data, home.MESSAGE_SEND_URL);
+		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
 		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
 		return convertAnswer(eval("st.wrapFunction(function(){ return " + answerString + "}).apply(st.nil);"));
 	};
