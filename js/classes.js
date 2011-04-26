@@ -39,9 +39,8 @@
 	if (!st.communication) st.communication = {};
 
 	// Settings
-	debugger;
-	if (!"DEBUG" in home) home.DEBUG = true;
-	if (!"PRINT_CALLS" in home) home.PRINT_CALLS = false;
+	if (!("DEBUG" in home)) home.DEBUG = true;
+	if (!("PRINT_CALLS" in home)) home.PRINT_CALLS = false;
 
 	// Globals
 	home.classes = [];
