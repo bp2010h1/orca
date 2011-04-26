@@ -59,7 +59,8 @@
 			];
 			
 			for (var i = 0; i < postloadScripts.length; i++) {
-				loadJsScript(postloadScripts[i]);
+				st.console.log("Loading " + postloadScripts[i] + "...");
+				st.communication.loadScript("file/js/" + postloadScripts[i]);
 			}
 			
 			st.console.log("Loading primitives...");
@@ -107,12 +108,6 @@
 	// Disable debugging-support when executing tests
 	st.DEBUG = false;
 
-	// Load the resource distributed from our file-handler in the image
-	var loadJsScript = function(scriptName) {
-		st.console.log("Loading script for tests: " + scriptName);
-		return st.communication.loadScript("file/js/" + scriptName);
-	};
-
 	// Run one test-script.
 	// This loads a script and evaluates it. Directory "test/" is prepended.
 	// The script must be thought of as a big function returning one object.
@@ -128,7 +123,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = loadJsScript("test/" + scriptName);
+			tester = st.communication.loadScript("file/js/test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});
@@ -193,7 +188,7 @@
 	};
 
 	var logError = function(errorArray, exception_message, error_type) {
-		var message = currentTestName() + ": " + error_type + ". Message: " + exception_message;
+		var message = "! " + currentTestName() + ": " + error_type + ". Message: " + exception_message;
 		errorArray.push(message);
 		st.console.log(message);
 		return message;
