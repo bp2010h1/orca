@@ -35,7 +35,7 @@
 	if (!("XHR_PATH" in home)) home.XHR_PATH = "xhr";
 	if (!("MESSAGE_HANDLER" in home)) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
-		eval(message); };
+		return eval(message); };
 
 	// 
 	// Local variables
