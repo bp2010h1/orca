@@ -156,7 +156,7 @@
 			open: function() {
 				var optionalArgument = '';
 				if (arguments[0] !== undefined) {
-					optionalArgument = "&answer=" + home.realEscape(arguments[0]);
+					optionalArgument = "&answer=" + st.escapeAll(arguments[0]);
 				}
 				request = createRequest();
 				request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
