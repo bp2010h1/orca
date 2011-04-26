@@ -87,7 +87,8 @@ do
 	esac
 done
 
-TEMP=$(mktemp -d -t orca_installer)
+TEMP=$(mktemp -d -t orca_installer_XXXXXX)
+echo "using $TEMP as temporary directory"
 cd $TEMP
 download
 setup
