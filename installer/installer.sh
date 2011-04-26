@@ -87,12 +87,12 @@ do
 	esac
 done
 
-mkdir temp
-cd temp
+TEMP=$(mktemp -d -t orca_installer)
+cd $TEMP
 download
 setup
 
-DATE_STRING=`date +%Y%m%d`
+DATE_STRING=`date +%Y%m%d_%H%M%S`
 
 mkdir "orca_${DATE_STRING}"
 cd "orca_${DATE_STRING}"
@@ -112,4 +112,4 @@ cd ..
 tar cfz "../orca_${DATE_STRING}.tar.gz" "orca_${DATE_STRING}"
 
 cd ..
-rm -rf temp
+rm -rf $TEMP
