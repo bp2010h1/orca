@@ -17,4 +17,4 @@ VM="/aPath/to/vm"
 
 CONFIG="ConfigurationOfOrca" 
 
-`dirname $0`/installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
+`dirname $0`/installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG" -a
