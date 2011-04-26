@@ -113,4 +113,3 @@ cd ..
 tar cfz "../orca_${DATE_STRING}.tar.gz" "orca_${DATE_STRING}"
 
 cd ..
-rm -rf $TEMP
