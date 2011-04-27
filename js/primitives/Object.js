@@ -3,8 +3,6 @@
 
 (function() {
 
-	var doesNotUnderstand = ;
-
 	st.Object._addInstanceMethods({
 		
 		doesNotUnderstand_: function(message) {
