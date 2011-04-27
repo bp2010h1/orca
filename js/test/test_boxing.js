@@ -1,7 +1,4 @@
 
-// This scripts uses blocks, which require Squeak-classes
-st.tests.setupSqueakEnvironment();
-
 // Make sure, the slots a and b are handled by doesNotUnderstand_. Add the slot-accessors.
 // Enables to test the OrcaBox-code (as it relies on doesNotUnderstand_ working).
 // This simulates, that these 4 methods exist in the squeak-image.

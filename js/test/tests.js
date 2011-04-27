@@ -6,7 +6,6 @@
 // st.tests.assert(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
 // st.tests.runTests(testScripts)
-// st.tests.setupSqueakEnvironment()
 
 // Settings:
 // st.tests.DEBUG_ON_ERROR (boolean)
@@ -33,41 +32,9 @@
 			runTestScript(testScripts[testScript]);
 		}
 		// Send the results to the server
-		/*
 		st.communication.performOnServer(
 			"[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]",
 			testResults.fail.length, testResults.error.length);
-		*/
-	};
-
-	// Load all resources needed to setup the squeak-environment on the client
-	home.setupSqueakEnvironment = function() {
-		if (!squeakEnvironmentLoaded) {
-			// The scripts are loaded in the same ordering as the real initialization
-			// (preload -> ) classes -> postload -> (required: none) -> primitives
-			// See OrcaSession >> #scriptsForClientInitialization
-			
-			st.console.log("Loading classes...");
-			st.communication.loadScript("classes");
-			
-			var postloadScripts = [
-			"server.js",
-			"perform.js", 
-			"boxing.js", 
-			"bootstrap.js", 
-			"remoteObjects.js"
-			];
-			
-			for (var i = 0; i < postloadScripts.length; i++) {
-				st.console.log("Loading " + postloadScripts[i] + "...");
-				st.communication.loadScript("file/js/" + postloadScripts[i]);
-			}
-			
-			st.console.log("Loading primitives...");
-			st.communication.loadScript("primitives");
-			
-			squeakEnvironmentLoaded = true;
-		}
 	};
 
 	home.assert = function (condition, exception_message){
@@ -96,8 +63,6 @@
 
 	// Exception-object to signalize assert-fails
 	var AssertionFail = function(message) { this.Orca_IS_AssertionFail = true; this.message = message; };
-
-	var squeakEnvironmentLoaded = false;
 
 	var testResults = {
 		ok: 0,

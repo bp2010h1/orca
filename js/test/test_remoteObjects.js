@@ -1,6 +1,3 @@
-// Here, we test the implementation of RemoteObjects
-
-st.tests.setupSqueakEnvironment();
 
 st.class("RemoteObjectTester", { 
 
