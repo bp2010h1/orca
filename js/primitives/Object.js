@@ -3,16 +3,16 @@
 
 (function() {
 
-	var doesNotUnderstand = function(message) {
+	var doesNotUnderstand = ;
+
+	st.Object._addInstanceMethods({
+		
+		doesNotUnderstand_: function(message) {
 			// TODO implement this correctly
 			var msg = this + "(instance of " + this._class().name() + 
 					") did not understand " + st.unbox(message.selector());
 			st.Exception.signal_(st.string(msg));
-	};
-
-	st.Object._addInstanceMethods({
-		
-		doesNotUnderstand_: doesNotUnderstand,
+		},
 		
 		_class: function() { return this._theClass; },
 		
@@ -32,7 +32,12 @@
 			return st.passMessage(this, st.Message.selector_(st.string("newOnServer")));
 		},
 		halt: function() { debugger; },
-		doesNotUnderstand_: doesNotUnderstand
+		doesNotUnderstand_: function(message) {
+			// TODO implement this correctly
+			var msg = this + "(" + this.name() + " class" + 
+					") did not understand " + st.unbox(message.selector());
+			st.Exception.signal_(st.string(msg));
+		}
 	});
 
 })();
