@@ -28,7 +28,8 @@
 	st.Object._addClassMethods({
 		newOnServer: function() {
 			return st.passMessage(this, st.Message.selector_(st.string("newOnServer")));
-		}
+		},
+		halt: function() { debugger; }
 	});
 
 })();
