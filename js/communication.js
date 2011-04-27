@@ -164,6 +164,9 @@
 	};
 
 	var fullURL = function(urlPath) {
+	  if (/^http(s)?:\/\//.test(urlPath)){
+	    return urlPath;
+	  }
 		var baseUrl = document.location.href;
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
