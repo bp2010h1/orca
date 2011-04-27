@@ -10,7 +10,9 @@
 	var intervals = [];
 	var originalSetInterval = window.setInterval;
 	window.setInterval = function() {
-		intervals.push(originalSetInterval.apply(window, st.toArray(arguments))); };
+		var id = originalSetInterval.apply(window, st.toArray(arguments));
+		intervals.push(id);
+		return id; };
 
 	st.Js._addClassMethods({
 		Document: function() {
