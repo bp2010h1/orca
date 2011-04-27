@@ -97,7 +97,7 @@
 
 	// This function creates a class with a given name and attributes.
 	home.class = function(classname, attrs) {
-		var createHelpers = function(newClassPrototype) {
+		var createHelpers = function(newClass) {
 			var createMethod = function(aPrototype, methodName, method) {
 				aPrototype[methodName] = wrapFunction(method);
 				aPrototype[methodName].methodName = methodName;
@@ -115,12 +115,11 @@
 			}
 			
 			// Initialize all fields, that are null to the given value
-			newClassPrototype.prototype._initializeInstanceVariables = function(newInitialValue) {
+			newClass._initializeInstanceVariables = function(newInitialValue) {
 				initializeVariables(this._instancePrototype.prototype, newInitialValue);
-				initializeVariables(this._classPrototype.prototype, newInitialValue);
 			}
 			
-			newClassPrototype.prototype._addInstanceMethods = function(methodTable) {
+			newClass._addInstanceMethods = function(methodTable) {
 				for(methodName in methodTable) {
 					if (typeof methodTable[methodName] == 'function'){
 						createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
@@ -128,94 +127,71 @@
 				}
 			}
 			
-			newClassPrototype.prototype._addClassMethods = function(methodTable) {
-				for(methodName in methodTable) {
-					if (typeof methodTable[methodName] == 'function'){
-						createMethod(this._classPrototype.prototype, methodName, methodTable[methodName]);
-					}
-				}
-			}
-			
-			newClassPrototype.prototype._addInstanceVariables = function(variableNames, defaultValue) {
+			newClass._addInstanceVariables = function(variableNames, defaultValue) {
 				for(idx in variableNames) {
 					this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
 				}
 			}
-			
-			newClassPrototype.prototype._addClassInstanceVariables = function(variableNames, defaultValue) {
-				for(idx in variableNames) {
-					this._classPrototype.prototype[variableNames[idx]] = defaultValue;
-				}
-			}
-			
-			newClassPrototype.prototype._addClassVariables = function(variableNames, defaultValue) {
-				// TODO not implemented yet
-			}
 		};
 		
-		var createClassAndLinkPrototypes = function() {
-			var newClassPrototype = function(){};
-			var newInstancePrototype = function(){ instanceCount++; this._instanceNumber = instanceCount; };
+		var createMetaclassAndInstantiate = function() {
 			var newClass;
+			var metaClass;
 			
-			if ('superclass' in attrs) {
-				// By creating new instances of the constructor-functions sotred in the superclass, the new class (and instances of it) inherits all variables/methods
-				newClassPrototype.prototype = new attrs.superclass._classPrototype();
-				newInstancePrototype.prototype = new attrs.superclass._instancePrototype();
+			if(classname.endsWith(' class')) {
+				// in case the class is a metaclass, it is
+				// an instance of MetaClass
+				metaClass = st['Metaclass'];
 			}
 			else {
-				// If we don't have a superclass, create the helper-methods to create variables/methods
-				createHelpers(newClassPrototype);
+				var metaSuperClass;
+				
+				if ('superclass' in attrs) {
+					if(attrs.superclass._classname.endsWith(' class'))
+						metaSuperClass = attrs.superclass;
+					else
+						metaSuperClass = st[attrs.superclass._classname + ' class'];
+				}
+				else {
+					// if there is no superclass, the metaSuperClass is Class
+					// this is important for ProtoObject class superclass
+					metaSuperClass = st['Class'];
+				}
+			
+				// metaclasses are actually anonymous but when getting accessed
+				// the naming convention for class "X" is "X class"
+				metaClass = st.class(classname + ' class', {
+						superclass: metaSuperClass,
+						instanceVariables: attrs.classVariables,
+						instanceMethods: attrs.classMethods
+				});				
+			}
+
+			newClass = metaClass._newInstance();
+			
+			var newInstancePrototype = function() { instanceCount++; this._instanceNumber = instanceCount; };
+			
+			createHelpers(newClass);
+			
+			newClass._instancePrototype = newInstancePrototype;
+			
+			if('superclass' in attrs) {
+				newClass._instancePrototype.prototype = new attrs.superclass._instancePrototype();
 			}
 			
-			// Instantiate the new class and store the constructor-functions to create instances of them when subclassing
-			newClass = new newClassPrototype();
-			newClass._instancePrototype = newInstancePrototype;
-			newClass._classPrototype = newClassPrototype;
+			newClass._newInstance = function() {
+				return new newClass._instancePrototype();
+			};
 			
-			// create default function to instantiate a class and a variable to access the class from instances
-			newClass._addClassMethods({
-				_newInstance: function() {
-					return new newClass._instancePrototype();
-				}
-			});
 			newClass._addInstanceVariables(['_theClass'], newClass);
 			newClass._classname = classname;
 			
 			return newClass;
 		};
 		
-		var createMetaclassAndInstantiate = function() {
-			if ('superclass' in attrs)
-				var metaSuperClass = attrs.superclass + ' class';
-			else {
-				// if there is no superclass, the metaSuperClass is ProtoType
-				// this is important for ProtoObject class superclass
-				var metaSuperClass = 'Class';
-			}				
-			
-			// metaclasses are actually anonymous but when getting accessed
-			// the naming convention for class "X" is "X class"
-			var metaClass = class(classname + ' class', {
-					superclass: metaSuperClass,
-					instanceVariables: attrs.classVariables,
-					instanceMethods: attrs.classMethods
-			});
-				
-			return metaClass._newInstance();
-		};
-		
 		var addVariables = function(newClass) {
-			if('classInstanceVariables' in attrs) {
-				newClass._addClassInstanceVariables(attrs.classInstanceVariables, null);
-			}
-			
 			if('instanceVariables' in attrs) {
 				newClass._addInstanceVariables(attrs.instanceVariables, null);
-			}
-			
-			if('classVariables' in attrs) {
-				newClass._addClassVariables(attrs.classVariables, null);
 			}
 		};
 		
@@ -223,13 +199,10 @@
 			if('instanceMethods' in attrs) {
 				newClass._addInstanceMethods(attrs.instanceMethods);
 			}
-			
-			if('classMethods' in attrs) {
-				newClass._addClassMethods(attrs.classMethods);
-			}
 		};
 		
-		var newClass = createMetaclassAndInstantiate();//createClassAndLinkPrototypes();
+		var newClass = createMetaclassAndInstantiate(); //createClassAndLinkPrototypes();
+		
 		addVariables(newClass);
 		addMethods(newClass);
 		
