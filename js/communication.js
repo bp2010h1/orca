@@ -239,6 +239,7 @@
 			},
 			send: function(data) {
 				webSocket.send(data);
+				webSocket.send(data);
 			},
 			sendAndWait: sendAndWaitImpl,
 			close: function() {
