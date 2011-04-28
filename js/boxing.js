@@ -160,6 +160,15 @@
 				return result;
 			},
 
+			// Implementation of OrcaSlotObject >> slotsDo:
+			// Maps to the 'in'-operator
+			slotsDo_: function(aBlock) {
+				for (slotName in this._original) {
+					aBlock.value_(home.box(slotName));
+				}
+				return this;
+			}
+
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
 			perform_: st.perform,
 			perform_with_: st.perform,
