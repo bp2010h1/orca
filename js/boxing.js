@@ -169,6 +169,14 @@
 				return this;
 			},
 
+			toString: function() {
+				var message = "a wrapped js-native object " + this._original;
+				if (this._original.toSource) {
+					message += " (source: " + this._original.toSource();
+				}
+				return message;
+			},
+
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
 			perform_: st.perform,
 			perform_with_: st.perform,
@@ -219,12 +227,12 @@
 			aClass._addInstanceMethods({
 				_hiddenGetter: function(slotName) {
 					return this._original[slotName];
+				},
+				toString: function() {
+					return st.super("toString")() + " wrapping " + st.unbox(this);
 				}
 			});
 		aClass._addInstanceMethods({
-			toString: function() {
-				return st.super("toString")() + " wrapping " + st.unbox(this);
-			},
 			doesNotUnderstand_: function(aMessage) {
 				var methodName = home.unbox(aMessage.selector());
 				if (methodName[methodName.length - 1] == ':') {
