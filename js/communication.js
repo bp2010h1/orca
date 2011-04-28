@@ -7,7 +7,6 @@
 // st.communication.connect()
 // st.communication.send(data)
 // st.communication.sendAndWait(data)
-// st.communication.disconnect()
 // st.communication.handleMessage(content, status)
 // st.GET(path)
 // st.loadScript(path)
@@ -42,7 +41,6 @@
 	// 
 
 	var connectionHandler;
-	var synchronousRequest;
 	var session_id = -1;
 
 	// 
@@ -67,13 +65,6 @@
 	home.sendAndWait = function(data, urlPath) {
 		if (connectionHandler.isOpen())
 			return connectionHandler.sendAndWait(data, urlPath);
-	};
-
-	home.disconnect = function() {
-		if (synchronousRequest)
-			closeRequest(synchronousRequest);
-		if (connectionHandler.isOpen())
-			connectionHandler.close();
 	};
 
 	// Use the configured message-handler to evaluate and log the content
@@ -138,13 +129,12 @@
 	// 
 
 	var sendAndWaitImpl = function(data, url) {
-		if (data) {
-			synchronousRequest = createRequest();
+		if (data){
+			var synchronousRequest = createRequest();
 			synchronousRequest.open("POST", fullURL(url), false);
 			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			synchronousRequest.send(data);
 			var result = synchronousRequest.responseText;
-			synchronousRequest = null;
 			return result;
 		}
 	}
