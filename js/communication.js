@@ -64,7 +64,7 @@
 
 	home.sendAndWait = function(data, urlPath) {
 		if (connectionHandler.isOpen())
-			return connectionHandler.sendAndWait(data, urlPath);
+			return sendAndWait(data, urlPath);
 	};
 
 	// Use the configured message-handler to evaluate and log the content
@@ -128,7 +128,7 @@
 	// Private functions
 	// 
 
-	var sendAndWaitImpl = function(data, url) {
+	var sendAndWait = function(data, url) {
 		if (data){
 			var synchronousRequest = createRequest();
 			synchronousRequest.open("POST", fullURL(url), false);
@@ -145,12 +145,6 @@
 
 	var createRequest = function() {
 		return new XMLHttpRequest();
-	};
-
-	var closeRequest = function(request) {
-		// TODO this is not pretty: this abort()-call always results in 
-		// a "Failed to load resource" in the browser...
-		request.abort();
 	};
 
 	var fullURL = function(urlPath) {
@@ -189,22 +183,10 @@
 			send: function(data) {
 				return this.sendAndWait(data, home.XHR_PATH);
 			},
-			sendAndWait: function(data, url) {
-				// It might be, that comet needs to close it's open connection before opening a new one
-				// this.close();
-				var result = sendAndWaitImpl(data, url);
-				// this.open();
-				return result;
-			},
-			close: function() {
-				closeRequest(request);
-				request = null;
-			},
 			isOpen: function() {
 				return request ? true : false;
 			}
 		};
-
 		return self;
 	};
 
@@ -232,13 +214,6 @@
 			},
 			send: function(data) {
 				webSocket.send(data);
-				webSocket.send(data);
-			},
-			sendAndWait: sendAndWaitImpl,
-			close: function() {
-				webSocket.close();
-				webSocket = null;
-				st.console.log("WebSocket closed by client.");
 			},
 			isOpen: function() {
 				return webSocket ? true : false;

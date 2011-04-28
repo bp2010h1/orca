@@ -222,6 +222,9 @@
 				}
 			});
 		aClass._addInstanceMethods({
+			toString: function() {
+				return st.super("toString")() + " wrapping " + st.unbox(this);
+			},
 			doesNotUnderstand_: function(aMessage) {
 				var methodName = home.unbox(aMessage.selector());
 				if (methodName[methodName.length - 1] == ':') {

@@ -4,6 +4,9 @@
 (function() {
 
 	st.ProtoObject._addClassMethods({
+		toString: function() {
+			return this._classname;
+		},
 		basicNew: function() { return this._newInstance(); },
 		_new: function() { return this.basicNew().initialize(); },
 		name: function() { return st.string(this._classname); },
@@ -11,10 +14,12 @@
 		isRemote: function() {	return st.false; }
 	});
 	st.ProtoObject._addInstanceMethods({
+		toString: function() {
+			return "a(n) " + this._theClass._classname;
+		},
 		_equals_equals: function(anObject) { return st.bool(this === anObject); },
 		identityHash: function() { return st.number(this._instanceNumber); },
-		isBehavior: function() { return st.false; },
-		isRemote: function() {	return st.false; }
+		isRemote: function() { return st.false; }
 	});
 
 })();
