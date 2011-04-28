@@ -167,7 +167,7 @@
 					aBlock.value_(home.box(slotName));
 				}
 				return this;
-			}
+			},
 
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
 			perform_: st.perform,
