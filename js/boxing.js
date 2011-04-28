@@ -206,10 +206,13 @@
 				return result;
 			}
 		});
+		if (aClass != OrcaBox)
+			aClass._addInstanceMethods({
+				_hiddenGetter: function(slotName) {
+					return this._original[slotName];
+				}
+			});
 		aClass._addInstanceMethods({
-			_hiddenGetter: function(slotName) {
-				return this._original[slotName];
-			},
 			doesNotUnderstand_: function(aMessage) {
 				var methodName = home.unbox(aMessage.selector());
 				if (methodName[methodName.length - 1] == ':') {
