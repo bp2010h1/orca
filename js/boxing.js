@@ -155,7 +155,7 @@
 				// If this is not present, return nil.
 				if (result === undefined) {
 					// Get the method to be invoked from global "-method-dictionary"; invoke it on ourselves.
-					result = st.performMethodFrom(selector, dummyObjectInstance);
+					result = st.performMethodFrom.call(this, selector, dummyObjectInstance);
 				}
 				return result;
 			},
