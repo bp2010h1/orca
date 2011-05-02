@@ -18,6 +18,14 @@ st.class("RemoteObjectTester", {
 			st.tests.assert(remoteObject.isNil() == st.false, ">>isNil as unary message to a remoteObject of Object did not return false.");
 		},
 		
+		testKeywordMessage: function(){
+			var remoteObject = st.OrderedCollection.newOnServer();
+
+			var addedValue = remoteObject.add_(st.number(1));
+			st.tests.assert(addedValue._equals(st.number(1)));
+			st.tests.assert(remoteObject.first()._equals(st.number(1)));
+		},
+		
 		testRemoteObjectIdentity: function (){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.yourself()._equals(remoteObject));
