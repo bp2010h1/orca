@@ -67,7 +67,7 @@ EOF
 
 function usage {
 	E_OPTERROR=65
-	echo "Usage: `basename $0` -u <USERNAME> -p <PASSWORD> -v <BUILD_VM_PATH> -c <METACELLO_CONFIGURATION>"
+	echo "Usage: `basename $0` -u <USERNAME> -p <PASSWORD> -v <BUILD_VM_PATH> -c <METACELLO_CONFIGURATION>" [-a]
 	exit $E_OPTERROR	
 }
 
@@ -76,14 +76,14 @@ then
 	usage
 fi
 
-while getopts ":u:p:v:c:" OPTION
+while getopts ":u:p:v:c:a:" OPTION
 do
 	case $OPTION in
 		u) USERNAME="$OPTARG" ;;
 		p) PASSWORD="$OPTARG" ;;
 		v) VM_PATH="$OPTARG" ;;
 		c) CONFIG="$OPTARG" ;;
-                a) BUILD_ARCHIVE=yes ;;
+		a) BUILD_ARCHIVE=yes ;;
 		*) usage ;;
 	esac
 done
