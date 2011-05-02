@@ -31,10 +31,8 @@
 		var answerString;
 		var resultObject;
 		if (st.unbox(receiver.isRemote())) { 
-			 // for test purposes just for unary messages now
-			 // TODO: other messages
-			 data =  "rid=" + st.escapeAll(receiver._remoteID) +
-			 	"&selector=" + st.escapeAll(st.unbox(message.selector()));
+			 data = "rid=" + st.escapeAll(receiver._remoteID) +
+			 	"&message=" + st.escapeAll(serializeOrExpose(message));
 		} else {
 			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
 				data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
@@ -97,17 +95,27 @@
 		if (anObject === st.nil){
 			return "null";
 		}
-		//besser: Klassenvergleich? isArray?
-		if (st.unbox(anObject.isArray())){
+		if (anObject._class() === st.Array){
 			var result = "[";
-			var i;
-			for (i = 0; i < st.unbox(anObject.size()); i++){
+			for (var i = 0; i < st.unbox(anObject.size()); i++){
 				result += serializeOrExpose(anObject.at(st.number(i+1)));
 				if(i < st.unbox(anObject.size()) - 1 ){
 					result += ", ";
 				}
 			}
 			return result + "]";
+		}
+		if (anObject._class() === st.Message){
+			var result = "{";
+			result += '"selector": ' + serializeOrExpose(anObject.selector()) + ",";
+			result += '"arguments": [';
+			var length = st.unbox(anObject._arguments().size());
+			for (var i=1; i<=length; i++) {
+				result += serializeOrExpose(anObject._arguments().at_(st.number(i)));
+				if (i !== length) result += ",";
+			}
+			result += "]";
+			return result + "}";
 		}
 		//else
 		var remoteId = reachableObjectMap.length;
