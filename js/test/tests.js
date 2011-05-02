@@ -77,7 +77,7 @@
 
 	home.assert = function (condition, exception_message){
 		if (!condition) {
-			throw new AssertionFail(exception_message);
+			throw exception_message;
 		}
 	};
 
