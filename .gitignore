@@ -1,5 +1,6 @@
 *~
 installer/custom_installer.sh
+installer/orca_*
 installer/temp/*
 installer/*.tar.gz
 installer/.DS_Store
