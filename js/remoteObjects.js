@@ -44,7 +44,7 @@
 		}
 		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
 		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
-		return convertAnswer(eval("st.wrapFunction(function(){ return " + answerString + "}).apply(st.nil);"));
+		return convertAnswer(eval("st.wrapFunction(function(){ " + answerString + "}).apply(st.nil);"));
 	};
 
 	// 
@@ -99,8 +99,9 @@
 		}
 		//besser: Klassenvergleich? isArray?
 		if (st.unbox(anObject.isArray())){
-			result = "[";
-			for (var i = 0; i < st.unbox(anObject.size()); i++){
+			var result = "[";
+			var i;
+			for (i = 0; i < st.unbox(anObject.size()); i++){
 				result += serializeOrExpose(anObject.at(st.number(i+1)));
 				if(i < st.unbox(anObject.size()) - 1 ){
 					result += ", ";
@@ -116,33 +117,24 @@
 
 	var convertAnswer = function (anObject){
 		// these are the tree json-types: array, object, primitive
-		if (typeof anObject == "Array") {
-			return convertArrayAnswer(anObject);
-		}
 		if (typeof anObject == "object") {
 			return convertObjectAnswer(anObject);
 		}
 		//TODO: convert anObject to st.string or st.number or st.true, st.false, st.nil, ...
+		// signal an error? this should not happen, because we now send serialized primitives
 		return anObject;
 	};
-	var convertArrayAnswer = function (anArray){
-		var result = [];
-		for(var i = 0; i < anArray.length; i++){
-			result[i] = convertAnswer(anArray[i]);
-		}
-		return result;
-	};
 	var convertObjectAnswer = function (anObject){
-		for (var aProperty in anObject){
-			if (aProperty == "remoteId") {
+			if (anObject.remoteId !== undefined && typeof anObject.remoteId === "number") {
 				var remoteObject = OrcaRemoteObject._newInstance();
 				remoteObject._remoteID = anObject.remoteId;
 				return remoteObject;
 			}
-			if (aProperty == "error") {
+			if (anObject.error !== undefined && typeof anObject.error !== "function") {
 				return st.Error.signal_(st.string(anObject.error));
-			}
-		}
+			}			
+			//Thesis: now, we have only primitive-Objects serialized?
+			return anObject;
 	};
 
 	// Set up the Remote Object Map
@@ -158,6 +150,10 @@
 			},
 			doesNotUnderstand_: function(message) {
 				return home.passMessage(this, message);
+			},
+			_equals: function(object) {
+				if (object === undefined || object === null) return st.false;
+				return st.box(this._remoteID == object._remoteID);
 			}
 		}
 	});
