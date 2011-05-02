@@ -16,6 +16,11 @@ st.class("RemoteObjectTester", {
 		testUnaryMessage: function(){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.isNil() == st.false, ">>isNil as unary message to a remoteObject of Object did not return false.");
+		},
+		
+		testRemoteObjectIdentity: function (){
+			var remoteObject = st.Object.newOnServer();
+			st.tests.assert(remoteObject.yourself()._equals(remoteObject));
 		}
 
 	}
