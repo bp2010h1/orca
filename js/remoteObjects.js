@@ -55,7 +55,7 @@
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
 	st.communication.MESSAGE_HANDLER = function(message){
 		var newOnClientCall = message.match(/newObjectOfClassNamed=([A-Za-z]+)/);
-		if (newOnClientCall) {
+		if (newOnClientCall !== null) {
 			var className = newOnClientCall[1];
 			var remoteId;
 			if(st[className]){
@@ -64,6 +64,18 @@
 				return '{ "remoteId": ' + remoteId + " }";
 			} else {
 				return '{ "error": "ClassNotFound" }';
+			}
+		}
+		var passedMessage = message.match(/rid=([0-9]+)&selector=([a-zA-Z0-9:]+)/);
+		if (passedMessage !== null) {
+			var remoteId = parseInt(passedMessage[1]);
+			var selector = passedMessage[2];
+			if (reachableObjectMap[remoteId]) {
+				// TODO: it works only for unary message sends until now
+				var answer = reachableObjectMap[remoteId].perform_(st.string(selector));
+				return serializeOrExpose(answer);
+			} else {
+				return '{ "error": "RemoteObjectNotAvailable" }';
 			}
 		}
 		return standardMessageHandler(message);
@@ -112,7 +124,6 @@
 		}
 		//TODO: convert anObject to st.string or st.number or st.true, st.false, st.nil, ...
 		return anObject;
-		
 	};
 	var convertArrayAnswer = function (anArray){
 		var result = [];
