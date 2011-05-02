@@ -4,7 +4,8 @@
 (function() {
 
 	st.Number._addInstanceMethods({
-		printString: function() { return st.string(st.unbox(this).toString()); }
+		printString: function() { return st.string(st.unbox(this).toString()); },
+		isInteger: function() { return st.bool(st.isInteger(st.unbox(this))); }
 	});
 
 })();

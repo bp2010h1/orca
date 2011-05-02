@@ -5,6 +5,7 @@
 // API:
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
+// st.isInteger(aNumber)
 
 (function() {
 
@@ -41,6 +42,12 @@
 		result = result.replace(/(\.)/g, "%2E");
 		result = result.replace(/(\/)/g, "%2F");
 		return result;
+	};
+	
+	home.isInteger = function (aNumber) {
+		if (isNaN(aNumber)) return false;
+		var integralPart = parseInt(aNumber);
+		return aNumber == integralPart;
 	};
 
 })();
