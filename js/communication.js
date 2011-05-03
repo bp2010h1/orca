@@ -6,8 +6,7 @@
 // st.communication.setup()
 // st.communication.connect()
 // st.communication.send(data)
-// st.communication.sendSynchronously(data)
-// st.communication.disconnect()
+// st.communication.sendAndWait(data)
 // st.communication.handleMessage(content, status)
 // st.GET(path)
 // st.loadScript(path)
@@ -30,19 +29,18 @@
 	// Settings
 	// 
 
-	if (!home.PREFER_WS) home.PREFER_WS = true;
-	if (!home.WEBSOCKET_PATH) home.WEBSOCKET_PATH = "ws";
-	if (!home.XHR_PATH) home.XHR_PATH = "xhr";
-	if (!home.MESSAGE_HANDLER) home.MESSAGE_HANDLER = function(message) {
+	if (!("PREFER_WS" in home)) home.PREFER_WS = true;
+	if (!("WEBSOCKET_PATH" in home)) home.WEBSOCKET_PATH = "ws";
+	if (!("XHR_PATH" in home)) home.XHR_PATH = "xhr";
+	if (!("MESSAGE_HANDLER" in home)) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
-		eval(message); };
+		return eval(message); };
 
 	// 
 	// Local variables
 	// 
 
 	var connectionHandler;
-	var synchronousRequest;
 	var session_id = -1;
 
 	// 
@@ -64,20 +62,13 @@
 			return connectionHandler.send(data);
 	};
 
-	home.sendSynchronously = function(data, urlPath) {
+	home.sendAndWait = function(data, urlPath) {
 		if (connectionHandler.isOpen())
-			return connectionHandler.sendSynchronously(data, urlPath);
-	};
-
-	home.disconnect = function() {
-		if (synchronousRequest)
-			closeRequest(synchronousRequest);
-		if (connectionHandler.isOpen())
-			connectionHandler.close();
+			return sendAndWait(data, urlPath);
 	};
 
 	// Use the configured message-handler to evaluate and log the content
-	home.handleMessage = function(content, status) {
+	home.handleMessage = function(content) {
 		var result;
 		try {
 			result = home.MESSAGE_HANDLER(content);
@@ -89,7 +80,7 @@
 	};
 
 	home.GET = function(path) {
-		var req = createXmlRequest();
+		var req = createRequest();
 		req.open("GET", fullURL(path), false);
 		req.send(null);
 		if (req.status == 200) {
@@ -104,7 +95,28 @@
 		var script = home.GET(path);
 		// The scripts need global context
 		return (function() { return window.eval(script); })();
-	}
+	};
+
+	home.addScriptTags = function(scriptNames) {
+		var i = 0;
+		var callback = function() {
+			if (i < scriptNames.length) {
+				home.addScriptTag(scriptNames[i++], callback);
+			}
+		};
+		callback();
+	};
+
+	home.addScriptTag = function(url, callback) {
+		// Copied from http://stackoverflow.com/questions/950087/include-javascript-file-inside-javascript-file
+		var head= document.getElementsByTagName('head')[0];
+		var script= document.createElement('script');
+		script.type= 'text/javascript';
+		script.src= fullURL(url);
+		script.onreadystatechange = callback;
+		script.onload = callback;
+		head.appendChild(script);
+	};
 
 	home.setup_session_id = function(id) {
 		// Allow calling this function only once - delete after usage
@@ -116,14 +128,13 @@
 	// Private functions
 	// 
 
-	var sendSynchronouslyImpl = function(data, url) {
-		if (data) {
-			synchronousRequest = createXmlRequest();
+	var sendAndWait = function(data, url) {
+		if (data){
+			var synchronousRequest = createRequest();
 			synchronousRequest.open("POST", fullURL(url), false);
 			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			synchronousRequest.send(data);
 			var result = synchronousRequest.responseText;
-			synchronousRequest = null;
 			return result;
 		}
 	}
@@ -132,17 +143,14 @@
 		return home.PREFER_WS && ("WebSocket" in window);
 	};
 
-	var createXmlRequest = function() {
+	var createRequest = function() {
 		return new XMLHttpRequest();
 	};
 
-	var closeRequest = function(request) {
-		// TODO this is not pretty: this abort()-call always results in 
-		// a "Failed to load resource" in the browser...
-		request.abort();
-	};
-
 	var fullURL = function(urlPath) {
+	  if (/^http(s)?:\/\//.test(urlPath)){
+	    return urlPath;
+	  }
 		var baseUrl = document.location.href;
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
@@ -156,14 +164,14 @@
 			open: function() {
 				var optionalArgument = '';
 				if (arguments[0] !== undefined) {
-					optionalArgument = "&answer=" + home.realEscape(arguments[0]);
+					optionalArgument = "&answer=" + st.escapeAll(arguments[0]);
 				}
-				request = createXmlRequest();
+				request = createRequest();
 				request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
 				request.onreadystatechange = function() {
 					if (request.readyState == 4) {
 						if (request.status == 200) {
-							var answer = home.handleMessage(request.responseText, request.status);
+							var answer = home.handleMessage(request.responseText);
 							self.open(answer);
 						} else {
 							st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
@@ -173,24 +181,12 @@
 				request.send(null);
 			},
 			send: function(data) {
-				return this.sendSynchronously(data, home.XHR_PATH);
-			},
-			sendSynchronously: function(data, url) {
-				// It might be, that comet needs to close it's open connection before opening a new one
-				// this.close();
-				var result = sendSynchronouslyImpl(data, url);
-				// this.open();
-				return result;
-			},
-			close: function() {
-				closeRequest(request);
-				request = null;
+				return this.sendAndWait(data, home.XHR_PATH);
 			},
 			isOpen: function() {
 				return request ? true : false;
 			}
 		};
-
 		return self;
 	};
 
@@ -208,10 +204,9 @@
 					st.console.log("WebSocket failed: " + event);
 				};
 				webSocket.onmessage = function(event) {
-					var answer = home.handleMessage(event.data, 200);
-					if (answer !== undefined){
-						webSocket.send(answer);
-					}
+					var answer = home.handleMessage(event.data);
+					// TODO should not answer always! Server receives unnecessary requests!
+					webSocket.send(answer == undefined ? "" : answer);
 				};
 				webSocket.onclose = function() {
 					st.console.log("WebSocket received close event.");
@@ -219,12 +214,6 @@
 			},
 			send: function(data) {
 				webSocket.send(data);
-			},
-			sendSynchronously: sendSynchronouslyImpl,
-			close: function() {
-				webSocket.close();
-				webSocket = null;
-				st.console.log("WebSocket closed by client.");
 			},
 			isOpen: function() {
 				return webSocket ? true : false;

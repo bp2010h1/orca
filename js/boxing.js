@@ -155,9 +155,26 @@
 				// If this is not present, return nil.
 				if (result === undefined) {
 					// Get the method to be invoked from global "-method-dictionary"; invoke it on ourselves.
-					result = st.performMethodFrom(selector, dummyObjectInstance);
+					result = st.performMethodFrom.call(this, selector, dummyObjectInstance);
 				}
 				return result;
+			},
+
+			// Implementation of OrcaSlotObject >> slotsDo:
+			// Maps to the 'in'-operator
+			slotsDo_: function(aBlock) {
+				for (slotName in this._original) {
+					aBlock.value_(home.box(slotName));
+				}
+				return this;
+			},
+
+			toString: function() {
+				var message = "a wrapped js-native object " + this._original;
+				if (this._original.toSource) {
+					message += " (source: " + this._original.toSource();
+				}
+				return message;
 			},
 
 			// copied from Object: Parallel hierarchy since ProtoObject should not be able to perform.
@@ -206,10 +223,16 @@
 				return result;
 			}
 		});
+		if (aClass != OrcaBox)
+			aClass._addInstanceMethods({
+				_hiddenGetter: function(slotName) {
+					return this._original[slotName];
+				},
+				toString: function() {
+					return st.super("toString")() + " wrapping " + st.unbox(this);
+				}
+			});
 		aClass._addInstanceMethods({
-			_hiddenGetter: function(slotName) {
-				return this._original[slotName];
-			},
 			doesNotUnderstand_: function(aMessage) {
 				var methodName = home.unbox(aMessage.selector());
 				if (methodName[methodName.length - 1] == ':') {

@@ -42,7 +42,7 @@
 	var reservedWords = {
 		"abstract": "", "as": "", "boolean": "", "break": "", 
 		"byte": "", "case": "", "catch": "", "char": "", 
-		"class": "", "continue":	"", "const": "", "debugger": "", 
+		"class": "", "continue": "", "const": "", "debugger": "", 
 		"default": "", "delete": "", "do": "", "double": "", 
 		"else": "", "enum": "", "export": "", "extends": "", 
 		"false": "", "final": "", "finally": "", "float": "",

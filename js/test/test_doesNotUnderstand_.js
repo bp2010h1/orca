@@ -1,6 +1,3 @@
-// Here, we test the doesNotUnderstandSends
-
-st.tests.setupSqueakEnvironment();
 
 st.class("DoesNotUnderstandTester", { 
 

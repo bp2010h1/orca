@@ -1,22 +1,18 @@
 
-// Runtime depends on: boxing.js
+// Runtime depends on: boxing.js, perform.js
 
 (function() {
 
+	var doesNotUnderstand = function(message) {
+		var msg = this + " did not understand " + st.unbox(message.selector());
+		st.Exception.signal_(st.string(msg));
+	};
+
 	st.Object._addInstanceMethods({
-		
-		doesNotUnderstand_: function(message) {
-			// TODO implement this correctly
-			var msg = this + "(instance of " + this._class().name() + 
-					") did not understand " + st.unbox(message.selector());
-			st.Exception.signal_(st.string(msg));
-		},
-		
+		doesNotUnderstand_: doesNotUnderstand,
 		_class: function() { return this._theClass; },
-		
 		halt: function() { debugger; },
 		
-		// st.perform is implemented in boxing.js
 		perform_: st.perform,
 		perform_with_: st.perform,
 		perform_with_with_: st.perform,
@@ -29,7 +25,9 @@
 	st.Object._addClassMethods({
 		newOnServer: function() {
 			return st.passMessage(this, st.Message.selector_(st.string("newOnServer")));
-		}
+		},
+		halt: function() { debugger; },
+		doesNotUnderstand_: doesNotUnderstand
 	});
 
 })();

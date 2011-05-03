@@ -1,7 +1,4 @@
 
-// This scripts uses blocks, which require Squeak-classes
-st.tests.setupSqueakEnvironment();
-
 st.class("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {

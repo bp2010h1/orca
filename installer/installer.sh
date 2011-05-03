@@ -83,16 +83,19 @@ do
 		p) PASSWORD="$OPTARG" ;;
 		v) VM_PATH="$OPTARG" ;;
 		c) CONFIG="$OPTARG" ;;
+                a) BUILD_ARCHIVE=yes ;;
 		*) usage ;;
 	esac
 done
 
-mkdir temp
-cd temp
+OLDDIR=$(pwd)
+TEMP=$(mktemp -d -t orca_installer_XXXXXX)
+echo "using $TEMP as temporary directory"
+cd $TEMP
 download
 setup
 
-DATE_STRING=`date +%Y%m%d`
+DATE_STRING=`date +%Y%m%d_%H%M%S`
 
 mkdir "orca_${DATE_STRING}"
 cd "orca_${DATE_STRING}"
@@ -107,9 +110,13 @@ cat <<EOF> INSTALL
 Move this content into your Resources directory.
 EOF
 
-cd ..
+mv "${TEMP}/orca_${DATE_STRING}" $OLDDIR/
 
-tar cfz "../orca_${DATE_STRING}.tar.gz" "orca_${DATE_STRING}"
+cd $OLDDIR
+
+if [ "$BUILD_ARCHIVE" = "yes" ]; then
+  tar czf "orca_${DATE_STRING}.tar.gz" "orca_${DATE_STRING}"
+  rm -rf orca_${DATE_STRING}
+fi
 
 cd ..
-rm -rf temp

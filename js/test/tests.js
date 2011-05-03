@@ -3,14 +3,13 @@
 // Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js
 
 // API:
-// st.tests.assert(boolean)
+// st.tests.assert(boolean, exceptionMessage)
+// st.tests.deny(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
-// st.tests.runTests()
-// st.tests.setupSqueakEnvironment()
+// st.tests.runTests(testScripts)
 
 // Settings:
 // st.tests.DEBUG_ON_ERROR (boolean)
-// st.tests.ORCA_TESTS (Array of Strings)
 
 (function() {
 
@@ -22,65 +21,35 @@
 	// Settings
 	// 
 
-	home.DEBUG_ON_ERROR = false;
 
-	home.ORCA_TESTS = [
-		"test_classes.js", 
-		"test_primitives.js", 
-		"test_blocks.js", 
-		"test_super.js", 
-		"test_communication.js",
-		"test_boxing.js",
-		"test_doesNotUnderstand_.js",
-		"test_remoteObjects.js" ];
+	home.DEBUG_ON_ERROR = false;
 
 	// 
 	// API functions
 	// 
 
-	home.runTests = function() {
+	home.runTests = function(testScripts) {
 		// The tests are executed directly in these files
-		for (testScript in home.ORCA_TESTS) {
-			var scriptName = home.ORCA_TESTS[testScript];
-			if (typeof scriptName == "string") {
-				runTestScript(scriptName);
-			}
+		for (testScript in testScripts) {
+			runTestScript(testScripts[testScript]);
 		}
-		
 		// Send the results to the server
 		st.communication.performOnServer(
 			"[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]",
 			testResults.fail.length, testResults.error.length);
 	};
 
-	// Load all resources needed to setup the squeak-environment on the client
-	home.setupSqueakEnvironment = function() {
-		if (!squeakEnvironmentLoaded) {
-			st.communication.loadScript("classes");
-			st.communication.loadScript("primitives");
-			
-			var scripts = [
-			"js/server.js",
-			"js/perform.js", 
-			"js/boxing.js", 
-			"js/bootstrap.js", 
-			"js/remoteObjects.js",
-			];
-			
-			for (var i = 0; i < scripts.length; i++) {
-				loadScript(scripts[i]);
-			}
-			
-			squeakEnvironmentLoaded = true;
-		}
-	};
 
 	home.assert = function (condition, exception_message){
 		if (!condition) {
 			throw exception_message;
 		}
 	};
-
+	
+	home.deny = function (condition, exception_message){
+		return home.assert(!condition, exception_message);
+	};
+	
 	home.assertEquals = function (anObject, aReferenceObject, exceptionMessage) {
 		return home.assert(st.unbox(anObject) == aReferenceObject, exceptionMessage);
 	};
@@ -102,8 +71,6 @@
 	// Exception-object to signalize assert-fails
 	var AssertionFail = function(message) { this.Orca_IS_AssertionFail = true; this.message = message; };
 
-	var squeakEnvironmentLoaded = false;
-
 	var testResults = {
 		ok: 0,
 		fail: new Array(),
@@ -112,12 +79,6 @@
 
 	// Disable debugging-support when executing tests
 	st.DEBUG = false;
-
-	// Load the resource distributed from our file-handler in the image
-	var loadScript = function(scriptName) {
-		st.console.log("Loading script " + scriptName);
-		return st.communication.loadScript("file/" + scriptName);
-	};
 
 	// Run one test-script.
 	// This loads a script and evaluates it. Directory "test/" is prepended.
@@ -134,7 +95,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = loadScript("js/test/" + scriptName);
+			tester = st.communication.loadScript("file/js/test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});
@@ -199,7 +160,7 @@
 	};
 
 	var logError = function(errorArray, exception_message, error_type) {
-		var message = currentTestName() + ": " + error_type + ". Message: " + exception_message;
+		var message = "! " + currentTestName() + ": " + error_type + ". Message: " + exception_message;
 		errorArray.push(message);
 		st.console.log(message);
 		return message;

@@ -5,8 +5,8 @@
 // API:
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
-// st.getRandomInt(min, max)
 // String.prototype.endsWidth(aSubString)
+// st.isInteger(aNumber)
 
 (function() {
 
@@ -32,9 +32,23 @@
 		return f;
 	};
 
-	// source: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Math/random
-	home.getRandomInt = function(min, max) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+	home.escapeAll = function(string) {
+		// * @ - _ + . / are not escaped by this default js-function
+		var result = escape(string);
+		result = result.replace(/(\*)/g, "%2A");
+		result = result.replace(/(\@)/g, "%40");
+		result = result.replace(/(\-)/g, "%2D");
+		result = result.replace(/(\_)/g, "%5F");
+		result = result.replace(/(\+)/g, "%2B");
+		result = result.replace(/(\.)/g, "%2E");
+		result = result.replace(/(\/)/g, "%2F");
+		return result;
+	};
+	
+	home.isInteger = function (aNumber) {
+		if (isNaN(aNumber)) return false;
+		var integralPart = parseInt(aNumber);
+		return aNumber == integralPart;
 	};
 	
 	String.prototype.endsWith = function(aSubString) {
