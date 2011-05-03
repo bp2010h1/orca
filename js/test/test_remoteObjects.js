@@ -15,7 +15,7 @@ st.class("RemoteObjectTester", {
 
 		testUnaryMessage: function(){
 			var remoteObject = st.Object.newOnServer();
-			st.tests.assert(remoteObject.isNil() == st.false, ">>isNil as unary message to a remoteObject of Object did not return false.");
+			st.tests.assert(remoteObject.isNil() === st.false, ">>isNil as unary message to a remoteObject of Object did not return false.");
 		},
 		
 		testBinaryMessage: function(){
@@ -28,6 +28,17 @@ st.class("RemoteObjectTester", {
 			var addedValue = remoteObject.add_(st.number(1));
 			st.tests.assert(addedValue._equals(st.number(1)));
 			st.tests.assert(remoteObject.first()._equals(st.number(1)));
+		},
+
+		testRemoteSymbol: function(){
+			var remoteObject = st.Object.newOnServer();
+			var remoteObjectClass = remoteObject._class();
+			st.tests.assert(remoteObjectClass.isRemote());
+			var remoteObjectClassName = remoteObjectClass.name();
+			st.tests.assert(remoteObjectClassName.isRemote() === st.false, "Symbols are no RemoteObjects (yet)");
+			st.tests.assert(remoteObjectClassName._equals(st.string("Object")));
+			
+			
 		},
 		
 		testRemoteObjectIdentity: function (){
