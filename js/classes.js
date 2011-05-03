@@ -158,7 +158,7 @@
 			var newClassPrototype = st.isChrome() ? (st.localEval("function st_" + classname + "() {}") : (function() {});
 			var newInstancePrototype = 
 				st.isChrome() ?
-				(function a_Squeak_Object() { instanceCount++; this._instanceNumber = instanceCount; }) :
+				(st.localEval("function a_Squeak_Object() { instanceCount++; this._instanceNumber = instanceCount; }") :
 				(function () { instanceCount++; this._instanceNumber = instanceCount; });
 			var newClass;
 			
