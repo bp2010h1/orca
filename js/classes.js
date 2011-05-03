@@ -155,11 +155,11 @@
 		var createClassAndLinkPrototypes = function() {
 			// For debugging purposes, we declare the function with a readable name when in the 
 			// Chrome-browser
-			var newClassPrototype = st.isChrome() ? (st.localEval("function st_" + classname + "() {}") : (function() {});
+			var newClassPrototype = st.isChrome() ? st.localEval("(function st_" + classname + "() {})") : (function() {});
 			var newInstancePrototype = 
-				st.isChrome() ?
-				(st.localEval("function a_Squeak_Object() { instanceCount++; this._instanceNumber = instanceCount; }") :
-				(function () { instanceCount++; this._instanceNumber = instanceCount; });
+        st.isChrome() ?
+				(st.localEval("(function an_st_" + classname + "() { })")) :
+				(function () { });
 			var newClass;
 			
 			if ('superclass' in attrs) {
@@ -180,7 +180,9 @@
 			// create default function to instantiate a class and a variable to access the class from instances
 			newClass._addClassMethods({
 				_newInstance: function() {
-					return new newClass._instancePrototype();
+				  var instance = new newClass._instancePrototype();
+          instanceCount++; instance._instanceNumber = instanceCount;
+				  return instance;
 				}
 			});
 			newClass._addInstanceVariables(['_theClass'], newClass);
