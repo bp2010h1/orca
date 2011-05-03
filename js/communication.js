@@ -149,6 +149,9 @@
 	};
 
 	var fullURL = function(urlPath) {
+		if (session_id == -1) {
+			throw "Session-ID has not been set up yet!";
+		}
 		if (/^http(s)?:\/\//.test(urlPath)){
 			return urlPath;
 		}
