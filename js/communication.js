@@ -108,14 +108,15 @@
 	};
 
 	home.addScriptTag = function(url, callback) {
-		// Copied from http://stackoverflow.com/questions/950087/include-javascript-file-inside-javascript-file
-		var head= document.getElementsByTagName('head')[0];
-		var script= document.createElement('script');
-		script.type= 'text/javascript';
-		script.src= fullURL(url);
+		var script = document.createElement('script');
+		var url = fullURL(url);
+		script.type = 'text/javascript';
+		script.language = "javascript";
 		script.onreadystatechange = callback;
 		script.onload = callback;
-		head.appendChild(script);
+		script.src = url;
+		
+		document.getElementsByTagName('HEAD')[0].appendChild(script);
 	};
 
 	home.setup_session_id = function(id) {
@@ -148,9 +149,9 @@
 	};
 
 	var fullURL = function(urlPath) {
-	  if (/^http(s)?:\/\//.test(urlPath)){
-	    return urlPath;
-	  }
+		if (/^http(s)?:\/\//.test(urlPath)){
+			return urlPath;
+		}
 		var baseUrl = document.location.href;
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
