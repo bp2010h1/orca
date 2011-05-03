@@ -76,7 +76,6 @@
 				}
 				var selector = evalWrapped(messageJson.selector);
 				var message = st.Message.selector_arguments_(selector, args);
-				debugger;
 				var answer = message.sendTo_(reachableObject);
 				return serializeOrExpose(answer);
 			} else {
