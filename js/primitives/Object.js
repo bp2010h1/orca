@@ -18,7 +18,8 @@
 		perform_with_with_: st.perform,
 		perform_with_with_with_: st.perform,
 		perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
-			return st.perform.apply(this, st.unbox(anArgumentsCollection));
+			var args = [aSTMessageSelector].concat(st.unbox(anArgumentsCollection));
+			return st.perform.apply(this, args);
 		}
 		
 	});

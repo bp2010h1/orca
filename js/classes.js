@@ -127,11 +127,20 @@
 				}
 			}
 			
+			newClass._addClassMethods = function(methodTable) {
+				for(methodName in methodTable) {
+					if (typeof methodTable[methodName] == 'function'){
+						createMethod(this._theClass._instancePrototype.prototype, methodName, methodTable[methodName]);
+					}
+				}
+			}
+			
 			newClass._addInstanceVariables = function(variableNames, defaultValue) {
 				for(idx in variableNames) {
 					this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
 				}
 			}
+			
 			
 			newClass._inheritFrom = function(superClass) {
 				this._instancePrototype.prototype = new superClass._instancePrototype();
@@ -182,9 +191,11 @@
 			}
 			
 			newClass._newInstance = function() {
-				return new newClass._instancePrototype();
+			  	var instance = new newClass._instancePrototype();
+	          	instanceCount++; instance._instanceNumber = instanceCount;
+				return instance;
 			};
-			
+
 			newClass._addInstanceVariables(['_theClass'], newClass);
 			newClass._classname = classname;
 			

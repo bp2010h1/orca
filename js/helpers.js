@@ -7,6 +7,8 @@
 // st.curried(aFunction, anArrayOfArguments)
 // String.prototype.endsWidth(aSubString)
 // st.isInteger(aNumber)
+// st.escapeAll(aString)
+// st.isChrome()
 
 (function() {
 
@@ -44,7 +46,7 @@
 		result = result.replace(/(\/)/g, "%2F");
 		return result;
 	};
-	
+
 	home.isInteger = function (aNumber) {
 		if (isNaN(aNumber)) return false;
 		var integralPart = parseInt(aNumber);
@@ -54,5 +56,17 @@
 	String.prototype.endsWith = function(aSubString) {
 		return (this.match(aSubString + "$") == aSubString);
 	};
+
+	home.isChrome = function() {
+		return /WebKit/g.test(navigator.userAgent);
+	}
+
+	home.localEval = function(evalString) {
+		return (function() { return eval(evalString); })();
+	}
+
+	home.startsWithVowel = function(string) {
+		return /^[AEIOUaeiouYy]/g.test(string);
+	}
 
 })();

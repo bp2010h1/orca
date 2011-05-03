@@ -42,7 +42,7 @@
 		}
 		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
 		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
-		return convertAnswer(eval("st.wrapFunction(function(){ " + answerString + "}).apply(st.nil);"));
+		return convertAnswer(evalWrapped(answerString));
 	};
 
 	// 
@@ -64,13 +64,19 @@
 				return '{ "error": "ClassNotFound" }';
 			}
 		}
-		var passedMessage = message.match(/rid=([0-9]+)&selector=([a-zA-Z0-9:]+)/);
+		var passedMessage = message.match(/rid=([0-9]+)&message=([^&]+)/);
 		if (passedMessage !== null) {
 			var remoteId = parseInt(passedMessage[1]);
-			var selector = passedMessage[2];
-			if (reachableObjectMap[remoteId]) {
-				// TODO: it works only for unary message sends until now
-				var answer = reachableObjectMap[remoteId].perform_(st.string(selector));
+			var reachableObject = reachableObjectMap[remoteId];
+			var messageJson = evalWrapped(passedMessage[2]);
+			if (reachableObject) {
+				var args = [];
+				for (var i=0; i<messageJson.args.length; i++) {
+					args[i] = convertAnswer(evalWrapped(messageJson.args[i]));
+				}
+				var selector = evalWrapped(messageJson.selector);
+				var message = st.Message.selector_arguments_(selector, args);
+				var answer = message.sendTo_(reachableObject);
 				return serializeOrExpose(answer);
 			} else {
 				return '{ "error": "RemoteObjectNotAvailable" }';
@@ -79,6 +85,9 @@
 		return standardMessageHandler(message);
 	};
 
+	// parameters of message sends to remoteObjects and return values of message sends to reachable objects
+	// need to be transmitted either as JSON objects (boolean, number, string, null) or a new reachable object
+	// needs to be created
 	var serializeOrExpose = function (anObject){
 		if (anObject.isRemote && st.unbox(anObject.isRemote())){
 			return '{ "remoteId": ' + anObject._remoteId + " }";
@@ -94,16 +103,6 @@
 		}
 		if (anObject === st.nil){
 			return "null";
-		}
-		if (anObject._class() === st.Array){
-			var result = "[";
-			for (var i = 0; i < st.unbox(anObject.size()); i++){
-				result += serializeOrExpose(anObject.at(st.number(i+1)));
-				if(i < st.unbox(anObject.size()) - 1 ){
-					result += ", ";
-				}
-			}
-			return result + "]";
 		}
 		if (anObject._class() === st.Message){
 			var result = "{";
@@ -124,11 +123,9 @@
 	};
 
 	var convertAnswer = function (anObject){
-		// these are the tree json-types: array, object, primitive
 		if (typeof anObject == "object") {
 			return convertObjectAnswer(anObject);
 		}
-		//TODO: convert anObject to st.string or st.number or st.true, st.false, st.nil, ...
 		// signal an error? this should not happen, because we now send serialized primitives
 		return anObject;
 	};
@@ -143,6 +140,10 @@
 			}			
 			//Thesis: now, we have only primitive-Objects serialized?
 			return anObject;
+	};
+	
+	var evalWrapped = function(aString) {
+		return eval("st.wrapFunction(function(){ " + aString  + "}).apply(st.nil);");
 	};
 
 	// Set up the Remote Object Map

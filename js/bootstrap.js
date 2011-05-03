@@ -38,10 +38,11 @@
 	home.false = st.False._newInstance();
 	home.nil = st.UndefinedObject._newInstance();
 
-	st.ProtoObject._inheritFrom(st.nil);
+	//st.ProtoObject._inheritFrom(st.doesNotUnderstandClass);
 
 	// finally inherit Metaclass from Object
-	st.Metaclass._inheritFrom(st.Object);
+	st.Metaclass._inheritFrom(st.ClassDescription);
+	st.Class._inheritFrom(st.ClassDescription);
 
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
 	for (aClass in st.classes) {
