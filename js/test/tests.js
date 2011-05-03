@@ -4,6 +4,7 @@
 
 // API:
 // st.tests.assert(boolean, exceptionMessage)
+// st.tests.deny(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
 // st.tests.runTests(testScripts)
 
@@ -42,7 +43,11 @@
 			throw new AssertionFail(exception_message);
 		}
 	};
-
+	
+	home.deny = function (condition, exception_message){
+		return home.assert(!condition, exception_message);
+	};
+	
 	home.assertEquals = function (anObject, aReferenceObject, exceptionMessage) {
 		return home.assert(st.unbox(anObject) == aReferenceObject, exceptionMessage);
 	};
