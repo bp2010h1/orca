@@ -176,7 +176,9 @@
 			// create default function to instantiate a class and a variable to access the class from instances
 			newClass._addClassMethods({
 				_newInstance: function() {
-					return new newClass._instancePrototype();
+				  var instance = new newClass._instancePrototype();
+          instanceCount++; instance._instanceNumber = instanceCount;
+				  return instance;
 				}
 			});
 			newClass._addInstanceVariables(['_theClass'], newClass);
