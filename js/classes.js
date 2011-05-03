@@ -154,8 +154,10 @@
 		};
 		
 		var createClassAndLinkPrototypes = function() {
-			var newClassPrototype = function(){};
-			var newInstancePrototype = function(){ instanceCount++; this._instanceNumber = instanceCount; };
+			var newClassPrototype = st.isChrome() ? st.localEval("(function st_" + classname + "() {})") : (function() {});
+			var newInstancePrototype = st.isChrome() ?
+                                 (st.localEval("(function instance_of_st_" + classname + "() { })")) :
+                                 (function () { });
 			var newClass;
 			
 			if ('superclass' in attrs) {
