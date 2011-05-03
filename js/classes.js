@@ -144,6 +144,10 @@
 			
 			newClass._inheritFrom = function(superClass) {
 				this._instancePrototype.prototype = new superClass._instancePrototype();
+
+				for (var i=0; i < this._instances.length; i++) {
+					this._instances[i].__proto__ = this._instancePrototype.prototype;
+				}
 			}
 		};
 		
@@ -184,6 +188,7 @@
 						
 			createHelpers(newClass);
 			
+			newClass._instances = new Array();
 			newClass._instancePrototype = function() { instanceCount++; this._instanceNumber = instanceCount; };
 			
 			if('superclass' in attrs) {
@@ -192,7 +197,9 @@
 			
 			newClass._newInstance = function() {
 			  	var instance = new newClass._instancePrototype();
-	          	instanceCount++; instance._instanceNumber = instanceCount;
+	          	instanceCount++; 
+				instance._instanceNumber = instanceCount;
+				newClass._instances.push(instance);
 				return instance;
 			};
 
@@ -318,8 +325,18 @@
 		home[classname] = {
 			_classname: classname,
 			_instancePrototype: function() { },
+			_instances: new Array(),
 			_newInstance: function() {
-				return new this._instancePrototype();
+				var instance = new this._instancePrototype();
+				this._instances.push(instance);
+				return instance;
+			},
+			_inheritFrom: function(superClass) {
+				this._instancePrototype.prototype = new superClass._instancePrototype();
+				
+				for (var i=0; i < this._instances.length; i++) {
+					this._instances[i].__proto__ = this._instancePrototype.prototype;
+				}
 			}
 		}
 
