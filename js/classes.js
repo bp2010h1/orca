@@ -1,6 +1,6 @@
 
 // Setup depends on: -
-// Runtime depends on: (console.js)
+// Runtime depends on: (console.js), classes, boxing.js
 
 // This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
@@ -31,11 +31,10 @@
 
 (function(){
 
-	// Set up the namespace
+	// Set up the namespace (also acts as foreign namespace)
 	var home = window.st ? window.st : (window.st = {});
 
 	// Set up foreign namespaces
-	if (!window.st) window.st = {};
 	if (!st.communication) st.communication = {};
 
 	// Settings
@@ -154,8 +153,13 @@
 		};
 		
 		var createClassAndLinkPrototypes = function() {
-			var newClassPrototype = function(){};
-			var newInstancePrototype = function(){ instanceCount++; this._instanceNumber = instanceCount; };
+			// For debugging purposes, we declare the function with a readable name when in the 
+			// Chrome-browser
+			var newClassPrototype = st.isChrome() ? (st.localEval("function st_" + classname + "() {}") : (function() {});
+			var newInstancePrototype = 
+				st.isChrome() ?
+				(st.localEval("function a_Squeak_Object() { instanceCount++; this._instanceNumber = instanceCount; }") :
+				(function () { instanceCount++; this._instanceNumber = instanceCount; });
 			var newClass;
 			
 			if ('superclass' in attrs) {
