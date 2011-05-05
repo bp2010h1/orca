@@ -250,7 +250,11 @@
 	};
 
 	var DontDebugMarker = {};
-	var NonLocalReturnException = function() { this.DontDebug = DontDebugMarker; };
+	var NonLocalReturnException = function(currentThis, method) { 
+		this.DontDebug = DontDebugMarker;
+		this.currentThis = currentThis;
+		this.currentMethod = method;
+	};
 
 	// A wrapper to enable several debugging-functionalities
 	var WithDebugging = function(method) {
@@ -289,9 +293,7 @@
 	var WithNonLocalReturn = function(method) {
 		// this is a wrapper for method invocation
 		return function() {
-			var lastCallee = new NonLocalReturnException;
-			lastCallee.currentThis = this;
-			lastCallee.currentMethod = method;
+			var lastCallee = new NonLocalReturnException(this, method);
 			callStack.push(lastCallee);
 			try {
 				var ret =  method.apply(this, arguments);
