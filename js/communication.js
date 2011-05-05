@@ -121,6 +121,7 @@
 
 	home.setup_session_id = function(id) {
 		// Allow calling this function only once - delete after usage
+		st.console.log("This session-id is " + id);
 		session_id = id;
 		delete home.setup_session_id;
 	};
