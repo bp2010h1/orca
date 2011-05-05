@@ -69,5 +69,10 @@
 			deprecatedError("slot:apply:");
 		}
 	});
+	
+	// Error message if remoteObject session is not used, but attempt to pass message to a remote-object
+	st.passMessage = function() {
+		throw "You have tried to use remote objects, but a RemoteObjectSession was not set in your application (>>#orcaSessionClass should return OrcaRemoteObjectsSession) ";
+	};
 
 })();
