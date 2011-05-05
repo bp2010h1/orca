@@ -44,6 +44,25 @@ st.klass("RemoteObjectTester", {
 		testRemoteObjectIdentity: function (){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.yourself()._equals(remoteObject));
+		},
+		
+		testObjectParameter: function (){
+			var remoteObject = st.OrderedCollection.newOnServer();
+			var newObject = st.Object._new();
+			var returnValue = remoteObject.add_(newObject);
+			st.tests.assert(returnValue._equals(newObject));
+		},
+		
+		testObjectParameter2: function (){
+			// Set's add checks whether that object is already in the collection and calls the object's hash therefore...
+			// cross message sends!
+			// TODO: find a minimal example
+			var remoteObject = st.OrderedCollection.newOnServer();
+			var firstObject = st.Object._new();
+			var secondObject = st.Object._new();
+			remoteObject.add_(firstObject);
+			var returnValue = remoteObject.includes_(secondObject);
+			st.tests.assert(returnValue._equals(secondObject));
 		}
 
 	}
