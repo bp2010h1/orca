@@ -1,0 +1,14 @@
+body {
+	margin: 0px;
+}
+
+#spinner {
+	background-color: black;
+  background-image: url("../images/loader_black.gif");
+  background-position: center center;
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0.75;
+}
