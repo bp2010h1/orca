@@ -74,7 +74,7 @@
 		} else {
 			if (st.unbox(receiver.isBehavior())){
 				if (st.unbox(message.selector()) == "newOnServer") {
-					data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
 				} else if (st.unbox(message.selector()) == "asRemote") {
 					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
 				}
