@@ -92,7 +92,7 @@
 	// needs to be created
 	var serializeOrExpose = function (anObject){
 		if (anObject.isRemote && st.unbox(anObject.isRemote())){
-			return '{ "remoteID": ' + anObject._remoteID + " }";
+			return '{ "reachableObject": ' + anObject._remoteID + " }";
 		}
 		if (anObject.isNumber && st.unbox(anObject.isNumber())){
 			return st.unbox(anObject).toString();
