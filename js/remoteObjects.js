@@ -159,7 +159,7 @@
 	};
 	
 	// Class, that will ...
-	st.class("OrcaRemoteObject", {
+	st.klass("OrcaRemoteObject", {
 		superclass: st.doesNotUnderstandClass,
 		instanceVariables: ['_remoteID'],
 		instanceMethods: {

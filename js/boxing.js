@@ -15,7 +15,7 @@
 
 // API for boxing a specific type of object:
 // st.bool(aBoolean)
-// st.char(aString)
+// st.character(aString)
 // st.string(aString)
 // st.number(aNumber)
 // st.array(anArray)
@@ -95,7 +95,7 @@
 
 	home.bool = function(aBool) { if (aBool) { return st.true; } else { return st.false; } };
 
-	home.char = function(aString) { return st.char._wrapping(aString); };
+	home.character = function(aString) { return st.Character._wrapping(aString); };
 
 	home.string = function(aString) { return st.ByteString._wrapping(aString); };
 
@@ -143,7 +143,7 @@
 	// Class, that will wrap native javascript-objects to implement the Object-interface.
 	// Additionally, it adds accessor-methods for all fields to provide a squeak-API to
 	// set slots on javascript-objects.
-	st.class("OrcaBox", {
+	st.klass("OrcaBox", {
 		superclass: st.doesNotUnderstandClass,
 		instanceMethods: {
 			_isBoxedObject: isBoxedObject,
@@ -229,7 +229,7 @@
 					return this._original[slotName];
 				},
 				toString: function() {
-					return st.super("toString")() + " wrapping " + st.unbox(this);
+					return st.supa("toString")() + " wrapping " + st.unbox(this);
 				}
 			});
 		aClass._addInstanceMethods({

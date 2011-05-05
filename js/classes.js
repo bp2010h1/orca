@@ -5,12 +5,12 @@
 // This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
 // API:
-// st.classes = array
+// st.klasses = array
 // st.peekCallStack()
-// st.super(methodName)
+// st.supa(methodName)
 // st.nonLocalReturn(returnValue)
 // st.block(function)
-// st.class(classname, attributes)
+// st.klass(classname, attributes)
 
 // API defined on classes:
 // _addInstanceMethods(methodDictionary)
@@ -53,7 +53,7 @@
 		return callStack[callStack.length - 1];
 	};
 
-	home.super = function(methodName) {
+	home.supa = function(methodName) {
 		return function() {
 			var currentContext = home.peekCallStack();
 			// Accessing .__proto__ here brings us one step higher in the class-hierarchy
@@ -96,7 +96,7 @@
 	};
 
 	// This function creates a class with a given name and attributes.
-	home.class = function(classname, attrs) {
+	home.klass = function(classname, attrs) {
 		var createHelpers = function(newClassPrototype) {
 			var createMethod = function(aPrototype, methodName, method) {
 				aPrototype[methodName] = wrapFunction(method);

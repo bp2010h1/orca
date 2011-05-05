@@ -1,7 +1,7 @@
 
 // This tests verifies helper methods.
 
-st.class("HelpersTester", { 
+st.klass("HelpersTester", { 
 
 	instanceMethods: {
 		
