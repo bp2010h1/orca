@@ -43,13 +43,28 @@
 			throw new AssertionFail(exception_message);
 		}
 	};
-	
+
 	home.deny = function (condition, exception_message){
 		return home.assert(!condition, exception_message);
 	};
-	
+
 	home.assertEquals = function (anObject, aReferenceObject, exceptionMessage) {
 		return home.assert(st.unbox(anObject) == aReferenceObject, exceptionMessage);
+	};
+
+	home.addDoesNotUnderstandMethods = function(stringArray, squeakStringArray) {
+		for (index in stringArray) {
+			(function() {
+				var methodName = stringArray[index];
+				var squeakMethodName = squeakStringArray[index];
+				var config = {};
+				config[methodName] = function() {
+						return this.doesNotUnderstand_(
+						st.Message.selector_arguments_(st.string(squeakMethodName), 
+						st.array(st.toArray(arguments)))) };
+				st.doesNotUnderstandClass._addInstanceMethods(config);
+			})();
+		}
 	};
 
 	// 

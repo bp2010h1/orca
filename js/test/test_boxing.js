@@ -2,16 +2,8 @@
 // Make sure, the slots a and b are handled by doesNotUnderstand_. Add the slot-accessors.
 // Enables to test the OrcaBox-code (as it relies on doesNotUnderstand_ working).
 // This simulates, that these 4 methods exist in the squeak-image.
-st.doesNotUnderstandClass._addInstanceMethods({
-	a: function(){
-        return this.doesNotUnderstand_(st.Message.selector_arguments_(st.string("a"), st.array(st.toArray(arguments)))); },
-	a_: function(){
-        return this.doesNotUnderstand_(st.Message.selector_arguments_(st.string("a:"), st.array(st.toArray(arguments)))); },
-	b: function(){
-        return this.doesNotUnderstand_(st.Message.selector_arguments_(st.string("b"), st.array(st.toArray(arguments)))); },
-	b_: function(){
-        return this.doesNotUnderstand_(st.Message.selector_arguments_(st.string("b:"), st.array(st.toArray(arguments)))); }
-});
+
+st.tests.addDoesNotUnderstandMethods(["a", "a_", "b", "b_"], ["a", "a:", "b", "b:"]);
 
 st.klass("BoxingTester", { instanceMethods: {
 	

@@ -1,4 +1,6 @@
 
+st.tests.addDoesNotUnderstandMethods(["new"], ["new"]);
+
 st.klass("RemoteObjectTester", { 
 
 	superclass: st.Object,

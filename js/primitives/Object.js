@@ -1,5 +1,5 @@
 
-// Runtime depends on: boxing.js, perform.js
+// Runtime depends on: boxing.js, perform.js, remoteObjects.js
 
 (function() {
 
@@ -26,6 +26,9 @@
 	st.Object._addClassMethods({
 		newOnServer: function() {
 			return st.passMessage(this, st.Message.selector_(st.string("newOnServer")));
+		},
+		asRemote: function() {
+			return st.passMessage(this, st.Message.selector_(st.string("asRemote")));
 		},
 		halt: function() { debugger; },
 		doesNotUnderstand_: doesNotUnderstand
