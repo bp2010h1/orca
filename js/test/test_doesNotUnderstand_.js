@@ -1,5 +1,5 @@
 
-st.class("DoesNotUnderstandTester", { 
+st.klass("DoesNotUnderstandTester", { 
 
 	superclass: st.Object,
 	classInstanceVariables: [ ],

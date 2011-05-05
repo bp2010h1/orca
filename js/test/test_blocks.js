@@ -1,5 +1,5 @@
 
-st.class("BlocksTester", { instanceMethods: {
+st.klass("BlocksTester", { instanceMethods: {
 	
 	setUp: function() {
 		this.instVar = st.string("instVar");

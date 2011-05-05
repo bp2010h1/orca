@@ -1,5 +1,5 @@
 
-st.class("RemoteObjectTester", { 
+st.klass("RemoteObjectTester", { 
 
 	superclass: st.Object,
 	classInstanceVariables: [ ],
@@ -37,13 +37,8 @@ st.class("RemoteObjectTester", {
 			var remoteObjectClassName = remoteObjectClass.name();
 			st.tests.assert(remoteObjectClassName.isRemote() === st.false, "Symbols are no RemoteObjects (yet)");
 			st.tests.assert(remoteObjectClassName._equals(st.string("Object")));
-		},
-		
-		testRemoteClassNameEquality: function(){
-			var remoteClass = st.Object.newOnServer()._class();
-			st.tests.assert(remoteClass.isRemote());
-			var objectClass = st.Object;
-			st.tests.assert(remoteClass.name()._equals(objectClass.name()));
+			
+			
 		},
 		
 		testRemoteObjectIdentity: function (){

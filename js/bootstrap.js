@@ -39,8 +39,8 @@
 	home.nil = st.UndefinedObject._newInstance();
 
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
-	for (aClass in st.classes) {
-		st.classes[aClass]._initializeInstanceVariables(home.nil);
+	for (aClass in st.klasses) {
+		st.klasses[aClass]._initializeInstanceVariables(home.nil);
 	}
 
 	// TODO if we're sure everything is fixed, remove these warnings.
@@ -69,10 +69,5 @@
 			deprecatedError("slot:apply:");
 		}
 	});
-	
-	// Error message if remoteObject session is not used, but attempt to pass message to a remote-object
-	st.passMessage = function() {
-		throw "You have tried to use remote objects, but a RemoteObjectSession was not set in your application (>>#orcaSessionClass should return OrcaRemoteObjectsSession) ";
-	};
 
 })();

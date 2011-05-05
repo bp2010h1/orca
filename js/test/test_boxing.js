@@ -13,7 +13,7 @@ st.doesNotUnderstandClass._addInstanceMethods({
         return this.doesNotUnderstand_(st.Message.selector_arguments_(st.string("b:"), st.array(st.toArray(arguments)))); }
 });
 
-st.class("BoxingTester", { instanceMethods: {
+st.klass("BoxingTester", { instanceMethods: {
 	
 	testNativeFunctionBoundBlock: function() {
 		var box = st.object( { a: 23, b: function(){ return this.a; } } );
