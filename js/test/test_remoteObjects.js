@@ -1,5 +1,5 @@
 
-st.tests.addDoesNotUnderstandMethods(["new", "environment"], ["new", "environment"]);
+st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests"], ["new", "environment", "runTests"]);
 
 st.klass("RemoteObjectTester", { 
 
@@ -72,19 +72,9 @@ st.klass("RemoteObjectTester", {
 		
 		testServerSide: function (){
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.newOnServer();
-			st.tests.assert(remoteTestCase.perform_(st.string("run")));
-		},
-		
-		testObjectParameter2: function (){
-			// Set's add checks whether that object is already in the collection and calls the object's hash therefore...
-			// cross message sends!
-			// TODO: find a minimal example
-			var remoteObject = st.OrderedCollection.newOnServer();
-			var firstObject = st.Object._new();
-			var secondObject = st.Object._new();
-			remoteObject.add_(firstObject);
-			var returnValue = remoteObject.includes_(secondObject);
-			st.tests.assert(returnValue._equals(secondObject));
+			if (!remoteTestCase.runTests()._unbox()){
+				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
+			}
 		}
 
 	}
