@@ -72,9 +72,14 @@
 			 data = "rid=" + st.escapeAll(receiver._remoteID) +
 			 	"&message=" + st.escapeAll(serializeOrExpose(message));
 		} else {
-			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
-			} else {
+			if (st.unbox(receiver.isBehavior())){
+				if (st.unbox(message.selector()) == "newOnServer") {
+					data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
+				} else if (st.unbox(message.selector()) == "asRemote") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
+				}
+			} 
+			if (!data) {
 				receiver.error_(string("Unexpected remote message send."));
 			}
 		}
