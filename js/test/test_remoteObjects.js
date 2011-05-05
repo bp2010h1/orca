@@ -49,6 +49,13 @@ st.class("RemoteObjectTester", {
 		testRemoteObjectIdentity: function (){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.yourself()._equals(remoteObject));
+		},
+		
+		testObjectParameter: function (){
+			var remoteObject = st.OrderedCollection.newOnServer();
+			var newObject = st.Object._new();
+			var returnValue = remoteObject.add_(newObject);
+			st.tests.assert(returnValue._equals(newObject));
 		}
 
 	}
