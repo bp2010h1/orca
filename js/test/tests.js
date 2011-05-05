@@ -39,7 +39,7 @@
 	};
 
 	home.assert = function (condition, exception_message){
-		if (!condition) {
+		if (!condition && condition !== st.false) {
 			throw new AssertionFail(exception_message);
 		}
 	};
