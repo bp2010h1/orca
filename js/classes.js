@@ -95,62 +95,61 @@
 		return b;
 	};
 
+	home.createHelpers = function(newClass) {
+		var createMethod = function(aPrototype, methodName, method) {
+			aPrototype[methodName] = wrapFunction(method);
+			aPrototype[methodName].methodName = methodName;
+			aPrototype[methodName].originalMethod = method;
+			method.methodName = methodName;
+			method.methodHome = aPrototype; // This is the object, that actually contains this method
+		}
+		
+		var initializeVariables = function(aPrototype, newInitialValue) {
+			for (instVar in aPrototype) {
+				if (aPrototype[instVar] == null) {
+					aPrototype[instVar] = newInitialValue;
+				}
+			}
+		}
+		
+		// Initialize all fields, that are null to the given value
+		newClass._initializeInstanceVariables = function(newInitialValue) {
+			initializeVariables(this._instancePrototype.prototype, newInitialValue);
+		}
+		
+		newClass._addInstanceMethods = function(methodTable) {
+			for(methodName in methodTable) {
+				if (typeof methodTable[methodName] == 'function'){
+					createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
+				}
+			}
+		}
+		
+		newClass._addClassMethods = function(methodTable) {
+			for(methodName in methodTable) {
+				if (typeof methodTable[methodName] == 'function'){
+					createMethod(this._theClass._instancePrototype.prototype, methodName, methodTable[methodName]);
+				}
+			}
+		}
+		
+		newClass._addInstanceVariables = function(variableNames, defaultValue) {
+			for(idx in variableNames) {
+				this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
+			}
+		}
+		
+		newClass._inheritFrom = function(superClass) {
+			this._instancePrototype.prototype = new superClass._instancePrototype();
+
+			for (var i=0; i < this._instances.length; i++) {
+				this._instances[i].__proto__ = this._instancePrototype.prototype;
+			}
+		}
+	};
+	
 	// This function creates a class with a given name and attributes.
 	home.class = function(classname, attrs) {
-		var createHelpers = function(newClass) {
-			var createMethod = function(aPrototype, methodName, method) {
-				aPrototype[methodName] = wrapFunction(method);
-				aPrototype[methodName].methodName = methodName;
-				aPrototype[methodName].originalMethod = method;
-				method.methodName = methodName;
-				method.methodHome = aPrototype; // This is the object, that actually contains this method
-			}
-			
-			var initializeVariables = function(aPrototype, newInitialValue) {
-				for (instVar in aPrototype) {
-					if (aPrototype[instVar] == null) {
-						aPrototype[instVar] = newInitialValue;
-					}
-				}
-			}
-			
-			// Initialize all fields, that are null to the given value
-			newClass._initializeInstanceVariables = function(newInitialValue) {
-				initializeVariables(this._instancePrototype.prototype, newInitialValue);
-			}
-			
-			newClass._addInstanceMethods = function(methodTable) {
-				for(methodName in methodTable) {
-					if (typeof methodTable[methodName] == 'function'){
-						createMethod(this._instancePrototype.prototype, methodName, methodTable[methodName]);
-					}
-				}
-			}
-			
-			newClass._addClassMethods = function(methodTable) {
-				for(methodName in methodTable) {
-					if (typeof methodTable[methodName] == 'function'){
-						createMethod(this._theClass._instancePrototype.prototype, methodName, methodTable[methodName]);
-					}
-				}
-			}
-			
-			newClass._addInstanceVariables = function(variableNames, defaultValue) {
-				for(idx in variableNames) {
-					this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
-				}
-			}
-			
-			
-			newClass._inheritFrom = function(superClass) {
-				this._instancePrototype.prototype = new superClass._instancePrototype();
-
-				for (var i=0; i < this._instances.length; i++) {
-					this._instances[i].__proto__ = this._instancePrototype.prototype;
-				}
-			}
-		};
-		
 		var createMetaclassAndInstantiate = function() {
 			var newClass;
 			var metaClass;
