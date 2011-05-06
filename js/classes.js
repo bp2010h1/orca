@@ -5,7 +5,7 @@
 // This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
 // API:
-// st.klasses = array
+// st.classes = array
 // st.peekCallStack()
 // st.supa(methodName)
 // st.nonLocalReturn(returnValue)
@@ -226,7 +226,7 @@
 		addMethods(newClass);
 		
 		this[classname] = newClass;
-		home.klasses.push(newClass);
+		home.classes.push(newClass);
 		
 		return newClass;
 	};
