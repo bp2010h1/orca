@@ -1,0 +1,115 @@
+body {
+	background-color: #EEE;
+	margin: 0px;
+	font-size: 14px;
+}
+
+body, input, textarea {
+	font-family: "Trebuchet MS", "Lucida Grande", Tahoma, Verdana, sans-serif;
+}
+
+form {
+	width: 600px;
+	margin: 0px auto;
+}
+
+form * {
+	margin: 10px 0px;
+}
+
+h1 {
+	font-size: 60px;
+	color: #DDD;
+	text-shadow: -1px -1px 0px #BBB, 1px 1px 0px #FFF;
+}
+
+input, textarea {
+	font-size: 14px;
+	padding: 10px;
+}
+
+label + input {
+	border: 1px solid #EEE;
+}
+
+label + input:hover {
+	border: 1px solid #CCC;
+}
+
+label {
+	color: #666;
+	margin-right: 10px;
+}
+
+input:valid {
+	background-color: PaleGreen;
+}
+
+input:invalid {
+	background-color: Salmon;
+}
+
+#messageBox, textarea {
+	background-color: #F8F8F8;
+}
+
+#messageBox {
+	padding: 5px;
+	height: 250px;
+	overflow: auto;
+}
+
+.message {
+	background-color: white;
+	border-radius: 5px;
+	margin: 10px 0px;
+	border: 1px solid LightSteelBlue;
+}
+
+.message * {
+	margin: 5px;
+}
+
+.message time {
+	text-transform: uppercase;
+	float: right;
+}
+
+.message > p {
+	color: #333;
+	font-weight: bold;
+	border-bottom: 1px dotted #DDD;
+}
+
+.message p + p {
+	color: #666;
+	font-weight: normal;
+	border: 0px;
+}
+
+textarea {
+	border: 0px;
+	border-radius: 10px;
+	box-shadow: 0px 0px 8px rgba(88, 83, 74, 0.2) inset;
+	width: 580px;
+	color: #888;
+}
+
+input[type="submit"] {
+	display: inline;
+	background-color: #CA351C;
+  background-image: -moz-linear-gradient(center top, #CC3B23, #C00B00);
+	border-radius: 10px;
+	float: right;
+	padding: 10px 40px;
+	color: white;
+	font-size: 20px;
+	font-weight: bold;
+	letter-spacing: 2px;
+	border: 0px;
+	box-shadow: 0px 0px 1px black;
+}
+
+input[type="submit"]:hover {
+	opacity: 0.9;
+}

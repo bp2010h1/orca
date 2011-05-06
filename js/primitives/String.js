@@ -24,7 +24,7 @@
 		},
 		
 		at_: function(num) { 
-			return st.char(st.unbox(this)[st.unbox(num) - 1]);
+			return st.character(st.unbox(this)[st.unbox(num) - 1]);
 		}
 	});
 

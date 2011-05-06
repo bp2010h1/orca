@@ -1,14 +1,14 @@
 
-st.class("A", { instanceMethods: { a: function(r) { return "abc" + r; } }});
-	st.class("A1", { superclass: st.A, instanceMethods: { a: function(r) { return st.super('a')(r + "hehe"); } }});
-		st.class("NoMethodsA1", { superclass: st.A1});
-			st.class("A2", { superclass: st.NoMethodsA1, instanceMethods: { a: function(r) { return st.super('a')(r + 2); } }});
-	st.class("NoMethods1", { superclass: st.A});
-		st.class("B", { superclass: st.NoMethods1, instanceMethods: { a: function(r) { return st.super('a')(3333); } }});
-		st.class("NoMethods2", { superclass: st.NoMethods1});
-			st.class("A3", { superclass: st.NoMethods2, instanceMethods: { a: function(r) { return st.super('a')(r + "hi"); } }});
-	st.class("NewImplementation", { superclass: st.A, instanceMethods: { a: function() { return "ThisIsNew"; } }});
-		st.class("A4", { superclass: st.NewImplementation, instanceMethods: { a: function(r) { return st.super('a')() + r; } }});
+st.klass("A", { instanceMethods: { a: function(r) { return "abc" + r; } }});
+	st.klass("A1", { superclass: st.A, instanceMethods: { a: function(r) { return st.supa('a')(r + "hehe"); } }});
+		st.klass("NoMethodsA1", { superclass: st.A1});
+			st.klass("A2", { superclass: st.NoMethodsA1, instanceMethods: { a: function(r) { return st.supa('a')(r + 2); } }});
+	st.klass("NoMethods1", { superclass: st.A});
+		st.klass("B", { superclass: st.NoMethods1, instanceMethods: { a: function(r) { return st.supa('a')(3333); } }});
+		st.klass("NoMethods2", { superclass: st.NoMethods1});
+			st.klass("A3", { superclass: st.NoMethods2, instanceMethods: { a: function(r) { return st.supa('a')(r + "hi"); } }});
+	st.klass("NewImplementation", { superclass: st.A, instanceMethods: { a: function() { return "ThisIsNew"; } }});
+		st.klass("A4", { superclass: st.NewImplementation, instanceMethods: { a: function(r) { return st.supa('a')() + r; } }});
 
 // Build up convenience to create instances of the test-classes
 classes = [ "A", "A1", "NoMethodsA1", "A2", "NoMethods1", "B", "NoMethods2", "A3", "NewImplementation", "A4" ];
@@ -17,12 +17,12 @@ for (cl in classes) {
     return clazz._newInstance() }; })(st[classes[cl]]);
 }
 
-st.class("SuperTester", {
+st.klass("SuperTester", {
 	
 	instanceMethods: {
 		
 		test1: function() {
-			// not really tests st.super(, but the inheritance and basics
+			// not really tests st.supa(, but the inheritance and basics
 			st.tests.assert(A().a(1) == "abc1");
 			st.tests.assert(NoMethods1().a(2) == "abc2");
 			st.tests.assert(NoMethods2().a(3) == "abc3");

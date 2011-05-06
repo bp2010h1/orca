@@ -5,8 +5,12 @@
 // Setup depends on: classes, classes.js
 // Runtime depends on: -
 
+// Settings
+// st.ILLEGAL_GLOBAL_HANDLER (function(globalName))
+
 // API (not a real API, just values mostly used in compiled code):
 // st.primitiveDeclaration (function())
+// st.defineGlobals(stringArray)
 // st.true
 // st.false
 // st.nil
@@ -15,6 +19,14 @@
 
 	// Set up the namespace
 	var home = window.st ? window.st : (window.st = {});
+
+	// Settings
+	if (!("ILLEGAL_GLOBAL_HANDLER" in home)) home.ILLEGAL_GLOBAL_HANDLER = 
+		function(handlerName) {
+			throw "The global/class '" + handlerName + 
+				"' has been accessed but is not defined on the client!" +
+				" Add it as requiredClass.";
+		};
 
 	// Function called when a method with an unimplemented primitive declaration is called
 	home.primitiveDeclaration = function() {
@@ -33,6 +45,20 @@
 		throw msg;
 	};
 
+	home.defineGlobals = function(globalNames) {
+		for (index in globalNames) {
+			(function() {
+				// Anonymous function to preserve the index-context-variable
+				var name = globalNames[index];
+				if (!(name in st)) {
+					st.__defineGetter__(name, function() {
+						return home.ILLEGAL_GLOBAL_HANDLER(name);
+					});
+				}
+			})();
+		}
+	};
+
 	// Set up immutable globals
 	home.true = st.True._newInstance();
 	home.false = st.False._newInstance();
@@ -45,8 +71,8 @@
 	st.Class._inheritFrom(st.Object);
 
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
-	for (aClass in st.classes) {
-		st.classes[aClass]._initializeInstanceVariables(home.nil);
+	for (aClass in st.klasses) {
+		st.klasses[aClass]._initializeInstanceVariables(home.nil);
 	}
 
 	// TODO if we're sure everything is fixed, remove these warnings.

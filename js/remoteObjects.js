@@ -21,53 +21,26 @@
 	// 
 
 	if (!("MESSAGE_SEND_URL" in home)) home.MESSAGE_SEND_URL = "send";
-
-	// 
-	// API functions
-	//
-
-	home.passMessage = function(receiver, message) {
-		var data;
-		var answerString;
-		var resultObject;
-		if (st.unbox(receiver.isRemote())) { 
-			 data = "rid=" + st.escapeAll(receiver._remoteID) +
-			 	"&message=" + st.escapeAll(serializeOrExpose(message));
-		} else {
-			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "newOnServer"){
-				data = "newObjectOfClassNamed=" + st.escapeAll(st.unbox(receiver.name()));
-			} else {
-				receiver.error_(string("Unexpected remote message send."));
-			}
-		}
-		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
-		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteId": 4}, true ]
-		return convertAnswer(evalWrapped(answerString));
-	};
-
-	// 
-	// Private
-	// 
-
+	
 	// Set the message-handler to handle remote-message-calls
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
 	st.communication.MESSAGE_HANDLER = function(message){
 		var newOnClientCall = message.match(/newObjectOfClassNamed=([A-Za-z]+)/);
 		if (newOnClientCall !== null) {
 			var className = newOnClientCall[1];
-			var remoteId;
+			var remoteID;
 			if(st[className]){
-				remoteId = reachableObjectMap.length;
-				reachableObjectMap[remoteId] = st[className]._new();
-				return '{ "remoteId": ' + remoteId + " }";
+				remoteID = reachableObjectMap.length;
+				reachableObjectMap[remoteID] = st[className]._new();
+				return '{ "remoteID": ' + remoteID + " }";
 			} else {
 				return '{ "error": "ClassNotFound" }';
 			}
 		}
 		var passedMessage = message.match(/rid=([0-9]+)&message=([^&]+)/);
 		if (passedMessage !== null) {
-			var remoteId = parseInt(passedMessage[1]);
-			var reachableObject = reachableObjectMap[remoteId];
+			var remoteID = parseInt(passedMessage[1]);
+			var reachableObject = reachableObjectMap[remoteID];
 			var messageJson = evalWrapped(passedMessage[2]);
 			if (reachableObject) {
 				var args = [];
@@ -82,15 +55,49 @@
 				return '{ "error": "RemoteObjectNotAvailable" }';
 			}
 		}
-		return standardMessageHandler(message);
+		if (standardMessageHandler !== undefined){
+			return standardMessageHandler(message);
+		}
+	};
+	
+	// 
+	// API functions
+	//
+
+	home.passMessage = function(receiver, message) {
+		var data;
+		var answerString;
+		var resultObject;
+		if (st.unbox(receiver.isRemote())) { 
+			 data = "rid=" + st.escapeAll(receiver._remoteID) +
+			 	"&message=" + st.escapeAll(serializeOrExpose(message));
+		} else {
+			if (st.unbox(receiver.isBehavior())){
+				if (st.unbox(message.selector()) == "newOnServer") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
+				} else if (st.unbox(message.selector()) == "asRemote") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
+				}
+			} 
+			if (!data) {
+				receiver.error_(string("Unexpected remote message send."));
+			}
+		}
+		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
+		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteID": 4}, true ]
+		return convertAnswer(evalWrapped(answerString));
 	};
 
+	// 
+	// Private
+	// 
+	
 	// parameters of message sends to remoteObjects and return values of message sends to reachable objects
 	// need to be transmitted either as JSON objects (boolean, number, string, null) or a new reachable object
 	// needs to be created
 	var serializeOrExpose = function (anObject){
 		if (anObject.isRemote && st.unbox(anObject.isRemote())){
-			return '{ "remoteId": ' + anObject._remoteId + " }";
+			return '{ "reachableObject": ' + anObject._remoteID + " }";
 		}
 		if (anObject.isNumber && st.unbox(anObject.isNumber())){
 			return st.unbox(anObject).toString();
@@ -117,9 +124,9 @@
 			return result + "}";
 		}
 		//else
-		var remoteId = reachableObjectMap.length;
-		reachableObjectMap[remoteId] = anObject;
-		return '{ "remoteId": ' + remoteId + " }";
+		var remoteID = reachableObjectMap.length;
+		reachableObjectMap[remoteID] = anObject;
+		return '{ "remoteID": ' + remoteID + " }";
 	};
 
 	var convertAnswer = function (anObject){
@@ -130,9 +137,9 @@
 		return anObject;
 	};
 	var convertObjectAnswer = function (anObject){
-			if (anObject.remoteId !== undefined && typeof anObject.remoteId === "number") {
+			if (anObject.remoteID !== undefined && typeof anObject.remoteID === "number") {
 				var remoteObject = OrcaRemoteObject._newInstance();
-				remoteObject._remoteID = anObject.remoteId;
+				remoteObject._remoteID = anObject.remoteID;
 				return remoteObject;
 			}
 			if (anObject.error !== undefined && typeof anObject.error !== "function") {
@@ -149,8 +156,15 @@
 	// Set up the Remote Object Map
 	var reachableObjectMap = [];
 
+	var reachableObjectNamed = function (anIdentifier){
+		if (reachableObjectMap[anIdentifier] === undefined){
+			return st.Error.signal_(st.string("Returned an ReachableObject which does not exist on this Client."));
+		}
+		return reachableObjectMap[anIdentifier];
+	};
+	
 	// Class, that will ...
-	st.class("OrcaRemoteObject", {
+	st.klass("OrcaRemoteObject", {
 		superclass: st.doesNotUnderstandClass,
 		instanceVariables: ['_remoteID'],
 		instanceMethods: {

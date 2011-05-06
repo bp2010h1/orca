@@ -2,7 +2,7 @@
 // This tests is meant to ensure that the server can push code.
 // Add more tests in general.
 
-st.class("ConnectionTester", { 
+st.klass("ConnectionTester", { 
 
 	classInstanceVariables: [ "connectionToClientSuccessful" ],
 

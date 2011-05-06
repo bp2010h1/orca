@@ -5,12 +5,12 @@
 // This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
 // API:
-// st.classes = array
+// st.klasses = array
 // st.peekCallStack()
-// st.super(methodName)
+// st.supa(methodName)
 // st.nonLocalReturn(returnValue)
 // st.block(function)
-// st.class(classname, attributes)
+// st.klass(classname, attributes)
 
 // API defined on classes:
 // _addInstanceMethods(methodDictionary)
@@ -53,7 +53,7 @@
 		return callStack[callStack.length - 1];
 	};
 
-	home.super = function(methodName) {
+	home.supa = function(methodName) {
 		return function() {
 			var currentContext = home.peekCallStack();
 			// Accessing .__proto__ here brings us one step higher in the class-hierarchy
@@ -149,7 +149,7 @@
 	};
 	
 	// This function creates a class with a given name and attributes.
-	home.class = function(classname, attrs) {
+	home.klass = function(classname, attrs) {
 		var createMetaclassAndInstantiate = function() {
 			var newClass;
 			var metaClass;
@@ -176,7 +176,7 @@
 			
 				// metaclasses are actually anonymous but when getting accessed
 				// the naming convention for class "X" is "X class"
-				metaClass = st.class(classname + ' class', {
+				metaClass = st.klass(classname + ' class', {
 						superclass: metaSuperClass,
 						instanceVariables: attrs.classVariables,
 						instanceMethods: attrs.classMethods
@@ -185,7 +185,7 @@
 
 			newClass = metaClass._newInstance();
 						
-			createHelpers(newClass);
+			home.createHelpers(newClass);
 			
 			newClass._instances = new Array();
 			newClass._instancePrototype = function() { instanceCount++; this._instanceNumber = instanceCount; };
@@ -226,7 +226,7 @@
 		addMethods(newClass);
 		
 		this[classname] = newClass;
-		home.classes.push(newClass);
+		home.klasses.push(newClass);
 		
 		return newClass;
 	};
@@ -258,7 +258,11 @@
 	};
 
 	var DontDebugMarker = {};
-	var NonLocalReturnException = function() { this.DontDebug = DontDebugMarker; };
+	var NonLocalReturnException = function(currentThis, method) { 
+		this.DontDebug = DontDebugMarker;
+		this.currentThis = currentThis;
+		this.currentMethod = method;
+	};
 
 	// A wrapper to enable several debugging-functionalities
 	var WithDebugging = function(method) {
@@ -297,9 +301,7 @@
 	var WithNonLocalReturn = function(method) {
 		// this is a wrapper for method invocation
 		return function() {
-			var lastCallee = new NonLocalReturnException;
-			lastCallee.currentThis = this;
-			lastCallee.currentMethod = method;
+			var lastCallee = new NonLocalReturnException(this, method);
 			callStack.push(lastCallee);
 			try {
 				var ret =  method.apply(this, arguments);

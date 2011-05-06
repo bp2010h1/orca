@@ -1,5 +1,7 @@
 
-st.class("RemoteObjectTester", { 
+st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests"], ["new", "environment", "runTests"]);
+
+st.klass("RemoteObjectTester", { 
 
 	superclass: st.Object,
 	classInstanceVariables: [ ],
@@ -7,10 +9,27 @@ st.class("RemoteObjectTester", {
 
 	instanceMethods: {
 		
-		testNewOnServer: function (){
+		testNewOnServer: function(){
 			var remoteObject = st.Object.newOnServer();
-			st.tests.assert(remoteObject.isRemote(), "Object created through st.Object.newOnServer() is not remote.");
+			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.newOnServer() is not remote.");
 			st.tests.assert((typeof remoteObject._remoteID) === "number", "Returned RemoteID for the created RemoteObject is not a number.");
+		},
+		
+		testAsRemote: function(){
+			var remoteObject = st.Object.asRemote();
+			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.asRemote() is not remote.");
+			st.tests.assert((typeof remoteObject._remoteID) === "number", "Returned RemoteID for the created RemoteObject is not a number.");
+		},
+		
+		testAsRemoteIsBehavior: function(){
+			var remoteObject = st.Object.asRemote();
+			st.tests.assert(remoteObject.isBehavior() === st.true);
+		},
+
+		testAsRemoteInstanceIsRemoteToo: function(){
+			var remoteObject = st.Object.asRemote();
+			var remoteInstance = remoteObject.new();
+			st.tests.assert(remoteInstance.isRemote() === st.true);
 		},
 
 		testUnaryMessage: function(){
@@ -39,16 +58,23 @@ st.class("RemoteObjectTester", {
 			st.tests.assert(remoteObjectClassName._equals(st.string("Object")));
 		},
 		
-		testRemoteClassNameEquality: function(){
-			var remoteClass = st.Object.newOnServer()._class();
-			st.tests.assert(remoteClass.isRemote());
-			var objectClass = st.Object;
-			st.tests.assert(remoteClass.name()._equals(objectClass.name()));
-		},
-		
-		testRemoteObjectIdentity: function (){
+		testRemoteObjectIdentity: function(){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.yourself()._equals(remoteObject));
+		},
+		
+		testObjectParameter: function(){
+			var remoteObject = st.OrderedCollection.newOnServer();
+			var newObject = st.Object._new();
+			var returnValue = remoteObject.add_(newObject);
+			st.tests.assert(returnValue._equals(newObject));
+		},
+		
+		testServerSide: function (){
+			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.newOnServer();
+			if (!remoteTestCase.runTests()._unbox()){
+				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
+			}
 		}
 
 	}

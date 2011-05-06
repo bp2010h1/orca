@@ -1,5 +1,5 @@
 
-st.class('A', {
+st.klass('A', {
 	instanceVariables: ['foo'],
 	instanceMethods: {
 		initialize: function() {
@@ -25,14 +25,14 @@ st.class('A', {
 	}
 });
 
-st.class('B', {
+st.klass('B', {
 	superclass: st.A,
 	instanceMethods: {
 		testMethod2: function(num) { 
 			return num; 
 		},
 		setTest: function(num) {
-			return st.super('setTest')(num);
+			return st.supa('setTest')(num);
 		},
 		lastName: function() {
 			return this._theClass.lastName();
@@ -41,7 +41,7 @@ st.class('B', {
 	classInstanceVariables: ['size'],
 	classMethods: {
 		myAge: function() {
-			return st.super('myAge')();
+			return st.supa('myAge')();
 		},
 		lastName: function() {
 			return 'Skywalker';
