@@ -222,15 +222,28 @@
 			}
 		};
 		
-		var newClass = createMetaclassAndInstantiate(); //createClassAndLinkPrototypes();
-		
-		addVariables(newClass);
-		addMethods(newClass);
-		
-		this[classname] = newClass;
-		home.classes.push(newClass);
-		
-		return newClass;
+		if((classname in this) == false) {
+			// create a new class if it does not yet exist
+			var newClass = createMetaclassAndInstantiate();
+
+			addVariables(newClass);
+			addMethods(newClass);
+
+			this[classname] = newClass;
+			home.classes.push(newClass);
+
+			return newClass;	
+		}
+		else {
+			// the class does already exist
+			// we will use the given parameters to extend the class
+			var theClass = this[classname];
+			
+			addVariables(theClass);
+			addMethods(theClass);
+			
+			return theClass;
+		}		
 	};
 
 	// 
