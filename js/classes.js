@@ -189,7 +189,18 @@
 			
 			newClass._instances = new Array();
 			newClass._instancePrototype = st.isChrome() ?
-                                 (st.localEval("(function instance_of_st_" + classname.replace(/ /g, "_") + "() { })")) :
+                                 (st.localEval("(function " + (function() {
+										var constructorName;
+										
+										if(classname.endsWith(' class')) { 
+											constructorName = "class_" + classname.replace(/ class/g, ""); 
+										}
+										else { 
+											constructorName = "instance_of_" + classname; 
+										}
+										
+										return constructorName;
+									})() + "() { })")) :
                                  (function () { }); 
 			
 			if('superclass' in attrs) {
@@ -239,6 +250,10 @@
 			// we will use the given parameters to extend the class
 			var theClass = this[classname];
 			
+			if('superclass' in attrs) {
+				theClass._inheritFrom(attrs['superclass']);
+			}
+
 			addVariables(theClass);
 			addMethods(theClass);
 			
