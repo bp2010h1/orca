@@ -187,9 +187,9 @@
 						
 			home.createHelpers(newClass);
 			
-			newClass._instances = new Array();			
+			newClass._instances = new Array();
 			newClass._instancePrototype = st.isChrome() ?
-                                 (st.localEval("(function instance_of_st_" + classname + "() { })")) :
+                                 (st.localEval("(function instance_of_st_" + classname.replace(/ /g, "_") + "() { })")) :
                                  (function () { }); 
 			
 			if('superclass' in attrs) {

@@ -67,8 +67,8 @@
 	//st.ProtoObject._inheritFrom(st.doesNotUnderstandClass);
 
 	// finally inherit Metaclass from ClassDescription
-	st.Metaclass._inheritFrom(st.Object);
-	st.Class._inheritFrom(st.Object);
+	st.Metaclass._inheritFrom(st.ClassDescription);
+	st.Class._inheritFrom(st.ClassDescription);
 
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
 	for (aClass in st.klasses) {
