@@ -22,6 +22,19 @@
 
 	if (!("MESSAGE_SEND_URL" in home)) home.MESSAGE_SEND_URL = "send";
 	
+	
+	// Set the ILLEGAL_GLOBAL_HANDLER to allow remote-object creation
+	var standardIllegalGlobalHandler = home.ILLEGAL_GLOBAL_HANDLER;
+	st.ILLEGAL_GLOBAL_HANDLER = function (globalName) {
+		if (typeof globalName === "string") {
+			var referredClass = ReferredClass._newInstance();
+			referredClass._name = globalName;
+			return referredClass;
+		} else if (standardIllegalGlobalHandler !== "undefined") {
+			standardIllegalGlobalHandler(globalName);
+		}
+	}
+	
 	// Set the message-handler to handle remote-message-calls
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
 	st.communication.MESSAGE_HANDLER = function(message){
@@ -163,7 +176,7 @@
 		return reachableObjectMap[anIdentifier];
 	};
 	
-	// Class, that will ...
+	// Proxy class for objects living on the server
 	st.klass("OrcaRemoteObject", {
 		superclass: st.doesNotUnderstandClass,
 		instanceVariables: ['_remoteID'],
@@ -180,8 +193,27 @@
 			}
 		}
 	});
-	// Remove the OrcaBox class from the st-namespace, since remoteObjects are only created here
+	
+	// A class that can only be used for creating remote obects on the server
+	// ReferredClass should only implement methods do indicate its a class and Object's newOnServer and asRemote
+	st.klass("ReferredClass", {
+		superclass: st.doesNotUnderstandClass,
+		instanceVariables: ["_name"],
+		instanceMethods: {
+			newOnServer: function() {return st.Object.newOnServer.apply(this, arguments)},
+			asRemote: function() {return st.Object.asRemote.apply(this, arguments)},
+			halt: function() {return st.Object.halt.apply(this, arguments)},
+			isBehavior: function() {return st.ProtoObject.isBehavior.apply(this, arguments)},
+			doesNotUnderstand_: function() {return st.Object.doesNotUnderstand_.apply(this, arguments)},
+			isRemote: function() {return st.false},
+			isReferredClass: function() {return st.true},
+			name: function() {return st.string(this._name)}
+		}
+	});
+	// Remove the OrcaRemoteObject and ReferredClass classes from the st-namespace, since those are only created here
 	var OrcaRemoteObject = st.OrcaRemoteObject;
 	delete st.OrcaRemoteObject;
+	var ReferredClass = st.ReferredClass;
+	delete st.ReferredClass;
 
 })();
