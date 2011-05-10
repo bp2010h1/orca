@@ -81,17 +81,32 @@
 		}
 		func.originalThis = currentThis;
 		// Unboxing a real block must give the same function as when evaluating it.
-		b._original = b._evaluated = function() {
+		var originalEvaluated = function() {
 			// Use the callStack to get the object, this block should be executed in.
 			// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
 			return func.apply(currentThis, st.boxIterable(arguments));
-		}
+		};
+		b._original = b._evaluated = originalEvaluated;
 		b._constructor = function() {
 			// When using real blocks as constructor, don't unpack the constructor-parameters, 
 			// but box them to be sure (should not be necessary).
 			// Use the real 'this' instead of the currentThis from the artificial stack
 			return func.apply(this, st.boxIterable(arguments));
-		}
+		};
+		
+		
+		// TODO this code uses the namedFunction, which drops the context of the passed function...
+		/*
+		b._original = st.namedFunction("__nativeBlockFunction", originalEvaluated);
+		b._evaluated = st.namedFunction("__smalltalkBlock", originalEvaluated);
+		b._constructor = st.namedFunction("__blockConstructor", function() {
+			// When using real blocks as constructor, don't unpack the constructor-parameters, 
+			// but box them to be sure (should not be necessary).
+			// Use the real 'this' instead of the currentThis from the artificial stack
+			return func.apply(this, st.boxIterable(arguments));
+		});
+		*/
+		
 		return b;
 	};
 
@@ -154,10 +169,8 @@
 		};
 		
 		var createClassAndLinkPrototypes = function() {
-			var newClassPrototype = st.isChrome() ? st.localEval("(function st_" + classname + "() {})") : (function() {});
-			var newInstancePrototype = st.isChrome() ?
-                                 (st.localEval("(function instance_of_st_" + classname + "() { })")) :
-                                 (function () { });
+			var newClassPrototype = st.namedFunction("st_" + classname, function() {});
+			var newInstancePrototype = st.namedFunction("instance_of_st_" + classname, function() {});
 			var newClass;
 			
 			if ('superclass' in attrs) {
@@ -228,7 +241,7 @@
 	// 
 
 	var wrapFunction = function(aFunc) {
-		return WithDebugging(WithNonLocalReturn(aFunc));
+		return __debugging(__nonLocalReturn(aFunc));
 	}
 	// This is not part of the API, but must be exposed to access it in the eval()-call below
 	st.wrapFunction = wrapFunction;
@@ -257,7 +270,7 @@
 	};
 
 	// A wrapper to enable several debugging-functionalities
-	var WithDebugging = function(method) {
+	var __debugging = function(method) {
 		if (home.DEBUG) {
 			return function() {
 				try {
@@ -290,7 +303,7 @@
 	};
 
 	// hide real method behind a wrapper method which catches exceptions
-	var WithNonLocalReturn = function(method) {
+	var __nonLocalReturn = function(method) {
 		// this is a wrapper for method invocation
 		return function() {
 			var lastCallee = new NonLocalReturnException(this, method);

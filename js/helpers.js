@@ -7,7 +7,7 @@
 // st.curried(aFunction, anArrayOfArguments)
 // st.isInteger(aNumber)
 // st.escapeAll(aString)
-// st.isChrome()
+// st.namedFunction(functionNameAndCode)
 
 (function() {
 
@@ -52,16 +52,27 @@
 		return aNumber == integralPart;
 	};
 
-	home.isChrome = function() {
+	home.namedFunction = function(functionName, namedFunction) {
+		// Funny hack to tell the Chrome-debugger the correct function-name
+		// insert the function-name into the printed version of the given function
+		var returnValue;
+		if (isChrome()) {
+			returnValue = localEval("(function " + functionName + 
+				namedFunction.toString().substring(8) + ")");
+		} else {
+			returnValue = namedFunction;
+		}
+		return returnValue;
+	}
+
+	// Private functions
+
+	var isChrome = function() {
 		return /WebKit/g.test(navigator.userAgent);
 	}
 
-	home.localEval = function(evalString) {
+	var localEval = function(evalString) {
 		return (function() { return eval(evalString); })();
-	}
-
-	home.startsWithVowel = function(string) {
-		return /^[AEIOUaeiouYy]/g.test(string);
 	}
 
 })();

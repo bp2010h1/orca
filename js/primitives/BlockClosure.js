@@ -5,10 +5,10 @@
 
 	// We distinct an _evaluated-function and an _original-function in case of blocks.
 	// _evaluated is the version, that is evaluated in the squeak-world, _original is the function inside javascript
-	var blockValue = function() { 
+	var __blockValue = function() { 
 		return this._evaluated.apply(this, st.toArray(arguments)); };
 
-	var createInstance = function() {
+	var __createInstance = function() {
 		// This is done to enable varargs-parameters for constructor-parameters
 		// First bind all constructor-parameters, then call the curried function without arguments
 		// (Bind the curried function to the original function itself. Seemed necessary.)
@@ -25,13 +25,13 @@
 		},
 		
 		// Up to 4 arguments, the Squeak-methods implemented
-		value: blockValue,
-		value_: blockValue,
-		value_value_: blockValue,
-		value_value_value_: blockValue,
-		value_value_value_value_: blockValue,
+		value: __blockValue,
+		value_: __blockValue,
+		value_value_: __blockValue,
+		value_value_value_: __blockValue,
+		value_value_value_value_: __blockValue,
 		valueWithArguments_: function(args) {
-			return this._callFunction(blockValue, args);
+			return this._callFunction(__blockValue, args);
 		},
 		
 		whileTrue_: function(anotherBlock) {
@@ -57,20 +57,20 @@
 		},
 		
 		// Up to 9 parameters for direct constructor call
-		jsNew: createInstance,
-		jsNew_: createInstance,
-		jsNew_with_: createInstance,
-		jsNew_with_with_: createInstance,
-		jsNew_with_with_with_: createInstance,
-		jsNew_with_with_with_with_: createInstance,
-		jsNew_with_with_with_with_with_: createInstance,
-		jsNew_with_with_with_with_with_with_: createInstance,
-		jsNew_with_with_with_with_with_with_with_: createInstance,
-		jsNew_with_with_with_with_with_with_with_with_: createInstance,
+		jsNew: __createInstance,
+		jsNew_: __createInstance,
+		jsNew_with_: __createInstance,
+		jsNew_with_with_: __createInstance,
+		jsNew_with_with_with_: __createInstance,
+		jsNew_with_with_with_with_: __createInstance,
+		jsNew_with_with_with_with_with_: __createInstance,
+		jsNew_with_with_with_with_with_with_: __createInstance,
+		jsNew_with_with_with_with_with_with_with_: __createInstance,
+		jsNew_with_with_with_with_with_with_with_with_: __createInstance,
 		
 		// Any arguments as array
 		jsNewWithArgs_: function(args) {
-			return this._callFunction(createInstance, args);
+			return this._callFunction(__createInstance, args);
 		}
 	});
 
