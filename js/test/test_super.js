@@ -53,5 +53,5 @@ st.klass("SuperTester", {
 
 });
 
-st.SuperTester._newInstance();
+supinst = st.SuperTester._newInstance();
 
