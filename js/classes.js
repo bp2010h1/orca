@@ -187,8 +187,10 @@
 						
 			home.createHelpers(newClass);
 			
-			newClass._instances = new Array();
-			newClass._instancePrototype = function() { instanceCount++; this._instanceNumber = instanceCount; };
+			newClass._instances = new Array();			
+			newClass._instancePrototype = st.isChrome() ?
+                                 (st.localEval("(function instance_of_st_" + classname + "() { })")) :
+                                 (function () { }); 
 			
 			if('superclass' in attrs) {
 				newClass._inheritFrom(attrs.superclass);
