@@ -188,20 +188,13 @@
 			home.createHelpers(newClass);
 			
 			newClass._instances = new Array();
-			newClass._instancePrototype = st.isChrome() ?
-                                 (st.localEval("(function " + (function() {
-										var constructorName;
-										
-										if(classname.endsWith(' class')) { 
-											constructorName = "class_" + classname.replace(/ class/g, ""); 
-										}
-										else { 
-											constructorName = "instance_of_" + classname; 
-										}
-										
-										return constructorName;
-									})() + "() { })")) :
-                                 (function () { }); 
+			newClass._instancePrototype = st.isChrome() 
+								? (st.localEval("(function " + 
+										(classname.endsWith(' class') 
+											? "class_" + classname.replace(/ class/g, "")
+											: "instance_of_" + classname
+										) + "() { })")) 
+								: (function () { }); 
 			
 			if('superclass' in attrs) {
 				newClass._inheritFrom(attrs.superclass);
