@@ -108,7 +108,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = st.communication.loadScript("file/js/test/" + scriptName);
+			tester = st.communication.evalScript("file/js/test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});

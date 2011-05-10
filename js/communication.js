@@ -8,8 +8,8 @@
 // st.communication.send(data)
 // st.communication.sendAndWait(data)
 // st.communication.handleMessage(content, status)
-// st.GET(path)
-// st.loadScript(path)
+// st.communication.evalScript(path)
+// st.communication.addScriptTags(arrayOfStrings)
 
 // (st.setup_session_id(int) can be called only once)
 
@@ -79,20 +79,17 @@
 		return result;
 	};
 
-	home.GET = function(path) {
+	// Load the resource and evaluate it in global context. Return the evaluated result.
+	home.evalScript = function(path) {
+		var script = null;
 		var req = createRequest();
-		req.open("GET", fullURL(path), false);
+		req.open("GET", fullURLWithoutId(path), false);
 		req.send(null);
 		if (req.status == 200) {
-			return req.responseText;
+			script = req.responseText;
 		} else {
 			throw "Could not load file: " + path;
 		}
-	};
-
-	// Load the resource and evaluate it in global context. Return the evaluated result.
-	home.loadScript = function(path) {
-		var script = home.GET(path);
 		// The scripts need global context
 		return (function() { return window.eval(script); })();
 	};
@@ -101,22 +98,11 @@
 		var i = 0;
 		var callback = function() {
 			if (i < scriptNames.length) {
-				home.addScriptTag(scriptNames[i++], callback);
+				addScriptTag(scriptNames[i], callback);
+				i++;
 			}
 		};
 		callback();
-	};
-
-	home.addScriptTag = function(url, callback) {
-		var script = document.createElement('script');
-		var url = fullURL(url);
-		script.type = 'text/javascript';
-		script.language = "javascript";
-		script.onreadystatechange = callback;
-		script.onload = callback;
-		script.src = url;
-		
-		document.getElementsByTagName('HEAD')[0].appendChild(script);
 	};
 
 	home.setup_session_id = function(id) {
@@ -129,6 +115,18 @@
 	// 
 	// Private functions
 	// 
+
+	var addScriptTag = function(url, callback) {
+		var script = document.createElement('script');
+		var url = fullURLWithoutId(url);
+		script.type = 'text/javascript';
+		script.language = "javascript";
+		script.onreadystatechange = callback;
+		script.onload = callback;
+		script.src = url;
+		
+		document.getElementsByTagName('HEAD')[0].appendChild(script);
+	};
 
 	var sendAndWait = function(data, url) {
 		if (data){
@@ -153,15 +151,28 @@
 		if (session_id == -1) {
 			throw "Session-ID has not been set up yet!";
 		}
-		if (/^http(s)?:\/\//.test(urlPath)){
+		if (isExternal(urlPath)) {
+			return urlPath;
+		}
+		return fullURLWithoutId(urlPath) + "?id=" + session_id;
+	};
+
+	// Skip adding the session-id when loading static files.
+	// This way, the browser identifies the files as same files and keeps breakpoints
+	var fullURLWithoutId = function(urlPath) {
+		if (isExternal(urlPath)) {
 			return urlPath;
 		}
 		var baseUrl = document.location.href;
 		if (!(/\/$/.test(baseUrl))){
 			baseUrl = baseUrl + "/";
 		}
-		return baseUrl + urlPath + "?id=" + session_id;
-	};
+		return baseUrl + urlPath;
+	}
+
+	var isExternal = function(urlPath) {
+		return (/^http(s)?:\/\//.test(urlPath));
+	}
 
 	var createCometHandler = function() {
 		var request = null;
