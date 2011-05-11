@@ -5,10 +5,11 @@
 // API:
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
-// String.prototype.endsWidth(aSubString)
-// st.isInteger(aNumber)
 // st.escapeAll(aString)
-// st.namedFunction(functionNameAndCode)
+// st.isInteger(aNumber)
+// String.prototype.endsWidth(aSubString)
+// st.isChrome()
+// st.localEval(aString)
 
 (function() {
 
@@ -52,31 +53,16 @@
 		var integralPart = parseInt(aNumber);
 		return aNumber == integralPart;
 	};
-	
+
 	String.prototype.endsWith = function(aSubString) {
 		return (this.match(aSubString + "$") == aSubString);
 	};
 
-	home.namedFunction = function(functionName, namedFunction) {
-		// Funny hack to tell the Chrome-debugger the correct function-name
-		// insert the function-name into the printed version of the given function
-		var returnValue;
-		if (isChrome()) {
-			returnValue = localEval("(function " + functionName + 
-				namedFunction.toString().substring(8) + ")");
-		} else {
-			returnValue = namedFunction;
-		}
-		return returnValue;
-	}
-
-	// Private functions
-
-	var isChrome = function() {
+	home.isChrome = function() {
 		return /WebKit/g.test(navigator.userAgent);
 	}
 
-	var localEval = function(evalString) {
+	home.localEval = function(evalString) {
 		return (function() { return eval(evalString); })();
 	}
 

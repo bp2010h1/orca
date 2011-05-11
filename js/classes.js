@@ -93,24 +93,121 @@
 			// Use the real 'this' instead of the currentThis from the artificial stack
 			return func.apply(this, st.boxIterable(arguments));
 		};
-		
-		
-		// TODO this code uses the namedFunction, which drops the context of the passed function...
-		/*
-		b._original = st.namedFunction("__nativeBlockFunction", originalEvaluated);
-		b._evaluated = st.namedFunction("__smalltalkBlock", originalEvaluated);
-		b._constructor = st.namedFunction("__blockConstructor", function() {
-			// When using real blocks as constructor, don't unpack the constructor-parameters, 
-			// but box them to be sure (should not be necessary).
-			// Use the real 'this' instead of the currentThis from the artificial stack
-			return func.apply(this, st.boxIterable(arguments));
-		});
-		*/
-		
 		return b;
 	};
 
-	home.createHelpers = function(newClass) {
+	// This function creates a class with a given name and attributes.
+	home.klass = function(classname, attrs) {
+		var addVariables = function(newClass) {
+			if('instanceVariables' in attrs) {
+				newClass._addInstanceVariables(attrs.instanceVariables, null);
+			}
+		};
+		
+		var addMethods = function(newClass) {
+			if('instanceMethods' in attrs) {
+				newClass._addInstanceMethods(attrs.instanceMethods);
+			}
+		};
+		
+		if((classname in this) == false) {
+			// create a new class if it does not yet exist
+			var newClass = createMetaclassAndInstantiate(classname, attrs);
+
+			addVariables(newClass);
+			addMethods(newClass);
+
+			this[classname] = newClass;
+			home.classes.push(newClass);
+
+			return newClass;	
+		}
+		else {
+			// the class does already exist
+			// we will use the given parameters to extend the class
+			var theClass = this[classname];
+			alert(classname);
+			if('superclass' in attrs) {
+//				theClass._inheritFrom(attrs['superclass']);
+			}
+
+			addVariables(theClass);
+			return null;
+			addMethods(theClass);
+			
+			return theClass;
+		}
+	};
+
+	// 
+	// Private functions
+	// 
+
+	var createMetaclassAndInstantiate = function(classname, attrs) {
+		var newClass;
+		var metaClass;
+		
+		if(classname.endsWith(' class')) {
+			// in case the class is a metaclass, it is
+			// an instance of MetaClass
+			metaClass = st['Metaclass'];
+		}
+		else {
+			var metaSuperClass;
+			
+			if ('superclass' in attrs) {
+				if(attrs.superclass._classname.endsWith(' class'))
+					metaSuperClass = attrs.superclass;
+				else
+					metaSuperClass = st[attrs.superclass._classname + ' class'];
+			}
+			else {
+				// if there is no superclass, the metaSuperClass is Class
+				// this is important for ProtoObject class superclass
+				metaSuperClass = st['Class'];
+			}
+		
+			// metaclasses are actually anonymous but when getting accessed
+			// the naming convention for class "X" is "X class"
+			metaClass = st.klass(classname + ' class', {
+					superclass: metaSuperClass,
+					instanceVariables: attrs.classVariables,
+					instanceMethods: attrs.classMethods
+			});				
+		}
+
+		newClass = metaClass._newInstance();
+					
+		home.createHelpers(newClass);
+		
+		newClass._instances = new Array();
+		newClass._instancePrototype = st.isChrome() 
+							? (st.localEval("(function " + 
+									(classname.endsWith(' class') 
+										? "class_" + classname.replace(/ class/g, "")
+										: "instance_of_" + classname
+									) + "() { })")) 
+							: (function () { }); 
+		
+		if('superclass' in attrs) {
+			newClass._inheritFrom(attrs.superclass);
+		}
+		
+		newClass._newInstance = function() {
+			var instance = new newClass._instancePrototype();
+			instanceCount++; 
+			instance._instanceNumber = instanceCount;
+			newClass._instances.push(instance);
+			return instance;
+		};
+
+		newClass._addInstanceVariables(['_theClass'], newClass);
+		newClass._classname = classname;
+		
+		return newClass;
+	};
+
+	var createHelpers = function(newClass) {
 		var createMethod = function(aPrototype, methodName, method) {
 			aPrototype[methodName] = wrapFunction(method);
 			aPrototype[methodName].methodName = methodName;
@@ -161,117 +258,6 @@
 			}
 		}
 	};
-	
-	// This function creates a class with a given name and attributes.
-	home.klass = function(classname, attrs) {
-		var createMetaclassAndInstantiate = function() {
-			var newClass;
-			var metaClass;
-			
-			if(classname.endsWith(' class')) {
-				// in case the class is a metaclass, it is
-				// an instance of MetaClass
-				metaClass = st['Metaclass'];
-			}
-			else {
-				var metaSuperClass;
-				
-				if ('superclass' in attrs) {
-					if(attrs.superclass._classname.endsWith(' class'))
-						metaSuperClass = attrs.superclass;
-					else
-						metaSuperClass = st[attrs.superclass._classname + ' class'];
-				}
-				else {
-					// if there is no superclass, the metaSuperClass is Class
-					// this is important for ProtoObject class superclass
-					metaSuperClass = st['Class'];
-				}
-			
-				// metaclasses are actually anonymous but when getting accessed
-				// the naming convention for class "X" is "X class"
-				metaClass = st.klass(classname + ' class', {
-						superclass: metaSuperClass,
-						instanceVariables: attrs.classVariables,
-						instanceMethods: attrs.classMethods
-				});				
-			}
-
-			newClass = metaClass._newInstance();
-						
-			home.createHelpers(newClass);
-			
-			newClass._instances = new Array();
-			newClass._instancePrototype = st.isChrome() 
-								? (st.localEval("(function " + 
-										(classname.endsWith(' class') 
-											? "class_" + classname.replace(/ class/g, "")
-											: "instance_of_" + classname
-										) + "() { })")) 
-								: (function () { }); 
-			
-			if('superclass' in attrs) {
-				newClass._inheritFrom(attrs.superclass);
-			}
-			
-			newClass._newInstance = function() {
-			  	var instance = new newClass._instancePrototype();
-	          	instanceCount++; 
-				instance._instanceNumber = instanceCount;
-				newClass._instances.push(instance);
-				return instance;
-			};
-
-			newClass._addInstanceVariables(['_theClass'], newClass);
-			newClass._classname = classname;
-			
-			return newClass;
-		};
-		
-		var addVariables = function(newClass) {
-			if('instanceVariables' in attrs) {
-				newClass._addInstanceVariables(attrs.instanceVariables, null);
-			}
-		};
-		
-		var addMethods = function(newClass) {
-			if('instanceMethods' in attrs) {
-				newClass._addInstanceMethods(attrs.instanceMethods);
-			}
-		};
-		
-		if((classname in this) == false) {
-			// create a new class if it does not yet exist
-			var newClass = createMetaclassAndInstantiate();
-
-			addVariables(newClass);
-			addMethods(newClass);
-
-			this[classname] = newClass;
-			home.classes.push(newClass);
-
-			return newClass;	
-		}
-		else {
-			// the class does already exist
-			// we will use the given parameters to extend the class
-			var theClass = this[classname];
-			alert(classname);
-			if('superclass' in attrs) {
-//				theClass._inheritFrom(attrs['superclass']);
-			}
-
-			addVariables(theClass);
-			return null;
-			addMethods(theClass);
-			
-			return theClass;
-		}		
-	};
-
-	// 
-	// Private functions
-	// 
 
 	var wrapFunction = function(aFunc) {
 		return __debugging(__nonLocalReturn(aFunc));
@@ -357,7 +343,7 @@
 			}
 		};
 	};
-	
+
 	/*********** <PRELOAD> ********************/
 
 	var classStub = function(classname) { 
@@ -385,7 +371,6 @@
 
 		return home[classname];
 	}
-
 
 	classStub('Metaclass');
 	classStub('Class');
