@@ -177,8 +177,7 @@
 		}
 
 		newClass = metaClass._newInstance();
-					
-		home.createHelpers(newClass);
+		createHelpers(newClass);
 		
 		newClass._instances = new Array();
 		newClass._instancePrototype = st.isChrome() 
@@ -366,8 +365,7 @@
 		}
 
 		home[classname]._instancePrototype.prototype._theClass = home[classname];
-		
-		home.createHelpers(home[classname]);
+		createHelpers(home[classname]);
 
 		return home[classname];
 	}
