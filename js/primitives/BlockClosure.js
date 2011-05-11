@@ -71,7 +71,11 @@
 		// Any arguments as array
 		jsNewWithArgs_: function(args) {
 			return this._callFunction(__createInstance, args);
-		}
+		},
+		cull_ : function (firstargs) {
+			/* For Javascript functions it doesn't matters how many arguments are expected and used; and we can't check it */
+			return this.value_(firstargs);
+		} 
 	});
 
 })();
