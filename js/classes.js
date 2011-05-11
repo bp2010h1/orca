@@ -242,12 +242,13 @@
 			// the class does already exist
 			// we will use the given parameters to extend the class
 			var theClass = this[classname];
-			
+			alert(classname);
 			if('superclass' in attrs) {
-				theClass._inheritFrom(attrs['superclass']);
+//				theClass._inheritFrom(attrs['superclass']);
 			}
 
 			addVariables(theClass);
+			return null;
 			addMethods(theClass);
 			
 			return theClass;
@@ -365,6 +366,8 @@
 		}
 
 		home[classname]._instancePrototype.prototype._theClass = home[classname];
+		
+		home.createHelpers(home[classname]);
 
 		return home[classname];
 	}
