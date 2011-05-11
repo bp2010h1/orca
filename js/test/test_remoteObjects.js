@@ -70,12 +70,34 @@ st.klass("RemoteObjectTester", {
 			st.tests.assert(returnValue._equals(newObject));
 		},
 		
+		testNewOnServerWithNotTranslatedButReferredClasses: function (){
+			// assumes that OMeta2Base is not translated
+			if (st.OMeta2Base === undefined) {
+					// setup but only for this test case
+					st.__defineGetter__("OMeta2Base", function() {
+						return st.ILLEGAL_GLOBAL_HANDLER("OMeta2Base");
+					});
+																										
+					var referredClass = st.OMeta2Base;
+					st.tests.assert(referredClass.isReferredClass() === st.true);
+          
+					var remoteClass = referredClass.asRemote();
+					st.tests.assert(remoteClass.isRemote() === st.true);
+					
+					var className = remoteClass.name();
+					st.tests.assert(st.unbox(className) === "OMeta2Base");
+          
+					var remoteInstance = referredClass.newOnServer();
+					st.tests.assert(remoteInstance.isRemote() === st.true);
+			}
+		},
+		
 		testServerSide: function (){
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.newOnServer();
 			if (!remoteTestCase.runTests()._unbox()){
 				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
 			}
-		}
+		}		
 
 	}
 

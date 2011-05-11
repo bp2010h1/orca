@@ -5,6 +5,7 @@
 // API:
 // st.toArray(anIterable)
 // st.curried(aFunction, anArrayOfArguments)
+// String.prototype.endsWidth(aSubString)
 // st.isInteger(aNumber)
 // st.escapeAll(aString)
 // st.namedFunction(functionNameAndCode)
@@ -50,6 +51,10 @@
 		if (isNaN(aNumber)) return false;
 		var integralPart = parseInt(aNumber);
 		return aNumber == integralPart;
+	};
+	
+	String.prototype.endsWith = function(aSubString) {
+		return (this.match(aSubString + "$") == aSubString);
 	};
 
 	home.namedFunction = function(functionName, namedFunction) {

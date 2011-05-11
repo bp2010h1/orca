@@ -38,6 +38,7 @@
 			testResults.fail.length, testResults.error.length);
 	};
 
+
 	home.assert = function (condition, exception_message){
 		if (!condition && condition !== st.false) {
 			throw new AssertionFail(exception_message);
