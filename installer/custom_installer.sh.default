@@ -19,4 +19,4 @@ CONFIG="ConfigurationOfOrca"
 
 # Add the parameterlesss '-a' switch to also create an archive of the installed files
 
-`dirname $0`/installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG" -a
+`dirname $0`/installer.sh -u "$USER" -p "$PW" -v "$VM" -c "$CONFIG"
