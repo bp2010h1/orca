@@ -45,10 +45,6 @@
 			return st.nil;
 		}
 		if (!nativeObject._isBoxedObject) {
-			var pooled = objectPool[nativeObject];
-			if (pooled != null) {
-				return pooled;
-			}
 			var value;
 			switch( typeof(nativeObject) ) {
 				case "number": value = home.number(nativeObject); break;
@@ -65,7 +61,6 @@
 				default:
 					throw "Could not box creepy object: " + nativeObject;
 			}
-			objectPool[nativeObject] = value;
 			return value;
 		}
 		// nativeObject is already boxed!
@@ -98,19 +93,27 @@
 
 	// Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 	// Most functions are used in translated code directly, to avoid switch-statement in st.box()
+
 	// (Instead of bool(), compiled code uses st.true/st.false directly. bool() is used in kernel_primitives.js etc.)
-
 	home.bool = function(aBool) { if (aBool) { return st.true; } else { return st.false; } };
-
-	home.character = function(aString) { return st.Character._wrapping(aString); };
-
-	home.string = function(aString) { return st.ByteString._wrapping(aString); };
-
-	home.number = function(aNumber) { return st.Float._wrapping(aNumber); };
-
 	home.array = function(anArray) { return st.Array._wrapping(anArray); };
-
 	home.object = function(anObject) { return OrcaBox._wrapping(anObject); };
+
+	home.character = function(aString) { 
+		var result = objectPool[aString];
+		if (result) return result;
+		objectPool[aNumber] = result;
+		return st.Character._wrapping(aString); };
+	home.string = function(aString) { 
+		var result = objectPool[aString];
+		if (result) return result;
+		objectPool[aNumber] = result;
+		return st.ByteString._wrapping(aString); };
+	home.number = function(aNumber) { 
+		var result = objectPool[aNumber];
+		if (result) return result;
+		objectPool[aNumber] = result;
+		return st.Float._wrapping(aNumber); };
 
 	home.boundBlock = function(func, that) {
 		// if we box a javascript function into a smalltalk block we must bind it on creation
