@@ -12,7 +12,7 @@
 		// This is done to enable varargs-parameters for constructor-parameters
 		// First bind all constructor-parameters, then call the curried function without arguments
 		// (Bind the curried function to the original function itself. Seemed necessary.)
-		// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and squeaky.js -> block())
+		// Constructor-arguments are determined polymorphically (set in boxing.js -> boundBlock() and classes.js -> block())
 		var newObject = new (st.curried(this._constructor, st.toArray(arguments))) ();
 		st.unboxSlots(newObject); // unbox each slot on the new object
 		return st.box(newObject); // but box the object itself
