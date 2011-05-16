@@ -45,21 +45,28 @@
 			return st.nil;
 		}
 		if (!nativeObject._isBoxedObject) {
+			var pooled = objectPool[nativeObject];
+			if (pooled != null) {
+				return pooled;
+			}
+			var value;
 			switch( typeof(nativeObject) ) {
-				case "number": return home.number(nativeObject); break;
-				case "string": return home.string(nativeObject); break;
-				case "boolean": return home.bool(nativeObject); break;
-				case "function": return home.boundBlock(nativeObject, that); break;
+				case "number": value = home.number(nativeObject); break;
+				case "string": value = home.string(nativeObject); break;
+				case "boolean": value = home.bool(nativeObject); break;
+				case "function": value = home.boundBlock(nativeObject, that); break;
 				case "object":
 					if (isArrayObject(nativeObject)) {
-						return home.array(nativeObject);
+						value = home.array(nativeObject);
 					} else {
-						return home.object(nativeObject);
+						value = home.object(nativeObject);
 					}
 					break;
 				default:
-					alert("Could not box creepy object: " + nativeObject);
+					throw "Could not box creepy object: " + nativeObject;
 			}
+			objectPool[nativeObject] = value;
+			return value;
 		}
 		// nativeObject is already boxed!
 		return nativeObject;
@@ -127,6 +134,10 @@
 	//
 	// Private functions
 	//
+
+	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
+	// canonicalized objects and object-identity
+	var objectPool = [];
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
