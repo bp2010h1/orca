@@ -102,20 +102,20 @@
 	home.character = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
-		objectPool[aString] = result;
 		result = st.Character._wrapping(aString);
+		objectPool[aString] = result;
 		return result; };
 	home.string = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
-		objectPool[aString] = result;
 		result = st.ByteString._wrapping(aString);
+		objectPool[aString] = result;
 		return result; };
 	home.number = function(aNumber) { 
 		var result = objectPool[aNumber];
 		if (result) return result;
+		result = st.Float._wrapping(aNumber);
 		objectPool[aNumber] = result;
-		result = st.Float._wrapping(aString);
 		return result; };
 
 	home.boundBlock = function(func, that) {
