@@ -2,7 +2,7 @@
 (function() {
 
 	st.Exception._addInstanceMethods({
-		signal: function() { 
+		signal: function(aString) { 
 			throw this;
 		}
 	});
