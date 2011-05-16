@@ -86,9 +86,7 @@
 			 	"&message=" + st.escapeAll(serializeOrExpose(message));
 		} else {
 			if (st.unbox(receiver.isBehavior())){
-				if (st.unbox(message.selector()) == "newOnServer") {
-					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
-				} else if (st.unbox(message.selector()) == "asRemote") {
+				if (st.unbox(message.selector()) == "asRemote") {
 					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
 				}
 			} 
@@ -195,12 +193,11 @@
 	});
 	
 	// A class that can only be used for creating remote obects on the server
-	// ReferredClass should only implement methods do indicate its a class and Object's newOnServer and asRemote
+	// ReferredClass should only implement methods do indicate its a class and Object's asRemote
 	st.klass("ReferredClass", {
 		superclass: st.doesNotUnderstandClass,
 		instanceVariables: ["_name"],
 		instanceMethods: {
-			newOnServer: function() {return st.Object.newOnServer.apply(this, arguments)},
 			asRemote: function() {return st.Object.asRemote.apply(this, arguments)},
 			halt: function() {return st.Object.halt.apply(this, arguments)},
 			isBehavior: function() {return st.ProtoObject.isBehavior.apply(this, arguments)},

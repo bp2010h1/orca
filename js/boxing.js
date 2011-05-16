@@ -45,21 +45,23 @@
 			return st.nil;
 		}
 		if (!nativeObject._isBoxedObject) {
+			var value;
 			switch( typeof(nativeObject) ) {
-				case "number": return home.number(nativeObject); break;
-				case "string": return home.string(nativeObject); break;
-				case "boolean": return home.bool(nativeObject); break;
-				case "function": return home.boundBlock(nativeObject, that); break;
+				case "number": value = home.number(nativeObject); break;
+				case "string": value = home.string(nativeObject); break;
+				case "boolean": value = home.bool(nativeObject); break;
+				case "function": value = home.boundBlock(nativeObject, that); break;
 				case "object":
 					if (isArrayObject(nativeObject)) {
-						return home.array(nativeObject);
+						value = home.array(nativeObject);
 					} else {
-						return home.object(nativeObject);
+						value = home.object(nativeObject);
 					}
 					break;
 				default:
-					alert("Could not box creepy object: " + nativeObject);
+					throw "Could not box creepy object: " + nativeObject;
 			}
+			return value;
 		}
 		// nativeObject is already boxed!
 		return nativeObject;
@@ -91,19 +93,30 @@
 
 	// Functions to bootstrap primitive values and wrap them into 'squeak'-objects
 	// Most functions are used in translated code directly, to avoid switch-statement in st.box()
+
 	// (Instead of bool(), compiled code uses st.true/st.false directly. bool() is used in kernel_primitives.js etc.)
-
 	home.bool = function(aBool) { if (aBool) { return st.true; } else { return st.false; } };
-
-	home.character = function(aString) { return st.Character._wrapping(aString); };
-
-	home.string = function(aString) { return st.ByteString._wrapping(aString); };
-
-	home.number = function(aNumber) { return st.Float._wrapping(aNumber); };
-
 	home.array = function(anArray) { return st.Array._wrapping(anArray); };
-
 	home.object = function(anObject) { return OrcaBox._wrapping(anObject); };
+
+	home.character = function(aString) { 
+		var result = objectPool[aString];
+		if (result) return result;
+		result = st.Character._wrapping(aString);
+		objectPool[aString] = result;
+		return result; };
+	home.string = function(aString) { 
+		var result = objectPool[aString];
+		if (result) return result;
+		result = st.ByteString._wrapping(aString);
+		objectPool[aString] = result;
+		return result; };
+	home.number = function(aNumber) { 
+		var result = objectPool[aNumber];
+		if (result) return result;
+		result = st.Float._wrapping(aNumber);
+		objectPool[aNumber] = result;
+		return result; };
 
 	home.boundBlock = function(func, that) {
 		// if we box a javascript function into a smalltalk block we must bind it on creation
@@ -127,6 +140,10 @@
 	//
 	// Private functions
 	//
+
+	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
+	// canonicalized objects and object-identity
+	var objectPool = [];
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
