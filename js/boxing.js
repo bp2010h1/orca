@@ -102,12 +102,12 @@
 	home.character = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
-		objectPool[aNumber] = result;
+		objectPool[aString] = result;
 		return st.Character._wrapping(aString); };
 	home.string = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
-		objectPool[aNumber] = result;
+		objectPool[aString] = result;
 		return st.ByteString._wrapping(aString); };
 	home.number = function(aNumber) { 
 		var result = objectPool[aNumber];
