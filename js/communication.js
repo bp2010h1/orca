@@ -3,9 +3,9 @@
 // Runtime depends on: console.js, helpers.js, server.js
 
 // API:
-// st.communication.connect()
 // st.communication.send(data)
-// st.communication.sendAndWait(data)
+// st.communication.sendForked(data)
+
 // st.communication.handleMessage(content, status)
 // st.communication.evalScript(path)
 // st.communication.addScriptTags(arrayOfStrings)
@@ -13,7 +13,7 @@
 // (st.setup_session_id(int) can be called only once)
 
 // Settings:
-// st.communication.XHR_PATH (string)
+// st.communication.STRING_PATH (string)
 // st.communication.MESSAGE_HANDLER (function(string))
 
 (function() {
@@ -26,7 +26,7 @@
 	// Settings
 	// 
 
-	if (!("XHR_PATH" in home)) home.XHR_PATH = "xhr";
+	if (!("STRING_PATH" in home)) home.STRING_PATH = "xhr";
 	if (!("MESSAGE_HANDLER" in home)) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
 		return eval(message); };
@@ -36,42 +36,27 @@
 	// 
 
 	var session_id = -1;
-	var request = null;
 
 	// 
 	// API functions
 	// 
 
-	home.connect = function() {
-		if (!isOpen()) {
-			var optionalArgument = '';
-			if (arguments[0] !== undefined) {
-				optionalArgument = "&answer=" + st.escapeAll(arguments[0]);
-			}
-			request = createRequest();
-			request.open("GET", fullURL(home.XHR_PATH) + optionalArgument , true);
-			request.onreadystatechange = function() {
-				if (request.readyState == 4) {
-					if (request.status == 200) {
-						var answer = home.handleMessage(request.responseText);
-						self.open(answer);
-					} else {
-						st.console.statusInfo("Disconnected Comet: " + request.responseText, request.status);
-					}
-				}
-			};
-			request.send(null);
-		}
-	};
-
 	home.send = function(data) {
-		if (isOpen())
-			return home.sendAndWait(data, home.XHR_PATH);
+		var result = doSend(data, true, "blocked");
+		// TODO call answerTo: handler
+		// return ...
 	};
 
-	home.sendAndWait = function(data, urlPath) {
-		if (isOpen())
-			return sendAndWait(data, urlPath);
+	home.sendForked = function(data) {
+		doSend(data, false, "forked", true);
+		return null;
+	};
+
+	home.setup_session_id = function(id) {
+		// Allow calling this function only once - delete after usage
+		delete home.setup_session_id;
+		st.console.log("This session-id is " + id);
+		session_id = id;
 	};
 
 	// Use the configured message-handler to evaluate and log the content
@@ -112,20 +97,53 @@
 		callback();
 	};
 
-	home.setup_session_id = function(id) {
-		// Allow calling this function only once - delete after usage
-		st.console.log("This session-id is " + id);
-		session_id = id;
-		delete home.setup_session_id;
-	};
-
 	// 
 	// Private functions
 	// 
 
-	var isOpen = function() {
-		return request ? true : false;
-	};
+	var doSend = function(data, isSynchronous, status, ignoreResponse) {
+		var request = createRequest();
+		var content = "status=" + st.escapeAll(status);
+		content += "message=" + st.escapeAll(data);
+		if (!ignoreResponse && !isSynchronous)
+			request.onreadystatechange = function() { answerToMessage(request); };
+		request.open("POST", fullURL(home.STRING_PATH), isSynchronous);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.send(content);
+		if (!ignoreResponse && isSynchronous)
+			return answerToMessage(request);
+		return request.responseText;
+	}
+
+	var answerToMessage = function(request) {
+		if (request.readyState == 4) {
+			if (request.status == 200) {
+				var response = /status=([^&]+)&message=([^&]+)/.test(request.responseText);
+				if (status && status.length >= 2) {
+					var status = response[0];
+					var message = response[1];
+					if (status == "answer") {
+						return message;
+					} else if (status == "blocked") {
+						var result = handleMessage(message);
+						return doSend(result, false, "answer");
+					} else if (stauts == "forked") {
+						if (true /* TODO check, whether we are waiting for ANY blocked send */) {
+							handleMessage(message); // Ignore result
+							return doSend("", true, "answer");
+						} else {
+							var result = doSend("", false , "answer");
+							handleMessage(message); // Ignore result
+							return result;
+						}
+					}
+				}
+				st.console.log("Illegal message received from the server: " + request.responseText);
+			} else {
+				st.console.statusInfo("Channel disconnected: " + request.responseText, request.status);
+			}
+		}
+	}
 
 	var addScriptTag = function(url, callback) {
 		var script = document.createElement('script');
@@ -137,17 +155,6 @@
 		script.src = url;
 		document.getElementsByTagName('HEAD')[0].appendChild(script);
 	};
-
-	var sendAndWait = function(data, url) {
-		if (data){
-			var synchronousRequest = createRequest();
-			synchronousRequest.open("POST", fullURL(url), false);
-			synchronousRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			synchronousRequest.send(data);
-			var result = synchronousRequest.responseText;
-			return result;
-		}
-	}
 
 	var createRequest = function() {
 		return new XMLHttpRequest();

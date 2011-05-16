@@ -86,7 +86,9 @@
 			 	"&message=" + st.escapeAll(serializeOrExpose(message));
 		} else {
 			if (st.unbox(receiver.isBehavior())){
-				if (st.unbox(message.selector()) == "asRemote") {
+				if (st.unbox(message.selector()) == "newOnServer") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
+				} else if (st.unbox(message.selector()) == "asRemote") {
 					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
 				}
 			} 
@@ -94,7 +96,7 @@
 				receiver.error_(string("Unexpected remote message send."));
 			}
 		}
-		answerString = st.communication.sendAndWait(data, home.MESSAGE_SEND_URL);
+		answerString = st.communication.send(data, home.MESSAGE_SEND_URL);
 		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteID": 4}, true ]
 		return convertAnswer(evalWrapped(answerString));
 	};
@@ -128,7 +130,7 @@
 			result += '"arguments": [';
 			var length = st.unbox(anObject._arguments().size());
 			for (var i=1; i<=length; i++) {
-				result += serializeOrExpose(anObject._arguments().at_(st.number(i)));
+				result += serializeOrExpose(anObject._arguments().at_(st.box(i)));
 				if (i !== length) result += ",";
 			}
 			result += "]";
@@ -154,7 +156,7 @@
 				return remoteObject;
 			}
 			if (anObject.error !== undefined && typeof anObject.error !== "function") {
-				return st.Error.signal_(st.string(anObject.error));
+				return st.Error.signal_(st.box(anObject.error));
 			}			
 			//Thesis: now, we have only primitive-Objects serialized?
 			return anObject;
@@ -169,7 +171,7 @@
 
 	var reachableObjectNamed = function (anIdentifier){
 		if (reachableObjectMap[anIdentifier] === undefined){
-			return st.Error.signal_(st.string("Returned an ReachableObject which does not exist on this Client."));
+			return st.Error.signal_(st.box("Returned an ReachableObject which does not exist on this Client."));
 		}
 		return reachableObjectMap[anIdentifier];
 	};
@@ -193,18 +195,19 @@
 	});
 	
 	// A class that can only be used for creating remote obects on the server
-	// ReferredClass should only implement methods do indicate its a class and Object's asRemote
+	// ReferredClass should only implement methods do indicate its a class and Object's newOnServer and asRemote
 	st.klass("ReferredClass", {
 		superclass: st.doesNotUnderstandClass,
 		instanceVariables: ["_name"],
 		instanceMethods: {
+			newOnServer: function() {return st.Object.newOnServer.apply(this, arguments)},
 			asRemote: function() {return st.Object.asRemote.apply(this, arguments)},
 			halt: function() {return st.Object.halt.apply(this, arguments)},
 			isBehavior: function() {return st.ProtoObject.isBehavior.apply(this, arguments)},
 			doesNotUnderstand_: function() {return st.Object.doesNotUnderstand_.apply(this, arguments)},
 			isRemote: function() {return st.false},
 			isReferredClass: function() {return st.true},
-			name: function() {return st.string(this._name)}
+			name: function() {return st.box(this._name)}
 		}
 	});
 	// Remove the OrcaRemoteObject and ReferredClass classes from the st-namespace, since those are only created here
