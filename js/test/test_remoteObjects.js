@@ -3,12 +3,12 @@ st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests"], ["new",
 
 st.klass("RemoteObjectTester", { 
 
-	superclass: st.Object,
 	classInstanceVariables: [ ],
 	instanceVariables: [ ],
 
-	instanceMethods: {
-		
+	instanceMethods: {	
+		setUp: function() {
+		},
 		testNewOnServer: function(){
 			var remoteObject = st.Object.newOnServer();
 			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.newOnServer() is not remote.");
@@ -25,7 +25,7 @@ st.klass("RemoteObjectTester", {
 			var remoteObject = st.Object.asRemote();
 			st.tests.assert(remoteObject.isBehavior() === st.true);
 		},
-
+		
 		testAsRemoteInstanceIsRemoteToo: function(){
 			var remoteObject = st.Object.asRemote();
 			var remoteInstance = remoteObject.new();

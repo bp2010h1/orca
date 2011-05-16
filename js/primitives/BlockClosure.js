@@ -82,6 +82,8 @@
 			} catch (e) {
 				if( e._class() == aKindOfError ) {
 					return  anExceptionalBlock.value();
+				}else {
+					throw e;
 				}
 			}
 		},

@@ -40,7 +40,7 @@
 
 
 	home.assert = function (condition, exception_message){
-		if (!condition && condition !== st.false) {
+		if (st.unbox(condition) != true) {
 			throw new AssertionFail(exception_message);
 		}
 	};
@@ -153,7 +153,11 @@
 			if (home.DEBUG_ON_ERROR) {
 				debugger;
 				// Step into this function to re-execute, what just has failed.
-				tryFunction();
+				try { 
+					tryFunction();
+				} catch (e) {
+					
+				}
 			}
 		}
 	};
