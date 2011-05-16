@@ -75,7 +75,24 @@
 		cull_ : function (firstargs) {
 			/* For Javascript functions it doesn't matters how many arguments are expected and used; and we can't check it */
 			return this.value_(firstargs);
-		} 
+		},
+		on_do_ : function ( aKindOfError, anExceptionalBlock) {
+			try {
+				 return  this.value();
+			} catch (e) {
+				if( e._class() == aKindOfError ) {
+					return  anExceptionalBlock.value();
+				}
+			}
+		},
+		ensure_ : function ( anotherBlock ) {
+			try {
+				return this.value();
+			}
+			catch (e) {
+				return  anotherBlock.value();
+			}
+		}
 	});
 
 })();
