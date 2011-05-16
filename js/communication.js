@@ -101,6 +101,9 @@
 	// Private functions
 	// 
 
+	// Increased with every send and decreased with every received "answer"
+	var pendingSends = 0;
+
 	var doSend = function(data, isSynchronous, status, ignoreResponse) {
 		var request = createRequest();
 		var content = "status=" + st.escapeAll(status);
@@ -109,6 +112,7 @@
 			request.onreadystatechange = function() { answerToMessage(request); };
 		request.open("POST", fullURL(home.STRING_PATH), isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		pendingSends++;
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
@@ -123,12 +127,17 @@
 					var status = response[0];
 					var message = response[1];
 					if (status == "answer") {
+						pendingSends--;
+						if (pendingSends < 0) {
+							pendingSends = 0;
+							st.console.log("Illegal state: Received more answers than sends!");
+						}
 						return message;
 					} else if (status == "blocked") {
 						var result = handleMessage(message);
 						return doSend(result, false, "answer");
-					} else if (stauts == "forked") {
-						if (true /* TODO check, whether we are waiting for ANY blocked send */) {
+					} else if (status == "forked") {
+						if (pendingSends >= 1) {
 							handleMessage(message); // Ignore result
 							return doSend("", true, "answer");
 						} else {
