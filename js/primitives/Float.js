@@ -8,6 +8,7 @@
 		_minus: function(other) { return st.number(st.unbox(this) - st.unbox(other)); },
 		_times: function(other) { return st.number(st.unbox(this) * st.unbox(other)); },
 		_slash: function(other) { return st.number(st.unbox(this) / st.unbox(other)); },
+		fractionPart: function(){ return this._minus(this.truncated()) },
 		floor: function() { return st.number(Math.floor(st.unbox(this))); },
 		rounded: function() { return st.number(Math.round(st.unbox(this))); },
 		_less: function(other) {
@@ -16,6 +17,7 @@
 		_greater: function(other) {
 			return st.bool(st.unbox(this) > st.unbox(other));
 		},
+		hash: function () { return this.truncated(); },
 		_less_equals: function(other) {
 			return st.bool(st.unbox(this) <= st.unbox(other));
 		},
