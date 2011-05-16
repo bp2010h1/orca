@@ -103,17 +103,20 @@
 		var result = objectPool[aString];
 		if (result) return result;
 		objectPool[aString] = result;
-		return st.Character._wrapping(aString); };
+		result = st.Character._wrapping(aString);
+		return result; };
 	home.string = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
 		objectPool[aString] = result;
-		return st.ByteString._wrapping(aString); };
+		result = st.ByteString._wrapping(aString);
+		return result; };
 	home.number = function(aNumber) { 
 		var result = objectPool[aNumber];
 		if (result) return result;
 		objectPool[aNumber] = result;
-		return st.Float._wrapping(aNumber); };
+		result = st.Float._wrapping(aString);
+		return result; };
 
 	home.boundBlock = function(func, that) {
 		// if we box a javascript function into a smalltalk block we must bind it on creation
