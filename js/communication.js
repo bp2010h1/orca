@@ -26,7 +26,7 @@
 	// Settings
 	// 
 
-	if (!("STRING_PATH" in home)) home.STRING_PATH = "xhr";
+	if (!("STRING_PATH" in home)) home.STRING_PATH = "message";
 	if (!("MESSAGE_HANDLER" in home)) home.MESSAGE_HANDLER = function(message) {
 		st.console.log("Received message: " + message);
 		return eval(message); };
