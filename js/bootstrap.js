@@ -41,7 +41,7 @@
 			"Or you implement the primitive in a Javascript-file in the primitives/-subfolder.\n" +
 			"The file must be called <name of the home-class of the primitive>.js and is included automatically.\n" +
 			"If it is not there, create it.";
-		alert(msg)
+		alert(msg);
 		throw msg;
 	};
 

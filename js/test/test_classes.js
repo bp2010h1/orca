@@ -87,6 +87,9 @@ tester = {
 	},
 	testMetaClassOfAClass : function() {
 		st.tests.assert(st['Object class'] == st.Object._class(), "The method class of a class doesn't work");
+	},
+	testSuperclassOfMetaclass : function() {
+//		st.tests.assert(st['Metaclass'].$superclass == st.Object._class(), "The method class of a class doesn't work");
 	}
 };
 

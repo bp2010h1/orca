@@ -185,16 +185,8 @@
 		}
 
 		newClass = metaClass._newInstance();
-		createHelpers(newClass);
-		
-		newClass._instances = new Array();
-		newClass._instancePrototype = st.isChrome() 
-							? (st.localEval("(function " + 
-									(classname.endsWith(' class') 
-										? "class_" + classname.replace(/ class/g, "")
-										: "instance_of_" + classname
-									) + "() { })")) 
-							: (function () { }); 
+
+		stubClass(newClass, classname);
 		
 		if('superclass' in attrs) {
 			newClass._inheritFrom(attrs.superclass);
@@ -203,20 +195,38 @@
 		else {
 			newClass._instancePrototype.prototype._theClass = newClass;
 		}
-		
-		newClass._newInstance = function() {
-			var instance = new newClass._instancePrototype();
-			instanceCount++; 
-			instance._instanceNumber = instanceCount;
-			newClass._instances.push(instance);
-			return instance;
-		};
 
-//		newClass._addInstanceVariables(['_theClass'], newClass);
-		newClass._classname = classname;
-		
 		return newClass;
 	};
+	
+	var stubClass = function(newClass, classname) {
+		newClass._classname = classname;
+		
+		newClass._instancePrototype = st.isChrome() 
+								? (st.localEval("(function " + 
+										(classname.endsWith(' class') 
+											? "class_" + classname.replace(/ class/g, "")
+											: "instance_of_" + classname
+										) + "() { })")) 
+								: (function () { });
+								
+		newClass._instances = new Array();
+		
+		newClass._newInstance = function() {
+			var instance = new this._instancePrototype();
+			instanceCount++; 
+			instance._instanceNumber = instanceCount;
+			this._instances.push(instance);
+			
+			return instance;				
+		}
+		
+
+		newClass._instancePrototype.prototype._theClass = newClass;
+		createHelpers(newClass);
+
+		return newClass;
+	}
 
 	var createHelpers = function(newClass) {
 		var createMethod = function(aPrototype, methodName, method) {
@@ -362,40 +372,11 @@
 
 	/*********** <PRELOAD> ********************/
 
-	var classStub = function(classname) { 
-		home[classname] = {
-			_classname: classname,
-			_instancePrototype: st.isChrome() 
-								? (st.localEval("(function " + 
-										(classname.endsWith(' class') 
-											? "class_" + classname.replace(/ class/g, "")
-											: "instance_of_" + classname
-										) + "() { })")) 
-								: (function () { }),
-			_instances: new Array(),
-			_newInstance: function() {
-				var instance = new this._instancePrototype();
-				this._instances.push(instance);
-				return instance;
-			},
-			_inheritFrom: function(superClass) {
-				this._instancePrototype.prototype = new superClass._instancePrototype();
-				this._instancePrototype.prototype._theClass = this;
-				
-				for (var i=0; i < this._instances.length; i++) {
-					this._instances[i].__proto__ = this._instancePrototype.prototype;
-				}
-			}
-		}
+	home.Metaclass = new Object();
+	stubClass(home.Metaclass, 'Metaclass');
 
-		home[classname]._instancePrototype.prototype._theClass = home[classname];
-		createHelpers(home[classname]);
-
-		return home[classname];
-	}
-
-	classStub('Metaclass');
-	classStub('Class');
+	home.Class = new Object();
+	stubClass(home.Class, 'Class');
 
 	home["Metaclass class"] = home.Metaclass._newInstance();
 	home["Metaclass class"]._instancePrototype = function() {};
