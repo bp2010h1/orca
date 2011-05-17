@@ -190,7 +190,6 @@
 		
 		if('superclass' in attrs) {
 			newClass._inheritFrom(attrs.superclass);
-			newClass.$superclass = attrs.superclass;
 		}
 		else {
 			newClass._instancePrototype.prototype._theClass = newClass;
@@ -273,12 +272,14 @@
 		}
 		
 		newClass._inheritFrom = function(superClass) {
-			this._instancePrototype.prototype = new superClass._instancePrototype();
+			this._instancePrototype.prototype = superClass._newInstance();
 			this._instancePrototype.prototype._theClass = this;
 
 			for (var i=0; i < this._instances.length; i++) {
 				this._instances[i].__proto__ = this._instancePrototype.prototype;
 			}
+			
+			this.$superclass = superClass;
 		}
 	};
 
