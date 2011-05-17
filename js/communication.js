@@ -84,10 +84,10 @@
 		
 		var request = st.createRequest();
 		var content = "status=" + st.escapeAll(status);
-		content += "message=" + st.escapeAll(data);
+		content += "&message=" + st.escapeAll(data);
 		if (!ignoreResponse && !isSynchronous)
 			request.onreadystatechange = function() { answerToMessage(request); };
-		request.open("POST", url, isSynchronous);
+		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		awaitedAnswers++;
 		request.send(content);
@@ -102,10 +102,10 @@
 	var answerToMessage = function(request) {
 		if (request.readyState == 4) {
 			if (request.status == 200) {
-				var response = /status=([^&]+)&message=([^&]+)/.test(request.responseText);
-				if (status && status.length >= 2) {
-					var status = response[0];
-					var message = response[1];
+				var response = /status=([^&]*)&message=([^&]*)/.exec(request.responseText);
+				if (response && response.length >= 2) {
+					var status = response[1];
+					var message = unescape(response[2]);
 					if (status == "answer") {
 						// "answerTo: (answer)"
 						awaitedAnswers--;
@@ -116,19 +116,19 @@
 						return message;
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
-						var result = handleMessage(message);
+						var result = home.handleMessage(message);
 						return doSend(result, false, "answer");
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
-						if (awaitedAnswers >= 1) {
+						if (awaitedAnswers >= 2) {
 							// Inside any blocking send from the client, a forked
 							// send from the server becomes blocking, because the clientInformation
 							// needs the opening connection to block
-							handleMessage(message); // Ignore result
+							home.handleMessage(message); // Ignore result
 							return doSend("", true, "answer");
 						} else {
 							var result = doSend("", false , "answer");
-							handleMessage(message); // Ignore result
+							home.handleMessage(message); // Ignore result
 							return result;
 						}
 					}

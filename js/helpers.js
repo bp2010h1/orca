@@ -71,7 +71,7 @@
 	}
 
 	home.globalEval = function(evalString) {
-		return (function() { return window.eval(script); })();
+		return (function() { return window.eval(evalString); })();
 	}
 
 	// Load the resource and evaluate it in global context. Return the evaluated result.
