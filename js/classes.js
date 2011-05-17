@@ -65,15 +65,26 @@
 
 	home.nonLocalReturn = function(value) {
 		var blockFunction = arguments.callee.caller;
-		var e = blockFunction.nonLocalReturnException;
-		e.nonLocalReturnValue = value;
-		throw e;
+		blockFunction.throwNonLocalReturnException(value);
 	};
 
 	home.block = function(func) {
 		var b = st.BlockClosure._newInstance();
-		func.nonLocalReturnException = home.peekCallStack();
-		var currentThis = arguments.callee.caller.originalThis;
+		var nonLocalReturnException = home.peekCallStack();
+    var blockContext = arguments.callee.caller;
+		func.throwNonLocalReturnException = function(value){
+	    // If this block is created inside another block after another message is on the call stack
+	    // the dispatch of the non local return has 2 dimensions:
+	    // 1) messages sent on the call stack
+	    // 2) blocks wrapped around blocks (because inner blocks may be created after further messages have been sent)
+	    if (blockContext.throwNonLocalReturnException) {
+	      blockContext.throwNonLocalReturnException(value);
+	    } else {
+	      nonLocalReturnException.nonLocalReturnValue = value;
+	      throw nonLocalReturnException;
+      }
+    };
+		var currentThis = blockContext.originalThis;
 		if (currentThis == undefined) {
 			// We are in the outer-most block of a method. The 'current this' is the top of the call-stack.
 			var callStackTop = home.peekCallStack();
