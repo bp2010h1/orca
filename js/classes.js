@@ -200,6 +200,9 @@
 			newClass._inheritFrom(attrs.superclass);
 			newClass.$superclass = attrs.superclass;
 		}
+		else {
+			newClass._instancePrototype.prototype._theClass = newClass;
+		}
 		
 		newClass._newInstance = function() {
 			var instance = new newClass._instancePrototype();
