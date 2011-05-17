@@ -54,6 +54,7 @@
 		delete home.setup_session_id;
 		st.console.log("This session-id is " + id);
 		session_id = id;
+		doSend("", false, "forked"); // Open the connection initially
 	};
 
 	// Use the configured message-handler to evaluate and log the content
