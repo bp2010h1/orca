@@ -310,6 +310,9 @@
 						throw e;
 					} else if (home.DEBUG) {
 						debugger;
+					}else {
+						/* is an ST Exception */
+						throw e;
 					}
 				}
 			}

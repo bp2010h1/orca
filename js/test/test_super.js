@@ -47,6 +47,12 @@ st.klass("SuperTester", {
 		
 		test6: function() {
 			st.tests.assert(A4().a("Here") == "ThisIsNewHere");
+		},	
+		testSuperClass: function() {
+			st.tests.assert(st.A1.superclass() == st.A, "incorrect super class");
+		},
+		testSuperClassOfObject : function() {
+			st.tests.assert(st.Object.superclass() == st.Object.$superclass, "Superclass methods works properly");
 		}
 		
 	}
