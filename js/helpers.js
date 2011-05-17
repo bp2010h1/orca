@@ -10,6 +10,10 @@
 // String.prototype.endsWidth(aSubString)
 // st.isChrome()
 // st.localEval(aString)
+// st.fullURL(aString)
+// st.isExternal(aString)
+// st.evalScript(path)
+// st.addScriptTags(arrayOfStrings)
 
 (function() {
 
@@ -64,6 +68,63 @@
 
 	home.localEval = function(evalString) {
 		return (function() { return eval(evalString); })();
+	}
+
+	home.globalEval = function(evalString) {
+		return (function() { return window.eval(script); })();
+	}
+
+	// Load the resource and evaluate it in global context. Return the evaluated result.
+	home.evalScript = function(path) {
+		var script = null;
+		var req = st.createRequest();
+		req.open("GET", st.fullURL(path), false);
+		req.send(null);
+		if (req.status == 200) {
+			script = req.responseText;
+		} else {
+			throw "Could not load file: " + path;
+		}
+		// The scripts need global context
+		return st.globalEval(script);
+	};
+
+	home.addScriptTags = function(scriptNames) {
+		var i = 0;
+		var callback = function() {
+			if (i < scriptNames.length) {
+				var script = document.createElement('script');
+				script.type = 'text/javascript';
+				script.language = "javascript";
+				script.onreadystatechange = callback;
+				script.onload = callback;
+				script.src = st.fullURL(scriptNames[i]);
+				document.getElementsByTagName('HEAD')[0].appendChild(script);
+				i++;
+			}
+		};
+		callback();
+	};
+
+	home.createRequest = function() {
+		return new XMLHttpRequest();
+	};
+
+	// Skip adding the session-id when loading static files.
+	// This way, the browser identifies the files as same files and keeps breakpoints
+	home.fullURL = function(urlPath) {
+		if (home.isExternal(urlPath)) {
+			return urlPath;
+		}
+		var baseUrl = document.location.href;
+		if (!(/\/$/.test(baseUrl))){
+			baseUrl = baseUrl + "/";
+		}
+		return baseUrl + urlPath;
+	}
+
+	home.isExternal = function(urlPath) {
+		return (/^http(s)?:\/\//.test(urlPath));
 	}
 
 })();
