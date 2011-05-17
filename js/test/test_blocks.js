@@ -285,7 +285,20 @@ st.klass("BlocksTester", { instanceMethods: {
 	},
 	helper_testErrorWhenClosureIsAlreadyLeft: function() {
 		return st.block(function(){ st.nonLocalReturn("This should throw error"); });
-	}
+	},
+	testNonLocalReturnInReceiver: function() {
+		var test =  this.helperNonLocalReturnInReceiver();
+		st.tests.assert( test._equals_equals(st.number(23))  , "Non local return value doesn't match");
+	},
+	helperNonLocalReturnInReceiver : function() {
+		st.block(function() {
+			st.true.ifTrue_(st.block(function(){
+				return st.nonLocalReturn(st.number(23));
+				}));
+			return st.false;
+		}).value();
+		return st.number(42);
+	},
 	
 }});
 

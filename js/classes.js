@@ -187,6 +187,7 @@
 		
 		if('superclass' in attrs) {
 			newClass._inheritFrom(attrs.superclass);
+			newClass.$superclass = attrs.superclass;
 		}
 		
 		newClass._newInstance = function() {
@@ -309,6 +310,9 @@
 						throw e;
 					} else if (home.DEBUG) {
 						debugger;
+					}else {
+						/* is an ST Exception */
+						throw e;
 					}
 				}
 			}

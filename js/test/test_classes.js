@@ -84,6 +84,13 @@ tester = {
 		st.B.age = 100;
 		st.tests.assert(st.B.myAge() == 100);
 		st.tests.assert(b.lastName() == st.B.lastName());
+	},
+	testMetaClassOfAClass : function() {
+		st.tests.assert(st['Object class'] == st.Object._class(), "The method class of a class doesn't work");
+	}, 
+	testSuperClassOfObject : function () {
+		st.tests.assert(st.Object.superclass() == st.ProtoObject, "The super class of Object isn't ProtoObject");
+		st.tests.assert(st.Object.$superclass == st.ProtoObject, "The super class of Object isn't ProtoObject");
 	}
 };
 
