@@ -10,7 +10,6 @@
 
 	st.Object._addInstanceMethods({
 		doesNotUnderstand_: doesNotUnderstand,
-		_class: function() { return this._theClass; },
 		halt: function() { debugger; },
 		
 		perform_: st.perform,
@@ -35,6 +34,7 @@
 		
 	});
 	st.Object._addClassMethods({
+		_class: function() { return this._theClass; },
 		asRemote: function() {
 			return st.passMessage(this, st.Message.selector_(st.string("asRemote")));
 		},
