@@ -52,9 +52,10 @@ st.klass("SuperTester", {
 			st.tests.assert(st.A1.superclass() == st.A, "incorrect super class");
 		},
 		testSuperClassOfObject : function() {
+			st.tests.assert(st.Object.superclass() == st.ProtoObject, "The super class of Object isn't ProtoObject");
+			st.tests.assert(st.Object.$superclass == st.ProtoObject, "The super class of Object isn't ProtoObject");
 			st.tests.assert(st.Object.superclass() == st.Object.$superclass, "Superclass methods works properly");
 		}
-		
 	}
 
 });

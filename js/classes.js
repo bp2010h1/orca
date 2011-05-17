@@ -198,7 +198,7 @@
 			return instance;
 		};
 
-		newClass._addInstanceVariables(['_theClass'], newClass);
+//		newClass._addInstanceVariables(['_theClass'], newClass);
 		newClass._classname = classname;
 		
 		return newClass;
@@ -250,6 +250,8 @@
 		
 		newClass._inheritFrom = function(superClass) {
 			this._instancePrototype.prototype = new superClass._instancePrototype();
+			this._instancePrototype.prototype._theClass = this;
+
 			for (var i=0; i < this._instances.length; i++) {
 				this._instances[i].__proto__ = this._instancePrototype.prototype;
 			}
@@ -349,7 +351,13 @@
 	var classStub = function(classname) { 
 		home[classname] = {
 			_classname: classname,
-			_instancePrototype: function() { },
+			_instancePrototype: st.isChrome() 
+								? (st.localEval("(function " + 
+										(classname.endsWith(' class') 
+											? "class_" + classname.replace(/ class/g, "")
+											: "instance_of_" + classname
+										) + "() { })")) 
+								: (function () { }),
 			_instances: new Array(),
 			_newInstance: function() {
 				var instance = new this._instancePrototype();
@@ -358,6 +366,7 @@
 			},
 			_inheritFrom: function(superClass) {
 				this._instancePrototype.prototype = new superClass._instancePrototype();
+				this._instancePrototype.prototype._theClass = this;
 				
 				for (var i=0; i < this._instances.length; i++) {
 					this._instances[i].__proto__ = this._instancePrototype.prototype;
