@@ -81,7 +81,7 @@
 				 return  this.value();
 			} catch (e) {
 				if( e._class() == aKindOfError ) {
-					return  anExceptionalBlock.value();
+					return  anExceptionalBlock.value_(e);
 				}else {
 					throw e;
 				}
@@ -92,7 +92,7 @@
 				return this.value();
 			}
 			catch (e) {
-				return  anotherBlock.value();
+				return  anotherBlock.value_(e);
 			}
 		}
 	});

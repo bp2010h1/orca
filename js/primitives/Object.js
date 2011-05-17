@@ -20,6 +20,17 @@
 		perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
 			var args = [aSTMessageSelector].concat(st.unbox(anArgumentsCollection));
 			return st.perform.apply(this, args);
+		},
+		copy : function() {
+			var duplicate = this._class().basicNew();
+			
+			for (slot in this) { 
+				if ((typeof(this[slot])!= "function")  && (slot[0]=='$')){
+					duplicate[slot] = this[slot];
+				}
+			}
+			return duplicate;
+			
 		}
 		
 	});
