@@ -75,31 +75,4 @@
 		st.klasses[aClass]._initializeInstanceVariables(home.nil);
 	}
 
-	// TODO if we're sure everything is fixed, remove these warnings.
-	var deprecatedError = function(methodName) {
-		var msg = "We have an obsolete " + methodname + "()-call! Fix it.";
-		alert(msg);
-		throw msg;
-	};
-	st.Object._addInstanceMethods({
-		jsEval: function() {
-			deprecatedError("jsEval (which is EVIL!!)");
-		},
-		js: function() {
-			deprecatedError("js");
-		},
-		js_: function() {
-			deprecatedError("js:");
-		},
-		slot_be_: function() {
-			deprecatedError("slot:be:");
-		},
-		slot_: function() {
-			deprecatedError("slot:");
-		},
-		slot_apply_: function() {
-			deprecatedError("slot:apply:");
-		}
-	});
-
 })();
