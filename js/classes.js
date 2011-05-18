@@ -121,17 +121,12 @@
 			}
 		};
 		
+		var theClass;
+		
 		if((classname in this) == false) {
 			// create a new class if it does not yet exist
-			var newClass = createMetaclassAndInstantiate(classname, attrs);
-
-			addVariables(newClass);
-			addMethods(newClass);
-
-			this[classname] = newClass;
-			home.classes.push(newClass);
-
-			return newClass;	
+			theClass = createMetaclassAndInstantiate(classname, attrs);
+			this[classname] = theClass;
 		}
 		else {
 			// the class does already exist
@@ -140,11 +135,17 @@
 			if('superclass' in attrs) {
 				theClass._inheritFrom(attrs['superclass']);
 			}
-
-			addVariables(theClass);
-			addMethods(theClass);
-			return theClass;
 		}
+		
+		addVariables(theClass);
+		addMethods(theClass);
+
+		return theClass;
+	};
+	
+	home.stubClass = function(classname) {
+		this[classname] = new Object();
+		makeClass(this[classname], classname);
 	};
 
 	// 
@@ -186,7 +187,7 @@
 
 		newClass = metaClass._newInstance();
 
-		stubClass(newClass, classname);
+		makeClass(newClass, classname);
 		
 		if('superclass' in attrs) {
 			newClass._inheritFrom(attrs.superclass);
@@ -197,8 +198,24 @@
 
 		return newClass;
 	};
-	
-	var stubClass = function(newClass, classname) {
+
+	var makeClass = function(newClass, classname) {
+		var createMethod = function(aPrototype, methodName, method) {
+			aPrototype[methodName] = wrapFunction(method);
+			aPrototype[methodName].methodName = methodName;
+			aPrototype[methodName].originalMethod = method;
+			method.methodName = methodName;
+			method.methodHome = aPrototype; // This is the object, that actually contains this method
+		}
+		
+		var initializeVariables = function(aPrototype, newInitialValue) {
+			for (instVar in aPrototype) {
+				if (aPrototype[instVar] == null) {
+					aPrototype[instVar] = newInitialValue;
+				}
+			}
+		}
+		
 		newClass._classname = classname;
 		
 		newClass._instancePrototype = st.isChrome() 
@@ -220,29 +237,7 @@
 			return instance;				
 		}
 		
-
 		newClass._instancePrototype.prototype._theClass = newClass;
-		createHelpers(newClass);
-
-		return newClass;
-	}
-
-	var createHelpers = function(newClass) {
-		var createMethod = function(aPrototype, methodName, method) {
-			aPrototype[methodName] = wrapFunction(method);
-			aPrototype[methodName].methodName = methodName;
-			aPrototype[methodName].originalMethod = method;
-			method.methodName = methodName;
-			method.methodHome = aPrototype; // This is the object, that actually contains this method
-		}
-		
-		var initializeVariables = function(aPrototype, newInitialValue) {
-			for (instVar in aPrototype) {
-				if (aPrototype[instVar] == null) {
-					aPrototype[instVar] = newInitialValue;
-				}
-			}
-		}
 		
 		// Initialize all fields, that are null to the given value
 		newClass._initializeInstanceVariables = function(newInitialValue) {
@@ -281,6 +276,8 @@
 			
 			this.$superclass = superClass;
 		}
+		
+		home.classes.push(newClass);
 	};
 
 	var wrapFunction = function(aFunc) {
@@ -373,11 +370,8 @@
 
 	/*********** <PRELOAD> ********************/
 
-	home.Metaclass = new Object();
-	stubClass(home.Metaclass, 'Metaclass');
-
-	home.Class = new Object();
-	stubClass(home.Class, 'Class');
+	home.stubClass('Metaclass');
+	home.stubClass('Class');
 
 	home["Metaclass class"] = home.Metaclass._newInstance();
 	home["Metaclass class"]._instancePrototype = function() {};
