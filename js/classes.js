@@ -274,7 +274,7 @@
 		return oldCodeHandler(
 			"st.wrapFunction(function() {" + 
 			source + "}).apply(st.nil);" );
-	};
+	});
 
 	var DontDebugMarker = {};
 	var NonLocalReturnException = function(currentThis, method) { 

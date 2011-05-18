@@ -76,6 +76,7 @@
 	var handleMessage = function(content, handlerId) {
 		var result;
 		try {
+			st.console.log("Received message to '" + handlerId + "': " + content);
 			var handler = messageHandlers[handlerId];
 			if (!handler) {
 				// Use the default handler or do nothing by default

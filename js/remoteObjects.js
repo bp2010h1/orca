@@ -45,7 +45,7 @@
 	// Private
 	// 
 
-	var evalHandler = function() { return st.communication.getHandler("code"); };
+	var evalHandler = function() { return st.communication.getMessageHandler("code"); };
 
 	// Set the ILLEGAL_GLOBAL_HANDLER to allow remote-object creation
 	var standardIllegalGlobalHandler = home.ILLEGAL_GLOBAL_HANDLER;
