@@ -13,18 +13,18 @@
             }));
 
             index.isInteger().ifTrue_ifFalse_(st.block(function () {
-				if (true /* index > bounds */) {
+				if (st.unbox(index) <= st.unbox(this).length) {
 					var start = this._original.substr(0, st.unbox(index) - 1);
 					var end = this._original.substr(st.unbox(index));
 					var newString = start + st.unbox(aCharacter) + end;
 					this._original = newString;
+					return this;
+				} else { 
+					return this.errorSubscriptBounds_(index); 
 				}
-				else 
-					{ return this.errorSubscriptBounds_(index); }
             }), st.block(function () {
                 return this.errorNonIntegerIndex();
-            }))
-			return this;
+            }));
 		}
 		
 	});
