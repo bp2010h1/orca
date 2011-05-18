@@ -27,6 +27,15 @@
 			return st.character(st.unbox(this)[st.unbox(num) - 1]);
 		}
 	});
+	st.String._addClassMethods({
+		basicNew_: function (sizeRequested){
+			//strings are initialized with whitespace, if they should have a specifiy length
+			var string = "";
+			for (var i = 0; i < st.unbox(sizeRequested); i++)
+			string += " ";
+			return st.string(string);
+		}
+	});
 
 	/*
 	at_ should also be defined in:
