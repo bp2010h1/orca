@@ -1,5 +1,5 @@
 
-st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests"], ["new", "environment", "runTests"]);
+st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests", "test_"], ["new", "environment", "runTests", "test:"]);
 
 st.klass("RemoteObjectTester", { 
 
@@ -55,9 +55,9 @@ st.klass("RemoteObjectTester", {
 			st.tests.assert(remoteInstance.yourself()._equals(remoteInstance));
 		},
 		
-		testObjectParameter: function(){
+		testObjectParameter: function() {
 			var remoteInstance = st.OrderedCollection.asRemote().new();
-			var newObject = st.Object._new();
+			var newObject = st.Object._newInstance();
 			var returnValue = remoteInstance.add_(newObject);
 			st.tests.assert(returnValue._equals(newObject));
 		},
@@ -71,10 +71,10 @@ st.klass("RemoteObjectTester", {
 					st.__defineGetter__("OMeta2Base", function() {
 						return st.ILLEGAL_GLOBAL_HANDLER("OMeta2Base");
 					});
-																										
+					
 					var referredClass = st.OMeta2Base;
 					st.tests.assert(referredClass.isReferredClass() === st.true);
-          
+					
 					var remoteClass = referredClass.asRemote();
 					st.tests.assert(remoteClass.isRemote() === st.true);
 					
@@ -91,7 +91,7 @@ st.klass("RemoteObjectTester", {
 			var remoteObject = st.OrcaRemoteTestObject.asRemote();
 			var localObject = st.Object._new();
 			// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
-			var answer = remoteObject.test(localObject);
+			var answer = remoteObject.test_(localObject);
 			st.tests.assert(answer === st.false);
 		},
 		
