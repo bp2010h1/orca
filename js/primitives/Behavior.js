@@ -7,6 +7,7 @@
 		basicNew: function() { return this._newInstance(); },
 		_new: function() { return this.basicNew().initialize(); },
 		name: function() { return st.string(this._classname); },
+		basicNew_: function(sizeRequested) { return this._newInstance(); },
 	});
 	
 })();
