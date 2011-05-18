@@ -119,6 +119,22 @@
 			}
 		};
 		
+		var setFormat = function (newClass) {
+			if ('format' in attrs){
+				/* hack -- the problem is, that st.number is not accessible just yet */
+				newClass.__defineGetter__('$format', 
+					(function (format){ 
+						return function (){ 
+							return st.number(format)}})(attrs.format));
+				/* if we set $format, getter and setter are deleted and format is set to aNumber */
+				newClass.__defineSetter__('$format', 
+					function (aNumber){ 
+						delete this[$format]; 
+						this.$format = aNumber;
+						return aNumber;});
+			}
+		};
+		
 		var theClass;
 		
 		if((classname in this) == false) {
@@ -137,7 +153,9 @@
 		
 		addVariables(theClass);
 		addMethods(theClass);
-
+		
+		setFormat(theClass);
+		
 		return theClass;
 	};
 	
@@ -180,7 +198,7 @@
 					superclass: metaSuperClass,
 					instanceVariables: attrs.classVariables,
 					instanceMethods: attrs.classMethods
-			});				
+			});
 		}
 
 		newClass = metaClass._newInstance();
