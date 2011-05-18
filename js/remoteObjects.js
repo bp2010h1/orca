@@ -5,11 +5,9 @@
 // API:
 // st.passMessage(receiver, message)
 
-// Settings:
-// st.communication.MESSAGE_SEND_URL
-
 // Wrapps the old
 // st.communication.MESSAGE_HANDLER
+// st.communication.ILLEGAL_GLOBAL_HANDLER
 
 (function() {
 
@@ -17,12 +15,37 @@
 	var home = window.st ? window.st : (window.st = {});	
 
 	// 
-	// Settings
+	// API functions
+	//
+
+	home.passMessage = function(receiver, message) {
+		var data;
+		var answerString;
+		var resultObject;
+		if (st.unbox(receiver.isRemote())) { 
+			 data = "rid=" + st.escapeAll(receiver._remoteID) +
+			 	"&message=" + st.escapeAll(serializeOrExpose(message));
+		} else {
+			if (st.unbox(receiver.isBehavior())){
+				if (st.unbox(message.selector()) == "newOnServer") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
+				} else if (st.unbox(message.selector()) == "asRemote") {
+					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
+				}
+			} 
+			if (!data) {
+				receiver.error_(string("Unexpected remote message send."));
+			}
+		}
+		answerString = st.communication.send(data);
+		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteID": 4}, true ]
+		return convertAnswer(evalWrapped(answerString));
+	};
+
+	// 
+	// Private
 	// 
 
-	if (!("MESSAGE_SEND_URL" in home)) home.MESSAGE_SEND_URL = "send";
-	
-	
 	// Set the ILLEGAL_GLOBAL_HANDLER to allow remote-object creation
 	var standardIllegalGlobalHandler = home.ILLEGAL_GLOBAL_HANDLER;
 	st.ILLEGAL_GLOBAL_HANDLER = function (globalName) {
@@ -34,7 +57,7 @@
 			standardIllegalGlobalHandler(globalName);
 		}
 	}
-	
+
 	// Set the message-handler to handle remote-message-calls
 	var standardMessageHandler = home.communication.MESSAGE_HANDLER;
 	st.communication.MESSAGE_HANDLER = function(message){
@@ -72,39 +95,7 @@
 			return standardMessageHandler(message);
 		}
 	};
-	
-	// 
-	// API functions
-	//
 
-	home.passMessage = function(receiver, message) {
-		var data;
-		var answerString;
-		var resultObject;
-		if (st.unbox(receiver.isRemote())) { 
-			 data = "rid=" + st.escapeAll(receiver._remoteID) +
-			 	"&message=" + st.escapeAll(serializeOrExpose(message));
-		} else {
-			if (st.unbox(receiver.isBehavior())){
-				if (st.unbox(message.selector()) == "newOnServer") {
-					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
-				} else if (st.unbox(message.selector()) == "asRemote") {
-					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
-				}
-			} 
-			if (!data) {
-				receiver.error_(string("Unexpected remote message send."));
-			}
-		}
-		answerString = st.communication.send(data, home.MESSAGE_SEND_URL);
-		//If possible, substitute eval by a JSON-Parser, parsing eg: [ "testString", { "remoteID": 4}, true ]
-		return convertAnswer(evalWrapped(answerString));
-	};
-
-	// 
-	// Private
-	// 
-	
 	// parameters of message sends to remoteObjects and return values of message sends to reachable objects
 	// need to be transmitted either as JSON objects (boolean, number, string, null) or a new reachable object
 	// needs to be created
@@ -175,7 +166,7 @@
 		}
 		return reachableObjectMap[anIdentifier];
 	};
-	
+
 	// Proxy class for objects living on the server
 	st.klass("OrcaRemoteObject", {
 		superclass: st.doesNotUnderstandClass,
@@ -193,7 +184,7 @@
 			}
 		}
 	});
-	
+
 	// A class that can only be used for creating remote obects on the server
 	// ReferredClass should only implement methods do indicate its a class and Object's newOnServer and asRemote
 	st.klass("ReferredClass", {

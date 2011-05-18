@@ -38,7 +38,6 @@
 			testResults.fail.length, testResults.error.length);
 	};
 
-
 	home.assert = function (condition, exception_message){
 		if (st.unbox(condition) != true) {
 			throw new AssertionFail(exception_message);
