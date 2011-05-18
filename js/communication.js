@@ -40,7 +40,7 @@
 		return doSend(data, true, "blocked", handlerId);
 	};
 
-	home.sendForked = function(data) {
+	home.sendForked = function(data, handlerId) {
 		// No meaningfull result-value when sending forked
 		doSend(data, false, "forked", handlerId, true);
 		return null;
@@ -79,7 +79,7 @@
 			var handler = messageHandlers[handlerId];
 			if (!handler) {
 				// Use the default handler or do nothing by default
-				handler = messageHandler["default"];
+				handler = messageHandlers["default"];
 			}
 			if (handler)
 				result = handler(content);
@@ -102,7 +102,7 @@
 		var request = st.createRequest();
 		var content = "status=" + st.escapeAll(status);
 		content += "&message=" + st.escapeAll(data);
-		content += "&handlerId=" + st.escapeAll(handlerId);
+		content += "&handlerId=" + st.escapeAll(handlerId ? handlerId : "default");
 		if (!ignoreResponse && !isSynchronous)
 			request.onreadystatechange = function() { answerToMessage(request); };
 		request.open("POST", url, !isSynchronous);
@@ -120,10 +120,11 @@
 	var answerToMessage = function(request) {
 		if (request.readyState == 4) {
 			if (request.status == 200) {
-				var response = /status=([^&]*)&message=([^&]*)/.exec(request.responseText);
+				var response = /status=([^&]*)&handlerId=([^&]*)&message=([^&]*)/.exec(request.responseText);
 				if (response && response.length >= 2) {
-					var status = response[1];
-					var message = unescape(response[2]);
+					var status = unescape(response[1]);
+					var handlerId = unescape(response[2]);
+					var message = unescape(response[3]);
 					if (status == "answer") {
 						// "answerTo: (answer)"
 						awaitedAnswers--;
@@ -134,7 +135,7 @@
 						return message;
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
-						var result = handleMessage(message);
+						var result = handleMessage(message, handlerId);
 						return doSend(result, false, "answer");
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
@@ -142,11 +143,11 @@
 							// Inside any blocking send from the client, a forked
 							// send from the server becomes blocking, because the clientInformation
 							// needs the opening connection to block
-							handleMessage(message); // Ignore result
+							handleMessage(message, handlerId); // Ignore result
 							return doSend("", true, "answer");
 						} else {
 							var result = doSend("", false , "answer");
-							handleMessage(message); // Ignore result
+							handleMessage(message, handlerId); // Ignore result
 							return result;
 						}
 					}
