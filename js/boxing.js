@@ -112,7 +112,13 @@
 	home.number = function(aNumber) { 
 		var result = objectPool[aNumber];
 		if (result) return result;
-		result = st.Float._wrapping(aNumber);
+
+		if (/^(-)?\d+$/.test(aNumber + "")){
+			result = st.Integer._wrapping(aNumber);
+		} else {
+			result = st.Float._wrapping(aNumber);
+		}
+
 		objectPool[aNumber] = result;
 		return result; };
 
