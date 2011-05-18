@@ -1,19 +1,12 @@
 
-st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests"], ["new", "environment", "runTests"]);
+st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests", "test_"], ["new", "environment", "runTests", "test:"]);
 
 st.klass("RemoteObjectTester", { 
 
 	classInstanceVariables: [ ],
 	instanceVariables: [ ],
 
-	instanceMethods: {	
-		setUp: function() {
-		},
-		testNewOnServer: function(){
-			var remoteObject = st.Object.newOnServer();
-			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.newOnServer() is not remote.");
-			st.tests.assert((typeof remoteObject._remoteID) === "number", "Returned RemoteID for the created RemoteObject is not a number.");
-		},		
+	instanceMethods: {
 		testAsRemote: function(){
 			var remoteObject = st.Object.asRemote();
 			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.asRemote() is not remote.");
@@ -62,9 +55,9 @@ st.klass("RemoteObjectTester", {
 			st.tests.assert(remoteInstance.yourself()._equals(remoteInstance));
 		},
 		
-		testObjectParameter: function(){
+		testObjectParameter: function() {
 			var remoteInstance = st.OrderedCollection.asRemote().new();
-			var newObject = st.Object._new();
+			var newObject = st.Object._newInstance();
 			var returnValue = remoteInstance.add_(newObject);
 			st.tests.assert(returnValue._equals(newObject));
 		},
@@ -78,10 +71,10 @@ st.klass("RemoteObjectTester", {
 					st.__defineGetter__("OMeta2Base", function() {
 						return st.ILLEGAL_GLOBAL_HANDLER("OMeta2Base");
 					});
-																										
+					
 					var referredClass = st.OMeta2Base;
 					st.tests.assert(referredClass.isReferredClass() === st.true);
-          
+					
 					var remoteClass = referredClass.asRemote();
 					st.tests.assert(remoteClass.isRemote() === st.true);
 					
@@ -90,17 +83,17 @@ st.klass("RemoteObjectTester", {
 			}
 		},
 		
-		// testRemoteSendTriggersRemoteSendOnServer: function() {
-		// 	// setup but only for this test case, since OrcaRemoteTestObject might not be in referred classes
-		// 	st.__defineGetter__("OrcaRemoteTestObject", function() {
-		// 		return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
-		// 	});
-		// 	var remoteObject = st.OrcaRemoteTestObject.asRemote();
-		// 	var localObject = st.Object._new();
-		// 	// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
-		// 	var answer = remoteObject.test(localObject);
-		// 	st.tests.assert(answer === st.false);
-		// },
+		testRemoteSendTriggersRemoteSendOnServer: function() {
+			// setup but only for this test case, since OrcaRemoteTestObject might not be in referred classes
+			st.__defineGetter__("OrcaRemoteTestObject", function() {
+				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
+			});
+			var remoteObject = st.OrcaRemoteTestObject.asRemote();
+			var localObject = st.Object._new();
+			// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
+			var answer = remoteObject.test_(localObject);
+			st.tests.assert(answer === st.false);
+		},
 		
 		testServerSide: function(){
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote().new();
