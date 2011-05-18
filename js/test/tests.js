@@ -1,6 +1,6 @@
 
 // Setup dependencies: -
-// Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js
+// Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js, helpers.js
 
 // API:
 // st.tests.assert(boolean, exceptionMessage)
@@ -109,7 +109,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = st.communication.evalScript("file/js/test/" + scriptName);
+			tester = st.evalScript("file/js/test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});
