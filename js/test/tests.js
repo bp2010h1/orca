@@ -1,6 +1,6 @@
 
 // Setup dependencies: -
-// Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js
+// Runtime dependencies: boxing.js, console.js, server.js, remoteObjects.js, helpers.js
 
 // API:
 // st.tests.assert(boolean, exceptionMessage)
@@ -37,7 +37,6 @@
 			"[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]",
 			testResults.fail.length, testResults.error.length);
 	};
-
 
 	home.assert = function (condition, exception_message){
 		if (st.unbox(condition) != true) {
@@ -109,7 +108,7 @@
 		
 		tryCatch(function() {
 			applicationName = "test";
-			tester = st.communication.evalScript("file/js/test/" + scriptName);
+			tester = st.evalScript("file/js/test/" + scriptName);
 		}, function(e) {
 			testError("Could not load and evaluate script. " + e);
 		});

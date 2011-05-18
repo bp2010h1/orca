@@ -6,17 +6,11 @@
 // st.communication.performOnServer(squeakCode)
 // st.communication.serverBlock(squeakCodeEvaluatingToABlock)
 
-// Settings:
-// st.CODE_EXECUTION_URL (String)
-
 (function() {
 
 	// Set up the namespace
 	if (!window.st) window.st = {};
 	var home = st.communication ? st.communication : (st.communication = {});
-
-	// Settings
-	if (!("CODE_EXECUTION_URL" in home)) home.CODE_EXECUTION_URL = "mi";
 
 	// 
 	// API functions
@@ -29,8 +23,8 @@
 			args += "&arg" + (i - 1) + "=" + st.escapeAll(arguments[i]);
 		}
 		var data = "code=" + st.escapeAll(squeakCode) + args;
-		var result = st.communication.send(data, home.CODE_EXECUTION_URL);
-		return st.communication.handleMessage(result);
+		var result = st.communication.send(data, "serverBlock");
+		return st.communication.getMessageHandler("code")(result);
 	};
 
 	home.serverBlock = function (squeakCode) {
