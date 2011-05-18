@@ -102,15 +102,13 @@
 	home.character = function(aString) { 
 		var result = objectPool[aString];
 		if (result) return result;
-		result = st.Character._wrapping(aString);
+		
+		result = st.Character._wrapping(aString[0]);
+		result.$value = st.number(aString.charCodeAt(0));
 		objectPool[aString] = result;
 		return result; };
 	home.string = function(aString) { 
-		var result = objectPool[aString];
-		if (result) return result;
-		result = st.ByteString._wrapping(aString);
-		objectPool[aString] = result;
-		return result; };
+		return st.ByteString._wrapping(aString);};
 	home.number = function(aNumber) { 
 		var result = objectPool[aNumber];
 		if (result) return result;
