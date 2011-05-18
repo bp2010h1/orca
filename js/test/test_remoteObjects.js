@@ -6,14 +6,7 @@ st.klass("RemoteObjectTester", {
 	classInstanceVariables: [ ],
 	instanceVariables: [ ],
 
-	instanceMethods: {	
-		setUp: function() {
-		},
-		testNewOnServer: function(){
-			var remoteObject = st.Object.newOnServer();
-			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.newOnServer() is not remote.");
-			st.tests.assert((typeof remoteObject._remoteID) === "number", "Returned RemoteID for the created RemoteObject is not a number.");
-		},		
+	instanceMethods: {
 		testAsRemote: function(){
 			var remoteObject = st.Object.asRemote();
 			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.asRemote() is not remote.");
@@ -90,17 +83,17 @@ st.klass("RemoteObjectTester", {
 			}
 		},
 		
-		// testRemoteSendTriggersRemoteSendOnServer: function() {
-		// 	// setup but only for this test case, since OrcaRemoteTestObject might not be in referred classes
-		// 	st.__defineGetter__("OrcaRemoteTestObject", function() {
-		// 		return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
-		// 	});
-		// 	var remoteObject = st.OrcaRemoteTestObject.asRemote();
-		// 	var localObject = st.Object._new();
-		// 	// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
-		// 	var answer = remoteObject.test(localObject);
-		// 	st.tests.assert(answer === st.false);
-		// },
+		testRemoteSendTriggersRemoteSendOnServer: function() {
+			// setup but only for this test case, since OrcaRemoteTestObject might not be in referred classes
+			st.__defineGetter__("OrcaRemoteTestObject", function() {
+				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
+			});
+			var remoteObject = st.OrcaRemoteTestObject.asRemote();
+			var localObject = st.Object._new();
+			// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
+			var answer = remoteObject.test(localObject);
+			st.tests.assert(answer === st.false);
+		},
 		
 		testServerSide: function(){
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote().new();
