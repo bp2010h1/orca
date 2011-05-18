@@ -87,6 +87,13 @@ tester = {
 	},
 	testMetaClassOfAClass : function() {
 		st.tests.assert(st['Object class'] == st.Object._class(), "The method class of a class doesn't work");
+	},
+	testProtoObjectChain : function() {
+		st.tests.assert(st.ProtoObject._theClass.$superclass.$superclass == st.Class, "ProtoObject class does not inherit from Class");
+	},
+	testClassDescriptionChain : function() {
+		st.tests.assert(st.Metaclass.$superclass == st.ClassDescription, "Metaclass class does not inherit from ClassDescription");
+		st.tests.assert(st.Class.$superclass == st.ClassDescription, "Class class does not inherit from ClassDescription");
 	}
 };
 
