@@ -29,8 +29,11 @@
 	});
 	st.String._addClassMethods({
 		basicNew_: function (sizeRequested){
-			//strings can not be initialized to a specific length, which is not their size, but their room in memory
-			return st.string(new String());
+			//strings are initialized with whitespace, if they should have a specifiy length
+			var string = "";
+			for (var i = 0; i < st.unbox(sizeRequsted); i++)
+			string += " ";
+			return st.string(string);
 		}
 	});
 
