@@ -65,15 +65,26 @@
 
 	home.nonLocalReturn = function(value) {
 		var blockFunction = arguments.callee.caller;
-		var e = blockFunction.nonLocalReturnException;
-		e.nonLocalReturnValue = value;
-		throw e;
+		blockFunction.throwNonLocalReturnException(value);
 	};
 
 	home.block = function(func) {
 		var b = st.BlockClosure._newInstance();
-		func.nonLocalReturnException = home.peekCallStack();
-		var currentThis = arguments.callee.caller.originalThis;
+		var nonLocalReturnException = home.peekCallStack();
+    var blockContext = arguments.callee.caller;
+		func.throwNonLocalReturnException = function(value){
+	    // If this block is created inside another block after another message is on the call stack
+	    // the dispatch of the non local return has 2 dimensions:
+	    // 1) messages sent on the call stack
+	    // 2) blocks wrapped around blocks (because inner blocks may be created after further messages have been sent)
+	    if (blockContext.throwNonLocalReturnException) {
+	      blockContext.throwNonLocalReturnException(value);
+	    } else {
+	      nonLocalReturnException.nonLocalReturnValue = value;
+	      throw nonLocalReturnException;
+      }
+    };
+		var currentThis = blockContext.originalThis;
 		if (currentThis == undefined) {
 			// We are in the outer-most block of a method. The 'current this' is the top of the call-stack.
 			var callStackTop = home.peekCallStack();
@@ -110,17 +121,12 @@
 			}
 		};
 		
+		var theClass;
+		
 		if((classname in this) == false) {
 			// create a new class if it does not yet exist
-			var newClass = createMetaclassAndInstantiate(classname, attrs);
-
-			addVariables(newClass);
-			addMethods(newClass);
-
-			this[classname] = newClass;
-			home.classes.push(newClass);
-
-			return newClass;	
+			theClass = createMetaclassAndInstantiate(classname, attrs);
+			this[classname] = theClass;
 		}
 		else {
 			// the class does already exist
@@ -129,11 +135,17 @@
 			if('superclass' in attrs) {
 				theClass._inheritFrom(attrs['superclass']);
 			}
-
-			addVariables(theClass);
-			addMethods(theClass);
-			return theClass;
 		}
+		
+		addVariables(theClass);
+		addMethods(theClass);
+
+		return theClass;
+	};
+	
+	home.stubClass = function(classname) {
+		this[classname] = new Object();
+		makeClass(this[classname], classname);
 	};
 
 	// 
@@ -174,37 +186,20 @@
 		}
 
 		newClass = metaClass._newInstance();
-		createHelpers(newClass);
-		
-		newClass._instances = new Array();
-		newClass._instancePrototype = st.isChrome() 
-							? (st.localEval("(function " + 
-									(classname.endsWith(' class') 
-										? "class_" + classname.replace(/ class/g, "")
-										: "instance_of_" + classname
-									) + "() { })")) 
-							: (function () { }); 
+
+		makeClass(newClass, classname);
 		
 		if('superclass' in attrs) {
 			newClass._inheritFrom(attrs.superclass);
-			newClass.$superclass = attrs.superclass;
 		}
-		
-		newClass._newInstance = function() {
-			var instance = new newClass._instancePrototype();
-			instanceCount++; 
-			instance._instanceNumber = instanceCount;
-			newClass._instances.push(instance);
-			return instance;
-		};
+		else {
+			newClass._instancePrototype.prototype._theClass = newClass;
+		}
 
-		newClass._addInstanceVariables(['_theClass'], newClass);
-		newClass._classname = classname;
-		
 		return newClass;
 	};
 
-	var createHelpers = function(newClass) {
+	var makeClass = function(newClass, classname) {
 		var createMethod = function(aPrototype, methodName, method) {
 			aPrototype[methodName] = wrapFunction(method);
 			aPrototype[methodName].methodName = methodName;
@@ -220,6 +215,29 @@
 				}
 			}
 		}
+		
+		newClass._classname = classname;
+		
+		newClass._instancePrototype = st.isChrome() 
+								? (st.localEval("(function " + 
+										(classname.endsWith(' class') 
+											? "class_" + classname.replace(/ class/g, "")
+											: "instance_of_" + classname
+										) + "() { })")) 
+								: (function () { });
+								
+		newClass._instances = new Array();
+		
+		newClass._newInstance = function() {
+			var instance = new this._instancePrototype();
+			instanceCount++; 
+			instance._instanceNumber = instanceCount;
+			this._instances.push(instance);
+			
+			return instance;				
+		}
+		
+		newClass._instancePrototype.prototype._theClass = newClass;
 		
 		// Initialize all fields, that are null to the given value
 		newClass._initializeInstanceVariables = function(newInitialValue) {
@@ -249,11 +267,17 @@
 		}
 		
 		newClass._inheritFrom = function(superClass) {
-			this._instancePrototype.prototype = new superClass._instancePrototype();
+			this._instancePrototype.prototype = superClass._newInstance();
+			this._instancePrototype.prototype._theClass = this;
+
 			for (var i=0; i < this._instances.length; i++) {
 				this._instances[i].__proto__ = this._instancePrototype.prototype;
 			}
+			
+			this.$superclass = superClass;
 		}
+		
+		home.classes.push(newClass);
 	};
 
 	var wrapFunction = function(aFunc) {
@@ -346,33 +370,8 @@
 
 	/*********** <PRELOAD> ********************/
 
-	var classStub = function(classname) { 
-		home[classname] = {
-			_classname: classname,
-			_instancePrototype: function() { },
-			_instances: new Array(),
-			_newInstance: function() {
-				var instance = new this._instancePrototype();
-				this._instances.push(instance);
-				return instance;
-			},
-			_inheritFrom: function(superClass) {
-				this._instancePrototype.prototype = new superClass._instancePrototype();
-				
-				for (var i=0; i < this._instances.length; i++) {
-					this._instances[i].__proto__ = this._instancePrototype.prototype;
-				}
-			}
-		}
-
-		home[classname]._instancePrototype.prototype._theClass = home[classname];
-		createHelpers(home[classname]);
-
-		return home[classname];
-	}
-
-	classStub('Metaclass');
-	classStub('Class');
+	home.stubClass('Metaclass');
+	home.stubClass('Class');
 
 	home["Metaclass class"] = home.Metaclass._newInstance();
 	home["Metaclass class"]._instancePrototype = function() {};

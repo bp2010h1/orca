@@ -13,6 +13,10 @@ li {
     color: white;
 }
 
+ul {
+    display: table-footer-group;
+}
+
 li.green {
     background-color: #00aa00;
 }
@@ -24,6 +28,7 @@ li.red {
 li.yellow {
     background-color: #d9d900;
 }
+
 h1{
 	clear: both;
     float: left;
@@ -36,6 +41,7 @@ h1{
     font-family: Verdana, Arial, Helvetica;
     color: black;
 }
+
 div.textBox{
 	position: absolute;
 	border: 1px solid black;

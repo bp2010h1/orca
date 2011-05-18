@@ -10,8 +10,8 @@
 
 	st.Object._addInstanceMethods({
 		doesNotUnderstand_: doesNotUnderstand,
-		_class: function() { return this._theClass; },
 		halt: function() { debugger; },
+		_class: function() { return this._theClass; },
 		
 		perform_: st.perform,
 		perform_with_: st.perform,
@@ -20,6 +20,17 @@
 		perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
 			var args = [aSTMessageSelector].concat(st.unbox(anArgumentsCollection));
 			return st.perform.apply(this, args);
+		},
+		copy : function() {
+			var duplicate = this._class().basicNew();
+			
+			for (slot in this) { 
+				if ((typeof(this[slot])!= "function")  && (slot[0]=='$')){
+					duplicate[slot] = this[slot];
+				}
+			}
+			return duplicate;
+			
 		}
 		
 	});
