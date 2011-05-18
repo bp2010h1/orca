@@ -1,8 +1,6 @@
 
-// Setup depends on: -
+// Setup depends on: communication.js
 // Runtime depends on: (console.js)
-
-// This scripts sets the foreign value st.communication.MESSAGE_HANDLER
 
 // API:
 // st.classes = array
@@ -271,9 +269,9 @@
 
 	// From here on, messages from the server potentially contain non-local-returns
 	// and must be wrapped into the appropriate wrapper-function
-	var originalMessageHandler = st.communication.MESSAGE_HANDLER;
-	st.communication.MESSAGE_HANDLER = function(source) {
-		return originalMessageHandler(
+	var oldCodeHandler = st.communication.getMessageHandler("code");
+	st.communication.addMessageHandler("code", function(source) {
+		return oldCodeHandler(
 			"st.wrapFunction(function() {" + 
 			source + "}).apply(st.nil);" );
 	};
