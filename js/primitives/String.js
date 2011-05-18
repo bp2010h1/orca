@@ -27,6 +27,12 @@
 			return st.character(st.unbox(this)[st.unbox(num) - 1]);
 		}
 	});
+	st.String._addClassMethods({
+		basicNew_: function (sizeRequested){
+			//strings can not be initialized to a specific length, which is not their size, but their room in memory
+			return st.string(new String());
+		}
+	});
 
 	/*
 	at_ should also be defined in:
