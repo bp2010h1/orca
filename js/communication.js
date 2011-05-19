@@ -59,7 +59,7 @@
 		delete home.setup_session_id;
 		st.console.log("This session-id is " + id);
 		session_id = id;
-		doSend("", false, "forked"); // Open the connection initially
+		openConnection(); // Open the connection initially
 	};
 
 	// 
@@ -71,6 +71,10 @@
 		function(messageString) { st.console.log("Received unhandled message: " + messageString); });
 	home.addMessageHandler("code",
 		function(messageString) { return st.globalEval(messageString); });
+
+	var openConnection = function() {
+		doSend("", false, "forked");
+	}
 
 	// Use the configured message-handler to evaluate and log the content
 	var handleMessage = function(content, handlerId) {
@@ -133,7 +137,7 @@
 							awaitedAnswers = 0;
 							st.console.log("Illegal state: Received more answers than sends!");
 						}
-						return message;
+						return message; // No new connection
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var result = handleMessage(message, handlerId);
@@ -154,6 +158,9 @@
 					}
 				}
 				st.console.log("Illegal message received from the server: " + request.responseText);
+			} else if (request.status == 408) { // Server-request to reconnect (timeout)
+				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 408);
+				openConnection();
 			} else {
 				st.console.statusInfo("Channel disconnected: " + request.responseText, request.status);
 			}

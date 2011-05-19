@@ -18,19 +18,13 @@
 	//
 
 	home.passMessage = function(receiver, message) {
-		var data;
-		var answerString;
-		var resultObject;
+		var data, answerString, resultObject;
 		if (st.unbox(receiver.isRemote())) { 
 			 data = "rid=" + st.escapeAll(receiver._remoteID) +
 				"&message=" + st.escapeAll(serializeOrExpose(message));
 		} else {
-			if (st.unbox(receiver.isBehavior())){
-				if (st.unbox(message.selector()) == "newOnServer") {
-					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name())) + "&newInstance=true";
-				} else if (st.unbox(message.selector()) == "asRemote") {
-					data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
-				}
+			if (st.unbox(receiver.isBehavior()) && st.unbox(message.selector()) == "asRemote"){
+				data = "classNamed=" + st.escapeAll(st.unbox(receiver.name()));
 			} 
 			if (!data) {
 				receiver.error_(string("Unexpected remote message send."));
@@ -135,16 +129,16 @@
 	};
 
 	var convertObjectAnswer = function (anObject){
-			if (anObject.remoteID !== undefined && typeof anObject.remoteID === "number") {
-				var remoteObject = OrcaRemoteObject._newInstance();
-				remoteObject._remoteID = anObject.remoteID;
-				return remoteObject;
-			}
-			if (anObject.error !== undefined && typeof anObject.error !== "function") {
-				return st.Error.signal_(st.box(anObject.error));
-			}			
-			//Thesis: now, we have only primitive-Objects serialized?
-			return anObject;
+		if (anObject.remoteID !== undefined && typeof anObject.remoteID === "number") {
+			var remoteObject = OrcaRemoteObject._newInstance();
+			remoteObject._remoteID = anObject.remoteID;
+			return remoteObject;
+		}
+		if (anObject.error !== undefined && typeof anObject.error !== "function") {
+			return st.Error.signal_(st.box(anObject.error));
+		}			
+		//Thesis: now, we have only primitive-Objects serialized?
+		return anObject;
 	};
 
 	// Set up the Remote Object Map
