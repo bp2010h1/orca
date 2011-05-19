@@ -59,7 +59,7 @@
 		delete home.setup_session_id;
 		st.console.log("This session-id is " + id);
 		session_id = id;
-		openConnection(); // Open the connection initially
+		doSend("", false, "forked"); // Open the connection initially
 	};
 
 	// 
@@ -71,10 +71,6 @@
 		function(messageString) { st.console.log("Received unhandled message: " + messageString); });
 	home.addMessageHandler("code",
 		function(messageString) { return st.globalEval(messageString); });
-
-	var openConnection = function() {
-		doSend("", false, "forked");
-	}
 
 	// Use the configured message-handler to evaluate and log the content
 	var handleMessage = function(content, handlerId) {
@@ -132,6 +128,9 @@
 					var message = unescape(response[3]);
 					if (status == "answer") {
 						// "answerTo: (answer)"
+						
+						console.log("Answer: " + message);
+						
 						awaitedAnswers--;
 						if (awaitedAnswers < 0) {
 							awaitedAnswers = 0;
@@ -160,7 +159,9 @@
 				st.console.log("Illegal message received from the server: " + request.responseText);
 			} else if (request.status == 408) { // Server-request to reconnect (timeout)
 				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 408);
-				openConnection();
+				// TODO Server needs to send info, which kind of connection is timed out (synchronous or not)
+				// re-open same kind of connection here
+				doSend("", false, "forked");
 			} else {
 				st.console.statusInfo("Channel disconnected: " + request.responseText, request.status);
 			}
