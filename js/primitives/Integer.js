@@ -32,6 +32,12 @@
 				aBlock.value();
 			}
 			return this;
+		},
+		bitShiftMagnitude_: function (other){
+			return st.number(st.unbox(this) * Math.pow(2, st.unbox(other))).floor();
+		},
+		bitAnd_: function (other){
+			return st.number(st.unbox(this) & st.unbox(other));
 		}
 	});
 
