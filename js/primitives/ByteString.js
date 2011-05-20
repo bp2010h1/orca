@@ -1,8 +1,10 @@
 
+// Runtime depends on: boxing.js
+
 (function() {
 
 	st.ByteString._addInstanceMethods({
-		at_put_: function(index, aCharacter) {
+		at_put_: function (index, aCharacter) {
 			
 			aCharacter.isCharacter().ifFalse_(st.block(function () {
                 return st.nonLocalReturn(this.errorImproperStore());
@@ -25,6 +27,9 @@
             }), st.block(function () {
                 return this.errorNonIntegerIndex();
             }));
+		},
+		at_: function (index){
+			return st.character(st.unbox(this)[st.unbox(index) - 1]);
 		}
 		
 	});
