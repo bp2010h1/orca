@@ -128,12 +128,15 @@
 					var message = unescape(response[3]);
 					if (status == "answer") {
 						// "answerTo: (answer)"
+						
+						console.log("Answer: " + message);
+						
 						awaitedAnswers--;
 						if (awaitedAnswers < 0) {
 							awaitedAnswers = 0;
 							st.console.log("Illegal state: Received more answers than sends!");
 						}
-						return message;
+						return message; // No new connection
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var result = handleMessage(message, handlerId);
@@ -154,6 +157,11 @@
 					}
 				}
 				st.console.log("Illegal message received from the server: " + request.responseText);
+			} else if (request.status == 408) { // Server-request to reconnect (timeout)
+				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 408);
+				// TODO Server needs to send info, which kind of connection is timed out (synchronous or not)
+				// re-open same kind of connection here
+				doSend("", false, "forked");
 			} else {
 				st.console.statusInfo("Channel disconnected: " + request.responseText, request.status);
 			}

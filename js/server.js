@@ -17,12 +17,13 @@
 	// 
 
 	home.performOnServer = function(squeakCode) {
-		var args = "";
-		for (var i = 1; i < arguments.length; i++) {
-			// to make sure the arguments and code get sent properly we must url-encode them by escape
-			args += "&arg" + (i - 1) + "=" + st.escapeAll(arguments[i]);
-		}
-		var data = "code=" + st.escapeAll(squeakCode) + args;
+		var args = st.toArray(arguments);
+		args.shift(); // Remove the first argument: the squeakCode
+		var data = {
+			code: squeakCode,
+			args: args
+			};
+		data = JSON.stringify(data);
 		var result = st.communication.send(data, "serverBlock");
 		return st.communication.getMessageHandler("code")(result);
 	};

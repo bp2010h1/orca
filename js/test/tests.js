@@ -33,11 +33,9 @@
 			runTestScript(testScripts[testScript]);
 		}
 		// Send the results to the server
-		/*
 		st.communication.performOnServer(
 			"[ :failed :errors | OrcaJavascriptTest reportJSResults: failed and: errors ]",
 			testResults.fail.length, testResults.error.length);
-		*/
 	};
 
 	home.assert = function (condition, exception_message){

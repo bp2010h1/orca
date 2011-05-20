@@ -62,7 +62,7 @@ st.klass("RemoteObjectTester", {
 			st.tests.assert(returnValue._equals(newObject));
 		},
 		
-		testNewOnServerWithNotTranslatedButReferredClasses: function(){
+		testRemoteNewWithNotTranslatedButReferredClasses: function(){
 			// test purpose: a not translated, but referred class should allow to create remote-objects as well
 			// assumes that OMeta2Base is not translated
 			if (st.OMeta2Base === undefined) {
