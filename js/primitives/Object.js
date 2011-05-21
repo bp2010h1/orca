@@ -3,16 +3,14 @@
 
 (function() {
 
-	var doesNotUnderstand = function(message) {
-		var msg = this + " did not understand " + st.unbox(message.selector());
-		st.Exception.signal_(st.string(msg));
-	};
-
 	st.Object._addInstanceMethods({
-		doesNotUnderstand_: doesNotUnderstand,
 		halt: function() { debugger; },
 		_class: function() { return this._theClass; },
 		
+		doesNotUnderstand_: function(message) {
+			var msg = this + " did not understand " + st.unbox(message.selector());
+			st.Exception.signal_(st.string(msg));
+		},
 		perform_: st.perform,
 		perform_with_: st.perform,
 		perform_with_with_: st.perform,
@@ -30,16 +28,19 @@
 				}
 			}
 			return duplicate;
-			
+		},
+		
+		basicSize: function (){
+			this._class().isVariable().ifTrue_ifFalse_(
+				st.block(function (){ debugger; }), 
+				st.block(function (){ return st.number(0); }));
 		}
 		
 	});
 	st.Object._addClassMethods({
 		asRemote: function() {
 			return st.passMessage(this, st.Message.selector_(st.string("asRemote")));
-		},
-		halt: function() { debugger; },
-		doesNotUnderstand_: doesNotUnderstand
+		}
 	});
 
 })();
