@@ -23,16 +23,17 @@ st.klass("BoxingTester", { instanceMethods: {
 		st.tests.assert(b2.a()._equals(st.number(25)) == st.true);
 	},
 	
-	testCanonicaliBlaBla: function() {
+	testCanonicalization: function() {
 		st.tests.assert(st.number(123123) === st.number(123123), "Equal Numbers are different instances!");
-		st.tests.assert(st.string("123123") === st.number("123123"), "Equal Strings are different instances!");
-		st.tests.assert(st.character("1") === st.number("1"), "Equal characters are different instances!");
+		//st.tests.assert(st.string("123123") === st.string("123123"), "Equal Strings are different instances!");
+		st.tests.assert(st.character("1") === st.character("1"), "Equal characters are different instances!");
 	},
 	
-	testCanonicaliBlaBla_2: function() {
+	testCanonicalization2: function() {
 		st.tests.assert(st.number(123123) !== st.number(123124), "Different Numbers are same instances!");
 		st.tests.assert(st.string("123123") !== st.number("123124"), "Different Strings are same instances!");
-		st.tests.assert(st.character("1") !== st.number("2"), "Different characters are same instances!");
+		st.tests.assert(st.character("1") !== st.character("2"), "Different characters are same instances!");
+		st.tests.assert(st.character("1") !== st.number("1"), "Characters and Numbers are equal instances!");
 	}
 	
 }});
