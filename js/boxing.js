@@ -100,12 +100,12 @@
 	home.object = function(anObject) { return OrcaBox._wrapping(anObject); };
 
 	home.character = function(aString) { 
-		var result = objectPool[aString];
+		var result = characterPool[aString];
 		if (result) return result;
 		
 		result = st.Character._wrapping(aString[0]);
 		result.$value = st.number(aString.charCodeAt(0));
-		objectPool[aString] = result;
+		characterPool[aString] = result;
 		return result; };
 	home.string = function(aString) { 
 		return st.ByteString._wrapping(aString);};
@@ -148,6 +148,10 @@
 	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
 	// canonicalized objects and object-identity
 	var objectPool = [];
+
+	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
+	// canonicalized objects and object-identity. Because a "1" is like 1 on property access, we need a separat pool for Character
+	var characterPool = [];
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
