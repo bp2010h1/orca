@@ -38,6 +38,10 @@
 		},
 		bitAnd_: function (other){
 			return st.number(st.unbox(this) & st.unbox(other));
+		},
+		printOn_base_: function (aStream, base){
+			var numberString = st.unbox(this).toString(st.unbox(base));
+			aStream.nextPutAll_(st.string(numberString));
 		}
 	});
 
