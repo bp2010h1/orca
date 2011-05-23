@@ -140,7 +140,11 @@
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var result = handleMessage(message, handlerId);
-						return doSend(result, false, "answer");
+						if (awaitedAnswers >= 2) {
+							return doSend(result, true, "answer");
+						} else {
+							return doSend(result, false, "answer");
+						}
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
 						if (awaitedAnswers >= 2) {

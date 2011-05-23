@@ -266,15 +266,15 @@
 
 	// Implementation of pooling of special classes
 
-	var pooledClasses = [ st.Number ]; // And st.Character, which is handled below
+	var pooledClasses = [ st.Float, st.Integer ]; // And st.Character, which is handled below
 
-	var poolingWrappingFunction = function(pool) {
+	var poolingWrappingFunction = function(pool, klass) {
 		return function(primitiveValue) {
 			var result;
 			if (primitiveValue in pool) {
 				result = pool[primitiveValue];
 			} else {
-				result = this._newInstance();
+				result = klass._newInstance();
 				result._original = primitiveValue;
 				pool[primitiveValue] = result;
 			}
@@ -284,11 +284,11 @@
 
 	for (var index in pooledClasses) {
 		pooledClasses[index]._addClassMethods({
-			_wrapping: poolingWrappingFunction([])
+			_wrapping: poolingWrappingFunction([], pooledClasses[index])
 		});
 	}
 
-	var characterPoolFunction = poolingWrappingFunction([]);
+	var characterPoolFunction = poolingWrappingFunction([], st.Character);
 	st.Character._addClassMethods({
 		_wrapping: function(primitiveValue) {
 			var result = characterPoolFunction(primitiveValue);

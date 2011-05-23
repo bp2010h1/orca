@@ -1,5 +1,5 @@
 
-st.tests.addDoesNotUnderstandMethods(["new", "environment", "runTests", "test_"], ["new", "environment", "runTests", "test:"]);
+st.tests.addDoesNotUnderstandMethods(["_new", "environment", "runTests", "test_"], ["new", "environment", "runTests", "test:"]);
 
 st.klass("RemoteObjectTester", { 
 
@@ -22,29 +22,29 @@ st.klass("RemoteObjectTester", {
 		
 		testAsRemoteInstanceIsRemoteToo: function(){
 			var remoteObject = st.Object.asRemote();
-			var remoteInstance = remoteObject.new();
+			var remoteInstance = remoteObject._new();
 			st.tests.assert(remoteInstance.isRemote() === st.true);
 		},
 
 		testUnaryMessage: function(){
-			var remoteInstance = st.Object.asRemote().new();
+			var remoteInstance = st.Object.asRemote()._new();
 			st.tests.assert(remoteInstance.isNil() === st.false, ">>isNil as unary message to a remoteObject of Object did not return false.");
 		},
 		
 		testBinaryMessage: function(){
-			var remoteInstance = st.Float.asRemote().new(); //float get initialized to 2.2...
+			var remoteInstance = st.Float.asRemote()._new(); //float get initialized to 2.2...
 			st.tests.assert(remoteInstance._less(st.number(3)));
 		},
 		
 		testKeywordMessage: function(){
-			var remoteInstance = st.OrderedCollection.asRemote().new();
+			var remoteInstance = st.OrderedCollection.asRemote()._new();
 			var addedValue = remoteInstance.add_(st.number(1));
 			st.tests.assert(addedValue._equals(st.number(1)));
 			st.tests.assert(remoteInstance.first()._equals(st.number(1)));
 		},
 
 		testRemoteSymbol: function(){
-			var remoteInstance = st.Object.asRemote().new();
+			var remoteInstance = st.Object.asRemote()._new();
 			var remoteObjectClass = remoteInstance._class();
 			st.tests.assert(remoteObjectClass.isRemote());
 			var remoteObjectClassName = remoteObjectClass.name();
@@ -53,14 +53,14 @@ st.klass("RemoteObjectTester", {
 		},
 		
 		testRemoteObjectIdentity: function(){
-			var remoteInstance = st.Object.asRemote().new();
+			var remoteInstance = st.Object.asRemote()._new();
 			st.tests.assert(remoteInstance.yourself()._equals(remoteInstance));
 		},
 		
 		*/
 		
 		testObjectParameter: function() {
-			var remoteInstance = st.OrderedCollection.asRemote().new();
+			var remoteInstance = st.OrderedCollection.asRemote()._new();
 			var newObject = st.Object._newInstance();
 			var returnValue = remoteInstance.add_(newObject);
 			st.tests.assert(returnValue._equals(newObject));
@@ -70,20 +70,20 @@ st.klass("RemoteObjectTester", {
 			// test purpose: a not translated, but referred class should allow to create remote-objects as well
 			// assumes that OMeta2Base is not translated
 			if (st.OMeta2Base === undefined) {
-					// setup but only for this test case
-					// OMeta2Base is not translated and not in referred classes: so we handle it as we handle referred classes
-					st.__defineGetter__("OMeta2Base", function() {
-						return st.ILLEGAL_GLOBAL_HANDLER("OMeta2Base");
-					});
-					
-					var referredClass = st.OMeta2Base;
-					st.tests.assert(referredClass.isReferredClass() === st.true);
-					
-					var remoteClass = referredClass.asRemote();
-					st.tests.assert(remoteClass.isRemote() === st.true);
-					
-					var className = remoteClass.name();
-					st.tests.assert(st.unbox(className) === "OMeta2Base");
+				// setup but only for this test case
+				// OMeta2Base is not translated and not in referred classes: so we handle it as we handle referred classes
+				st.__defineGetter__("OMeta2Base", function() {
+					return st.ILLEGAL_GLOBAL_HANDLER("OMeta2Base");
+				});
+				
+				var referredClass = st.OMeta2Base;
+				st.tests.assert(referredClass.isReferredClass() === st.true);
+				
+				var remoteClass = referredClass.asRemote();
+				st.tests.assert(remoteClass.isRemote() === st.true);
+				
+				var className = remoteClass.name();
+				st.tests.assert(st.unbox(className) === "OMeta2Base");
 			}
 		},
 		
@@ -100,7 +100,7 @@ st.klass("RemoteObjectTester", {
 		},
 		
 		testServerSide: function(){
-			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote().new();
+			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote()._new();
 			if (!remoteTestCase.runTests()._unbox()){
 				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
 			}

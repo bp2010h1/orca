@@ -62,7 +62,7 @@
 			var className = message.remoteIdForClass;
 			if (className in st) {
 				var remoteID = reachableObjectMap.length;
-				reachableObjectMap[remoteID] = st[className]._new();
+				reachableObjectMap[remoteID] = st[className];
 				answer = { rid: remoteID };
 			} else {
 				answer = { error: "ClassNotFound" };
