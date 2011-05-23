@@ -22,7 +22,7 @@
 	// Settings
 	// 
 
-	home.DEBUG_ON_ERROR = false;
+	home.DEBUG_ON_ERROR = true;
 
 	// 
 	// API functions
