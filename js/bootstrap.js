@@ -22,8 +22,8 @@
 
 	// Settings
 	if (!("ILLEGAL_GLOBAL_HANDLER" in home)) home.ILLEGAL_GLOBAL_HANDLER = 
-		function(handlerName) {
-			throw "The global/class '" + handlerName + 
+		function(globalName) {
+			throw "The global/class '" + globalName + 
 				"' has been accessed but is not defined on the client!" +
 				" Add it as requiredClass.";
 		};

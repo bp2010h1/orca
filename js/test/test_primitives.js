@@ -129,6 +129,7 @@ st.klass("PrimitivesTester", {
 		},
 	
 		testPrimitivesNeededForStoreString: function() {
+			debugger;
 			st.tests.assert(st.unbox(st.Object._new().storeString()) == "(Object basicNew yourself)", "A plain Object can not be serialized.");
 			st.tests.assert(st.unbox(st.number(1).storeString()) == "1", "Integer storeString failed");
 			st.tests.assert(st.unbox(st.number(1)._at(st.number(2)).storeString()) == "(1@2)", "A Point is not written to stream.");

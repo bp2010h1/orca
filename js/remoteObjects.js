@@ -158,7 +158,7 @@
 			asRemote: function() {return st.Object.asRemote.apply(this, arguments)},
 			halt: function() {return st.Object.halt.apply(this, arguments)},
 			isBehavior: function() {return st.ProtoObject.isBehavior.apply(this, arguments)},
-			doesNotUnderstand_: function() {return st.Object.doesNotUnderstand_.apply(this, arguments)},
+			doesNotUnderstand_: function() { standardIllegalGlobalHandler(this._name); },
 			isRemote: function() {return st.false},
 			isReferredClass: function() {return st.true},
 			name: function() {return st.box(this._name)}

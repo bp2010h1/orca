@@ -17,15 +17,17 @@
 	// 
 
 	home.performOnServer = function(squeakCode) {
-		var args = st.toArray(arguments);
-		args.shift(); // Remove the first argument: the squeakCode
+		var args = [];
+		for (var i = 1; i < arguments.length; i++) {
+			args.push(arguments[i].storeString ? arguments[i].storeString() : arguments[i]);
+		}
 		var data = {
 			code: squeakCode,
 			args: args
 			};
 		data = JSON.stringify(data);
 		var result = st.communication.send(data, "serverBlock");
-		return st.communication.getMessageHandler("code")(result);
+		return st.globalEval("(function() {" + result + "})());
 	};
 
 	home.serverBlock = function (squeakCode) {

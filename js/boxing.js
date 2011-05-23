@@ -293,7 +293,7 @@
 		_wrapping: function(primitiveValue) {
 			var result = characterPoolFunction(primitiveValue);
 			// TODO bad: this is set on each access to the character, even if an already pooled object is accessed
-			result.$value = primitiveValue.charCodeAt(0);
+			result.$value = st.number(primitiveValue.charCodeAt(0));
 			return result;
 		}
 	});
