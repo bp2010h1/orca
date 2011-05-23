@@ -99,28 +99,16 @@
 	home.array = function(anArray) { return st.Array._wrapping(anArray); };
 	home.object = function(anObject) { return OrcaBox._wrapping(anObject); };
 
-	home.character = function(aString) { 
-		var result = characterPool[aString];
-		if (result) return result;
-		
-		result = st.Character._wrapping(aString[0]);
-		result.$value = st.number(aString.charCodeAt(0));
-		characterPool[aString] = result;
-		return result; };
-	home.string = function(aString) { 
-		return st.ByteString._wrapping(aString);};
-	home.number = function(aNumber) { 
-		var result = objectPool[aNumber];
-		if (result) return result;
-
+	home.character = function(aString) { return st.Character._wrapping(aString[0]); };
+	home.string = function(aString) { return st.ByteString._wrapping(aString);};
+	home.number = function(aNumber) {
+		// Try to simulate the Squeak-Number-Library
 		if (/^(-)?\d+$/.test(aNumber + "")){
-			result = st.Integer._wrapping(aNumber);
+			return st.Integer._wrapping(aNumber);
 		} else {
-			result = st.Float._wrapping(aNumber);
+			return st.Float._wrapping(aNumber);
 		}
-
-		objectPool[aNumber] = result;
-		return result; };
+	};
 
 	home.boundBlock = function(func, that) {
 		// if we box a javascript function into a smalltalk block we must bind it on creation
@@ -144,14 +132,6 @@
 	//
 	// Private functions
 	//
-
-	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
-	// canonicalized objects and object-identity
-	var objectPool = [];
-
-	// This array maps native objects (it's keys) to Squeak-boxes (it's values) to ensure
-	// canonicalized objects and object-identity. Because a "1" is like 1 on property access, we need a separat pool for Character
-	var characterPool = [];
 
 	var isBoxedObject = function() { throw "just access this slot without calling."; };
 
@@ -283,5 +263,39 @@
 			}
 		});
 	}
+
+	// Implementation of pooling of special classes
+
+	var pooledClasses = [ st.Number ]; // And st.Character, which is handled below
+
+	var poolingWrappingFunction = function(pool) {
+		return function(primitiveValue) {
+			var result;
+			if (primitiveValue in pool) {
+				result = pool[primitiveValue];
+			} else {
+				result = this._newInstance();
+				result._original = primitiveValue;
+				pool[primitiveValue] = result;
+			}
+			return result;
+		}
+	};
+
+	for (var index in pooledClasses) {
+		pooledClasses[index]._addClassMethods({
+			_wrapping: poolingWrappingFunction([])
+		});
+	}
+
+	var characterPoolFunction = poolingWrappingFunction([]);
+	st.Character._addClassMethods({
+		_wrapping: function(primitiveValue) {
+			var result = characterPoolFunction(primitiveValue);
+			// TODO bad: this is set on each access to the character, even if an already pooled object is accessed
+			result.$value = primitiveValue.charCodeAt(0);
+			return result;
+		}
+	});
 
 })();

@@ -7,6 +7,8 @@ st.klass("RemoteObjectTester", {
 	instanceVariables: [ ],
 
 	instanceMethods: {
+	
+	/*
 		testAsRemote: function(){
 			var remoteObject = st.Object.asRemote();
 			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.asRemote() is not remote.");
@@ -54,6 +56,8 @@ st.klass("RemoteObjectTester", {
 			var remoteInstance = st.Object.asRemote().new();
 			st.tests.assert(remoteInstance.yourself()._equals(remoteInstance));
 		},
+		
+		*/
 		
 		testObjectParameter: function() {
 			var remoteInstance = st.OrderedCollection.asRemote().new();
