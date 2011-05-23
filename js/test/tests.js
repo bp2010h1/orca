@@ -7,6 +7,7 @@
 // st.tests.deny(boolean, exceptionMessage)
 // st.tests.assertEquals(anObject, aReferenceObject, exeptionMessage)
 // st.tests.runTests(testScripts)
+// st.tests.addDoesNotUnderstandMethods(jsFunctionNamesAsStringArray, squeakFunctionNamesAsStringArray)
 
 // Settings:
 // st.tests.DEBUG_ON_ERROR (boolean)
@@ -21,7 +22,7 @@
 	// Settings
 	// 
 
-	home.DEBUG_ON_ERROR = false;
+	home.DEBUG_ON_ERROR = true;
 
 	// 
 	// API functions
