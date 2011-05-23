@@ -109,6 +109,7 @@
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		awaitedAnswers++;
+		st.console.log("Sending " + status + " to " + handlerId + ": " + data);
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
@@ -128,9 +129,7 @@
 					var message = unescape(response[3]);
 					if (status == "answer") {
 						// "answerTo: (answer)"
-						
-						console.log("Answer: " + message);
-						
+						console.log("Received answer: " + message);
 						awaitedAnswers--;
 						if (awaitedAnswers < 0) {
 							awaitedAnswers = 0;

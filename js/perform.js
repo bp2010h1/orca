@@ -59,6 +59,7 @@
 		
 		"st": "" // Our namespace
 	};
+	for (index in reservedWords) reservedWords[index] = true; // something trueish
 
 	var characterList = {
 		":": '',
