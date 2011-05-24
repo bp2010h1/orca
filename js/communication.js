@@ -161,8 +161,8 @@
 					}
 				}
 				st.console.log("Illegal message received from the server: " + request.responseText);
-			} else if (request.status == 408) { // Server-request to reconnect (timeout)
-				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 408);
+			} else if (request.status == 299) { // Server-request to reconnect (timeout), not 408 since that's displayed as error in chrome
+				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 229);
 				// TODO Server needs to send info, which kind of connection is timed out (synchronous or not)
 				// re-open same kind of connection here
 				doSend("", false, "forked");
