@@ -71,8 +71,9 @@
 		function(messageString) { st.console.log("Received unhandled message: " + messageString); });
 	home.addMessageHandler("code",
 		function(messageString) {
-			var result = st.globalEval(messageString);
-			return result.storeString ? result.storeString() : result; });
+			var evalResult = st.globalEval(messageString);
+			var result = evalResult.storeString ? evalResult.storeString() : evalResult;
+			return st.unbox(st.box(result)) });
 
 	// Use the configured message-handler to evaluate and log the content
 	var handleMessage = function(content, handlerId) {
