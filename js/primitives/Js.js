@@ -5,6 +5,7 @@
 
 	var Global = null;
 	var Document = null;
+	var Window = null;
 
 	// Set up setInterval to track all added intervals
 	var intervals = [];
@@ -24,6 +25,11 @@
 			if (!Global)
 				Global = st.box(window);
 			return Global;
+		},
+		Window: function() {
+			if (!Window)
+				Window = st.box(window);
+			return Window;
 		},
 		clearIntervals: function() {
 			for (var i = 0; i < intervals.length; i++) {
