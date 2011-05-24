@@ -97,6 +97,9 @@ st.klass("RemoteObjectTester", {
 		},
 		
 		testServerSide: function(){
+			st.__defineGetter__("OrcaRemoteObjectsServerSideTest", function() {
+				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteObjectsServerSideTest");
+			});
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote()._new();
 			if (!remoteTestCase.runTests()._unbox()){
 				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
