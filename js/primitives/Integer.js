@@ -42,6 +42,18 @@
 		printOn_base_: function (aStream, base){
 			var numberString = st.unbox(this).toString(st.unbox(base));
 			aStream.nextPutAll_(st.string(numberString));
+		},
+		digitDiv_neg_: function(arg, ng) {
+			var divident = st.unbox(this);
+			var divisor = st.unbox(arg);
+			var isNegative = st.unbox(ng);
+			var remainder = divident % divisor;
+			var quotient = (divident - remainder) / divisor;
+			if (isNegative) {
+				return st.array([st.number(-1 * quotient), st.number(remainder)]);
+			} else {
+				return st.array([st.number(quotient), st.number(remainder)]);
+			}
 		}
 	});
 
