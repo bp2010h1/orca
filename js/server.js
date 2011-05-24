@@ -27,7 +27,7 @@
 			};
 		data = JSON.stringify(data);
 		var result = st.communication.send(data, "serverBlock");
-		return st.globalEval("(function() {" + result + "})());
+		return st.globalEval("(function() {" + result + "})()");
 	};
 
 	home.serverBlock = function (squeakCode) {

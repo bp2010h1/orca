@@ -37,11 +37,13 @@
 	// 
 
 	home.send = function(data, handlerId) {
+		awaitedAnswers++;
 		return doSend(data, true, "blocked", handlerId);
 	};
 
 	home.sendForked = function(data, handlerId) {
 		// No meaningfull result-value when sending forked
+		awaitedAnswers++;
 		doSend(data, false, "forked", handlerId, true);
 		return null;
 	};
@@ -70,9 +72,7 @@
 	home.addMessageHandler("default",
 		function(messageString) { st.console.log("Received unhandled message: " + messageString); });
 	home.addMessageHandler("code",
-		function(messageString) {
-			var result = st.globalEval(messageString);
-			return result.storeString ? result.storeString() : result; });
+		function(messageString) { return st.globalEval(messageString); });
 
 	// Use the configured message-handler to evaluate and log the content
 	var handleMessage = function(content, handlerId) {
@@ -110,8 +110,7 @@
 			request.onreadystatechange = function() { answerToMessage(request); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		awaitedAnswers++;
-		st.console.log("Sending " + status + " to " + handlerId + ": " + data);
+		st.console.log("Sending (synchronous: " +isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
@@ -141,14 +140,14 @@
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var result = handleMessage(message, handlerId);
-						if (awaitedAnswers >= 2) {
+						if (awaitedAnswers > 0) {
 							return doSend(result, true, "answer");
 						} else {
 							return doSend(result, false, "answer");
 						}
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
-						if (awaitedAnswers >= 2) {
+						if (awaitedAnswers > 0) {
 							// Inside any blocking send from the client, a forked
 							// send from the server becomes blocking, because the clientInformation
 							// needs the opening connection to block

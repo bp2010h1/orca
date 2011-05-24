@@ -74,5 +74,12 @@
 	for (aClass in st.klasses) {
 		st.klasses[aClass]._initializeInstanceVariables(home.nil);
 	}
+	
+	st.communication.addMessageHandler("inSessionBlock",
+		function(messageString) {
+			var evalResult = st.communication.getMessageHandler("code")(messageString);
+			var result = (evalResult && evalResult.storeString) ? evalResult.storeString() : evalResult;
+			return st.unbox(st.box(result)); // unbox(box(x)) e.g. x is undefined => nil 
+	});
 
 })();

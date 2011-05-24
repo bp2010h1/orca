@@ -56,8 +56,6 @@ st.klass("RemoteObjectTester", {
 			st.tests.assert(remoteInstance.yourself()._equals(remoteInstance));
 		},
 		
-		
-		
 		testObjectParameter: function() {
 			var remoteInstance = st.OrderedCollection.asRemote()._new();
 			var newObject = st.Object._newInstance();
@@ -102,6 +100,8 @@ st.klass("RemoteObjectTester", {
 			var remoteTestCase = st.OrcaRemoteObjectsServerSideTest.asRemote()._new();
 			if (!remoteTestCase.runTests()._unbox()){
 				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
+				// testAsRemoteInSession: a #asRemoteIn:-message results in a RemoteObject?
+				// test
 			}
 		}
 
