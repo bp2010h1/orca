@@ -31,6 +31,10 @@ st.klass("StoreStringTester", {
 			var storeString = st.string("testCase").storeString();
 			st.tests.assert(st.unbox(storeString) === "'testCase'");
 		},
+		testAssociationStoreString: function (){
+			var storeString = st.number(1)._minus_greater(st.number(2)).storeString();
+			st.tests.assert(st.unbox(storeString) === "(1->2)");
+		},
 		testResultStoreString: function (){
 			var storeString = st.TestResult._new().storeString();
 			st.tests.assert(/\(TestResult basicNew instVarAt: 1 put: '[0-9]{1,2} [^ ]{3,} 20[0-9]{2} [0-9]{1,2}:[0-9]{2}:[0-9]{2} pm' asTimeStamp; instVarAt: 2 put: \(\(Set new\)\); instVarAt: 3 put: \(\(OrderedCollection new\)\); instVarAt: 4 put: \(\(OrderedCollection new\)\); yourself\)/.test(st.unbox(storeString)));
