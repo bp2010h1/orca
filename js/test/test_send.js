@@ -138,18 +138,6 @@ st.klass("SendTester", {
 			performTest("brfrfa4");
 		},
 		
-		test5: function() {
-			performTest("");
-		},
-		
-		test6: function() {
-			performTest("");
-		},
-		
-		test7: function() {
-			performTest("");
-		}
-		
 	}
 
 });
