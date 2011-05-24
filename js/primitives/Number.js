@@ -14,6 +14,9 @@
 				decimalCount++;
 			}
 			return st.number(result.toFixed(decimalCount));
+		},
+		raisedTo_: function(exp) {
+			return st.number(Math.exp(st.unbox(this), st.unbox(exp)));
 		}
 	});
 

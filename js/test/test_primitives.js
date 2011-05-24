@@ -126,13 +126,6 @@ st.klass("PrimitivesTester", {
 			
 			b = block.jsNewWithArgs_(["b"]);
 			st.tests.assert(b._original.a == "a" && b._original.b == "b", "jsNewWithArgs_() on BlockClosure");
-		},
-	
-		testPrimitivesNeededForStoreString: function() {
-			st.tests.assert(st.unbox(st.Object._new().storeString()) == "(Object basicNew yourself)", "A plain Object can not be serialized.");
-			st.tests.assert(st.unbox(st.number(1).storeString()) == "1", "Integer storeString failed");
-			st.tests.assert(st.unbox(st.number(1)._at(st.number(2)).storeString()) == "(1@2)", "A Point is not written to stream.");
-			st.tests.assert(st.unbox(st.array([st.number(1), st.number(2)]).storeString()) == "#(1 2 )", "Array serialization failed.");
 		}
 		
 	}
