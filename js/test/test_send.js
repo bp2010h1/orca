@@ -1,16 +1,83 @@
 
+var handlerId = "testsend";
+
 var send = function(data) {
-	return st.communication.send(data, "testsend");
+	return st.communication.send(data, handlerId);
 }
 
 var sendForked = function(data) {
-	return st.communication.sendForked(data, "testsend");
+	return st.communication.sendForked(data, handlerId);
 }
 
 var asynchMessages = 0;
 
-var handler = function(message) {
+var taskHandler = function(message) {
 	// If message is an empty String, this test is finished
+	var nextTask = null;
+	if (message.length > 0) {
+		var firstChar = message[0];
+		var rest = message.substr(1);
+		switch (firstChar) {
+			case 'a': 
+				// Answer directly
+				return rest;
+			case 'b': 
+				// Blocked send
+				nextTask = send(rest);
+				break;
+			case 'f': 
+				// Forked send
+				sendForked("asynch");
+				nextTask = rest;
+				break;
+			case 'r': 
+				// Forked send, asynch reply expected
+				sendForked("asynch please reply");
+				nextTask = rest;
+				break;
+
+			case '0': 
+				// Check, that 0 asynch sends has arrived in the meantime
+				st.tests.assert(asynchMessages == 0);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
+			case '1': 
+				// Check, that 1 asynch send has arrived in the meantime
+				st.tests.assert(asynchMessages == 1);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
+			case '2': 
+				// Check, that 2 asynch sends has arrived in the meantime
+				st.tests.assert(asynchMessages == 2);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
+			case '3': 
+				// Check, that 3 asynch sends has arrived in the meantime
+				st.tests.assert(asynchMessages == 3);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
+			case '4': 
+				// Check, that 4 asynch sends has arrived in the meantime
+				st.tests.assert(asynchMessages == 4);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
+		}
+	}
+	if (nextTask != null) {
+		return taskHandler(nextTask);
+	}
+	if (message == "") {
+		return "tests ok";
+	}
+	return "BAD TESTS IN taskHandler";
+};
+
+st.communication.addMessageHandler(handlerId, function(message) {
 	if (message == "asynch") {
 		// When receiving a forked message, don't send anything.
 		// It would get lost, as testing here cannot handle forked threads.
@@ -21,65 +88,11 @@ var handler = function(message) {
 		// Server want an answer to an asynch message
 		return sendForked("asynch");
 	}
-	if (message.length > 0) {
-		var firstChar = message[0];
-		var rest = message.substr(1);
-		switch (firstChar) {
-			case 'b': 
-				// Blocked send
-				return send(rest);
-				break;
-			case 'f': 
-				// Forked send
-				return sendForked("asynch");
-				break;
-			case 'r': 
-				// Forked send, asynch reply expected
-				return sendForked("asynch please reply");
-				break;
-			case 'a': 
-				// Answer directly
-				return rest;
-				break;
-			case '0': 
-				// Check, that 0 asynch sends has arrived in the meantime
-				st.tests.assert(asynchMessages == 0);
-				asynchMessages = 0;
-				return handler(rest);
-				break;
-			case '1': 
-				// Check, that 1 asynch send has arrived in the meantime
-				st.tests.assert(asynchMessages == 1);
-				asynchMessages = 0;
-				return handler(rest);
-				break;
-			case '2': 
-				// Check, that 2 asynch sends has arrived in the meantime
-				st.tests.assert(asynchMessages == 2);
-				asynchMessages = 0;
-				return handler(rest);
-				break;
-			case '3': 
-				// Check, that 3 asynch sends has arrived in the meantime
-				st.tests.assert(asynchMessages == 3);
-				asynchMessages = 0;
-				return handler(rest);
-				break;
-			case '4': 
-				// Check, that 4 asynch sends has arrived in the meantime
-				st.tests.assert(asynchMessages == 4);
-				asynchMessages = 0;
-				return handler(rest);
-				break;
-		}
-	}
-	return "tests ok";
-};
-
-st.communication.addMessageHandler("testsend", handler);
+	return taskHandler(message);
+});
 
 var performTest = function(testSpec) {
-	st.tests.assert("tests ok" == handler(testSpec), "Send test-spec failed: " + testSpec);
+	st.tests.assert("tests ok" == taskHandler(testSpec), "Send test-spec failed: " + testSpec);
 }
 
 st.klass("SendTester", { 
@@ -89,7 +102,7 @@ st.klass("SendTester", {
 
 	instanceMethods: {
 		
-		test1: function() {
+		_test1: function() {
 			// Send blocked and expect immediate answer
 			// No asynch messages in the meantime
 			performTest("ba0");
@@ -107,7 +120,15 @@ st.klass("SendTester", {
 			// Client calls forked, server replies with forked.
 			// Client returs, Server returns. One asynch message has arrived on client.
 			
-			performTest("bbra1");
+			performTest("bbraa1");
+		},
+		
+		test2: function() {
+			// b>
+			//   f<
+			//   a<
+			
+			performTest("bfa1");
 		},
 		
 		test3: function() {
@@ -142,8 +163,10 @@ st.klass("SendTester", {
 
 });
 
-// st.SendTester._newInstance();
+st.SendTester._newInstance();
 
 // This leads to this test being commented out
+
 var a = {testMock:function(){}};
 a;
+
