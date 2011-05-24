@@ -74,7 +74,7 @@ var handler = function(message) {
 		}
 	}
 	return "tests ok";
-});
+};
 
 st.communication.addMessageHandler("testsend", handler);
 
@@ -142,4 +142,8 @@ st.klass("SendTester", {
 
 });
 
-st.SendTester._newInstance();
+// st.SendTester._newInstance();
+
+// This leads to this test being commented out
+var a = {testMock:function(){}};
+a;
