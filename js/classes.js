@@ -351,6 +351,7 @@
 					} else if (home.DEBUG) {
 						debugger;
 					}else {
+						console.log("Forward Caught ST-Exception: " + e.message);
 						/* is an ST Exception */
 						throw e;
 					}
