@@ -109,7 +109,7 @@
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		awaitedAnswers++;
-		st.console.log("Sending " + status + " to " + handlerId + ": " + data);
+		st.console.log("Sending ( Synchronous: " +isSynchronous + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
