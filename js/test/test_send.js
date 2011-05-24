@@ -102,7 +102,7 @@ st.klass("SendTester", {
 
 	instanceMethods: {
 		
-		test1: function() {
+		_test1: function() {
 			// Send blocked and expect immediate answer
 			// No asynch messages in the meantime
 			performTest("ba0");
@@ -120,7 +120,15 @@ st.klass("SendTester", {
 			// Client calls forked, server replies with forked.
 			// Client returs, Server returns. One asynch message has arrived on client.
 			
-			performTest("bbra1");
+			performTest("bbraa1");
+		},
+		
+		test2: function() {
+			// b>
+			//   f<
+			//   a<
+			
+			performTest("bfa1");
 		},
 		
 		test3: function() {
@@ -158,7 +166,7 @@ st.klass("SendTester", {
 st.SendTester._newInstance();
 
 // This leads to this test being commented out
-/*
+
 var a = {testMock:function(){}};
 a;
-*/
+
