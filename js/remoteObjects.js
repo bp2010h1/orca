@@ -76,8 +76,13 @@
 					args.push(parseAnswer(message.args[index]));
 				}
 				var messageInstance = st.Message.selector_arguments_(st.box(message.selector), st.box(args));
-				var answerObject = messageInstance.sendTo_(reachableObject);
-				answer = serializeOrExpose(answerObject);
+				try {
+					var answerObject = messageInstance.sendTo_(reachableObject);
+					answer = serializeOrExpose(answerObject);
+				} catch (e) {
+					var errorString = (e && e.messageText) ? st.unbox(e.messageText) : e+"";
+					answer = { error: errorString };
+				}
 			} else {
 				answer = { error: "RemoteObjectNotAvailable" };
 			}

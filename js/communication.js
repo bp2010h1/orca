@@ -110,7 +110,7 @@
 			request.onreadystatechange = function() { answerToMessage(request); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		st.console.log("Sending " + status + " to " + handlerId + ": " + data);
+		st.console.log("Sending (synchronous: " +isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
