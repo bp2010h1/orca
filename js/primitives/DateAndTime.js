@@ -16,6 +16,12 @@
 				st.number(now.getUTCSeconds()),
 				st.number(now.getUTCMilliseconds() * 1000000),
 				st.Duration.minutes_(st.number(-1 * now.getTimezoneOffset()))); 
+		},
+		localTimeZone: function () {
+			return st.TimeZone.offset_name_abbreviation_(
+				st.Duration.minutes_(st.number(-1 * (new Date()).getTimezoneOffset())),
+				st.string("Local Timezone"),
+				st.string("LT"));
 		}
 	});
 })();
