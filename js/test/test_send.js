@@ -39,27 +39,42 @@ var taskHandler = function(message) {
 			case '0': 
 				// Check, that 0 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 0);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
 			case '1': 
 				// Check, that 1 asynch send has arrived in the meantime
 				st.tests.assert(asynchMessages == 1);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
 			case '2': 
 				// Check, that 2 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 2);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
 			case '3': 
 				// Check, that 3 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 3);
+				asynchMessages = 0;
+				nextTask = rest;
+				break;
 			case '4': 
 				// Check, that 4 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 4);
-			case 'all_numbers': // Above cases enter here, because there is no break;
 				asynchMessages = 0;
 				nextTask = rest;
+				break;
 		}
 	}
 	if (nextTask != null) {
 		return taskHandler(nextTask);
 	}
-	return "tests ok";
+	if (message == "") {
+		return "tests ok";
+	}
+	return "BAD TESTS IN taskHandler";
 };
 
 st.communication.addMessageHandler(handlerId, function(message) {
@@ -73,11 +88,11 @@ st.communication.addMessageHandler(handlerId, function(message) {
 		// Server want an answer to an asynch message
 		return sendForked("asynch");
 	}
-	return "BAD TESTS";
+	return taskHandler(message);
 });
 
 var performTest = function(testSpec) {
-	st.tests.assert("tests ok" == handler(testSpec), "Send test-spec failed: " + testSpec);
+	st.tests.assert("tests ok" == taskHandler(testSpec), "Send test-spec failed: " + testSpec);
 }
 
 st.klass("SendTester", { 
