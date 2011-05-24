@@ -72,7 +72,7 @@
 	home.addMessageHandler("code",
 		function(messageString) {
 			var result = st.globalEval(messageString);
-			return result.storeString ? result.storeString() : result; });
+			return (result && result.storeString) ? result.storeString() : result; });
 
 	// Use the configured message-handler to evaluate and log the content
 	var handleMessage = function(content, handlerId) {
