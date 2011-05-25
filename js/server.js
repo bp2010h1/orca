@@ -23,7 +23,7 @@
 		}
 		var data = {
 			code: squeakCode,
-			args: args
+			args: st.unboxIterable(args)
 			};
 		data = JSON.stringify(data);
 		var result = st.communication.send(data, "serverBlock");
