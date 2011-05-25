@@ -40,6 +40,15 @@ st.klass("StoreStringTester", {
 			st.tests.assert(/\(TestResult basicNew instVarAt: 1 put: '[0-9]{1,2} [^ ]{3,} 20[0-9]{2} [0-9]{1,2}:[0-9]{2}:[0-9]{2} pm' asTimeStamp; instVarAt: 2 put: \(\(Set new\)\); instVarAt: 3 put: \(\(OrderedCollection new\)\); instVarAt: 4 put: \(\(OrderedCollection new\)\); yourself\)/.test(st.unbox(storeString)));
 		},
 		
+		testClientSideTestCaseStoreString: function (){
+			var expectedString = '(OrcaClientSideTestCase basicNew instVarAt: 1 put: nil; instVarAt: 2 put: nil; yourself)';
+			var storeString = st.OrcaClientSideTestCase._new().storeString();
+
+
+			st.tests.assert(expectedString == st.unbox(storeString));
+		},
+		
+		
 	}
 });
 

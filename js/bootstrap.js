@@ -71,8 +71,8 @@
 	st.Class._inheritFrom(st.ClassDescription);
 
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
-	for (aClass in st.klasses) {
-		st.klasses[aClass]._initializeInstanceVariables(home.nil);
+	for (aClass in st.classes) {
+		st.classes[aClass]._initializeInstanceVariables(home.nil);
 	}
 	
 	st.communication.addMessageHandler("inSessionBlock",
