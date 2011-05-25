@@ -36,8 +36,9 @@ st.klass("StoreStringTester", {
 			st.tests.assert(st.unbox(storeString) === "(1->2)");
 		},
 		testResultStoreString: function (){
+			debugger;
 			var storeString = st.TestResult._new().storeString();
-			st.tests.assert(/\(TestResult basicNew instVarAt: 1 put: '[0-9]{1,2} [^ ]{3,} 20[0-9]{2} [0-9]{1,2}:[0-9]{2}:[0-9]{2} pm' asTimeStamp; instVarAt: 2 put: \(\(Set new\)\); instVarAt: 3 put: \(\(OrderedCollection new\)\); instVarAt: 4 put: \(\(OrderedCollection new\)\); yourself\)/.test(st.unbox(storeString)));
+			st.tests.assert(/\(TestResult basicNew instVarAt: 1 put: '[0-9]{1,2} [^ ]{3,} 20[0-9]{2} [0-9]{1,2}:[0-9]{2}:[0-9]{2} (am|pm)' asTimeStamp; instVarAt: 2 put: \(\(Set new\)\); instVarAt: 3 put: \(\(OrderedCollection new\)\); instVarAt: 4 put: \(\(OrderedCollection new\)\); yourself\)/.test(st.unbox(storeString)));
 		},
 		
 		testClientSideTestCaseStoreString: function (){
