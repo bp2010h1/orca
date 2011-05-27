@@ -280,7 +280,7 @@
 			for(idx in variableNames) {
 				this._instancePrototype.prototype[variableNames[idx]] = defaultValue;
 			}
-			this._instancePrototype.prototype.instanceVariables = variableNames;
+			this._instancePrototype.prototype.instanceVariables = (this._instancePrototype.prototype.instanceVariables === undefined) ? variableNames : this._instancePrototype.prototype.instanceVariables.concat(variableNames);
 		}
 		
 		newClass._inheritFrom = function(superClass) {

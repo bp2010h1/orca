@@ -189,6 +189,10 @@
 			perform_with_with_with_: st.perform,
 			perform_withArguments_: function (aSTMessageSelector, anArgumentsCollection){
 				return st.perform.apply(this, home.unbox(anArgumentsCollection));
+			},
+			storeOn_ : function( aWriteStream) {
+				aWriteStream.nextPutAll_(st.string("nil"));
+			    return this;
 			}
 		}
 	});

@@ -40,7 +40,7 @@
 				return st.Error.signal("Access to instVarAt: without Integer Parameter");
 			}
 			var jsIndex = st.unbox(index) - 1;
-			if (jsIndex > this.instanceVariables.length) {
+			if (jsIndex >= this.instanceVariables.length) {
 				if (this._class().isVariable() === st.false){
 					return st.Error.signal("Access to an instVar at an index out of bounds.")
 				} else {
@@ -48,7 +48,7 @@
 					debugger;
 				}
 			}
-			return this[this.instanceVariables[jsIndex]]
+			return this[this.instanceVariables[jsIndex]];
 		}
 		
 	});
