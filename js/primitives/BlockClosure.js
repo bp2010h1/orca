@@ -24,12 +24,13 @@
 			return func.apply(this, st.unbox(args));
 		},
 		
-		// Up to 4 arguments, the Squeak-methods implemented
+		// Up to 5 arguments, the Squeak-methods implemented
 		value: __blockValue,
 		value_: __blockValue,
 		value_value_: __blockValue,
 		value_value_value_: __blockValue,
 		value_value_value_value_: __blockValue,
+		value_value_value_value_value_: __blockValue,
 		valueWithArguments_: function(args) {
 			return this._callFunction(__blockValue, args);
 		},
