@@ -70,11 +70,8 @@
 	st.Metaclass._inheritFrom(st.ClassDescription);
 	st.Class._inheritFrom(st.ClassDescription);
 
-	home.TRACK_INSTANCES = false;
-
 	// Now, that nil is available, initialize all instance-variables of all classes to nil
 	for (aClass in st.classes) {
-		st.classes[aClass]._instances = null;
 		st.classes[aClass]._initializeInstanceVariables(home.nil);
 	}
 	

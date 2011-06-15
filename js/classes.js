@@ -39,7 +39,6 @@
 	// Settings
 	if (!("DEBUG" in home)) home.DEBUG = true;
 	if (!("PRINT_CALLS" in home)) home.PRINT_CALLS = false;
-	if (!("TRACK_INSTANCES" in home)) home.TRACK_INSTANCES = true;
 
 	// Globals
 	home.classes = [];
@@ -242,17 +241,14 @@
 											: "instance_of_" + classname
 										) + "() { })")) 
 								: (function () { });
-		
-		if(st.TRACK_INSTANCES)						
-			newClass._instances = new Array();
+								
+		newClass._instances = new Array();
 		
 		newClass._newInstance = function() {
 			var instance = new this._instancePrototype();
 			instanceCount++; 
 			instance._instanceNumber = instanceCount;
-
-			if(st.TRACK_INSTANCES)						
-				this._instances.push(instance);
+			this._instances.push(instance);
 			
 			return instance;				
 		}
