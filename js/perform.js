@@ -44,7 +44,7 @@
 		"byte": "", "case": "", "catch": "", "char": "", 
 		"class": "", "continue": "", "const": "", "debugger": "", 
 		"default": "", "delete": "", "do": "", "double": "", 
-		"else": "", "enum": "", "export": "", "extends": "", 
+		"else": "", "enum": "", "eval": "", "export": "", "extends": "", 
 		"false": "", "final": "", "finally": "", "float": "",
 		"for": "", "function": "", "goto": "", "if": "",
 		"implements": "", "import": "", "in": "", "instanceof": "",
@@ -55,7 +55,7 @@
 		"switch": "", "synchronized": "", "this": "", "throw": "", 
 		"throws": "", "transient": "", "true": "", "try": "", 
 		"typeof": "", "use": "", "var": "", "void": "", 
-		"volatile": "", "while": "", "with": "", "arguments": "",
+		"volatile": "", "while": "", "with": "", "yield": "", "arguments": "",
 		
 		"st": "" // Our namespace
 	};
