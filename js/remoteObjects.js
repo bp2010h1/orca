@@ -112,7 +112,12 @@
 		}
 		//
 		if (anObject.copyOnSend && st.unbox(anObject.copyOnSend())) {
-			return { storeString: anObject.storeString() }
+			var instState = {};
+			for (var slotName in anObject) { // on server-side allInstVars is used
+				instState.slotName = serializeOrExpose(anObject.slotName);
+			}
+			return {className: anObject._class()._classname,
+				storeString: instState };
 		}
 		// object: transfer rid
 		var remoteID = reachableObjectMap.indexOf(anObject)
