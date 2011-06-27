@@ -38,8 +38,14 @@ st.klass("RemoteObjectTester", {
 		testKeywordMessage: function(){
 			var remoteInstance = st.OrderedCollection.asRemote()._new();
 			var addedValue = remoteInstance.add_(st.number(1));
-			st.tests.assert(addedValue._equals(st.number(1)));
-			st.tests.assert(remoteInstance.first()._equals(st.number(1)));
+			st.tests.assert(addedValue._equals(st.number(1)) === st.true);
+			st.tests.assert(remoteInstance.first()._equals(st.number(1)) === st.true);
+		},
+		
+		testPerformForked: function(){
+			var remoteInstance = st.OrderedCollection.asRemote()._new();
+			var returnValue = remoteInstance.performForked_With_("add:", st.number(1));
+			st.tests.assert(returnValue.isNil() === st.true);
 		},
 
 		testRemoteSymbol: function(){

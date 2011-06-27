@@ -17,7 +17,7 @@
 	// API functions
 	//
 
-	home.passMessage = function(receiver, message) {
+	home.passMessage = function(receiver, message, messageType) {
 		var message, answerString, resultObject;
 		if (st.unbox(receiver.isRemote())) {
 			var messageArgs = [];
@@ -38,8 +38,16 @@
 			receiver.error_(string("Unexpected remote message send."));
 		}
 		message = JSON.stringify(message);
-		answerString = st.communication.send(message, "remote");
-		return parseAnswer(JSON.parse(answerString));
+		if (messageType === "forked") {
+			st.communication.sendForked(message, "remote");
+			return st.nil;
+		} else if (messageType === "blocked") {
+			answerString = st.communication.send(message, "remote");
+			return parseAnswer(JSON.parse(answerString));
+		} else {
+			throw "Remote message sends have to be either forked or blocked"; 
+		}
+		
 	};
 
 	// 
@@ -138,11 +146,27 @@
 				return st.true; 
 			},
 			doesNotUnderstand_: function(message) {
-				return home.passMessage(this, message);
+				return home.passMessage(this, message, "blocked");
 			},
 			_equals: function(object) {
 				if (object === undefined || object === null) return st.false;
 				return st.box(this._remoteID == object._remoteID);
+			},
+			performForked_WithArguments_: function(selector, argsArray) {
+				var message = st.Message.selector_arguments_(selector, argsArray);
+				return home.passMessage(this, message, "forked");
+			},
+			performForked_: function(selector) {
+				return this.performForked_WithArguments_(selector, st.Array.new_(st.number(0)));
+			},
+			performForked_With_: function(selector, anObject) {
+				return this.performForked_WithArguments_(selector, st.Array.with_(anObject));
+			},
+			performForked_With_With_: function(selector, firstObject, secondObject) {
+				return this.performForked_WithArguments_(selector, st.Array.with_with_(firstObject, secondObject));
+			},
+			performForked_With_With_With_: function(selector, firstObject, secondObject, thirdObject) {
+				return this.performForked_WithArguments_(selector, st.Array.with_with_with_(firstObject, secondObject, thirdObject));
 			}
 		},
 		classMethods: {

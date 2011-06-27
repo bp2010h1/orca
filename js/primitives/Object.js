@@ -54,7 +54,7 @@
 	});
 	st.Object._addClassMethods({
 		asRemote: function() {
-			return st.passMessage(this, st.Message.selector_(st.string("asRemote")));
+			return st.passMessage(this, st.Message.selector_(st.string("asRemote")), "blocked");
 		}
 	});
 
