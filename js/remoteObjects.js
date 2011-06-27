@@ -110,6 +110,10 @@
 			anObject === st.true || anObject === st.false || anObject ===  st.nil) {
 				return st.unbox(anObject);
 		}
+		//
+		if (anObject.copyOnSend && st.unbox(anObject.copyOnSend())) {
+			return { storeString: anObject.storeString() }
+		}
 		// object: transfer rid
 		var remoteID = reachableObjectMap.indexOf(anObject)
 		if (remoteID == -1 /*not included*/) {
@@ -129,6 +133,14 @@
 			}
 			if ("localRid" in anObject) { // Server sent an object, that lives on this client
 				return reachableObjectMap[anObject.localRid];
+			}
+			if ("className" in anObject && "storeString" in anObject) { // Server sent a complete object, >>#serializeToJavaScript
+				if (! (anObject.className in St)) throw "Attempting to move an object which class is not available";
+				var newInstance = St[anObject.className]._new();
+				for (var slotName in anObject.storeString) {
+					newInstance.slotName = parseAnswer(anObject.storeString.slotName);
+				}
+				return newInstance;
 			}
 		}
 		return st.box(anObject); // Immutable/primitive value

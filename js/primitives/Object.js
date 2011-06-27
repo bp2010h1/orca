@@ -29,7 +29,6 @@
 			}
 			return duplicate;
 		},
-		
 		basicSize: function () {
 			this._class().isVariable().ifTrue_ifFalse_(
 				st.block(function () { debugger; }), 
