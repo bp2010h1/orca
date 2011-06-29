@@ -1,5 +1,5 @@
 
-st.tests.addDoesNotUnderstandMethods(["_new", "environment", "runTests", "test_"], ["new", "environment", "runTests", "test:"]);
+st.tests.addDoesNotUnderstandMethods(["_new", "environment", "runTests", "test_", "testObject"], ["new", "environment", "runTests", "test:", "testObject"]);
 
 st.klass("RemoteObjectTester", { 
 
@@ -7,6 +7,12 @@ st.klass("RemoteObjectTester", {
 	instanceVariables: [ ],
 
 	instanceMethods: {
+		
+		setUp: function(){
+			st.__defineGetter__("OrcaRemoteTestObject", function() {
+				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
+			});
+		},
 	
 		testAsRemote: function(){
 			var remoteObject = st.Object.asRemote();
@@ -38,8 +44,14 @@ st.klass("RemoteObjectTester", {
 		testKeywordMessage: function(){
 			var remoteInstance = st.OrderedCollection.asRemote()._new();
 			var addedValue = remoteInstance.add_(st.number(1));
-			st.tests.assert(addedValue._equals(st.number(1)));
-			st.tests.assert(remoteInstance.first()._equals(st.number(1)));
+			st.tests.assert(addedValue._equals(st.number(1)) === st.true);
+			st.tests.assert(remoteInstance.first()._equals(st.number(1)) === st.true);
+		},
+		
+		testPerformForked: function(){
+			var remoteInstance = st.OrderedCollection.asRemote()._new();
+			var returnValue = remoteInstance.performForked_With_("add:", st.number(1));
+			st.tests.assert(returnValue.isNil() === st.true);
 		},
 
 		testRemoteSymbol: function(){
@@ -85,15 +97,17 @@ st.klass("RemoteObjectTester", {
 		},
 		
 		testRemoteSendTriggersRemoteSendOnServer: function() {
-			// setup but only for this test case, since OrcaRemoteTestObject might not be in referred classes
-			st.__defineGetter__("OrcaRemoteTestObject", function() {
-				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
-			});
 			var remoteObject = st.OrcaRemoteTestObject.asRemote();
 			var localObject = st.Object._new();
 			// remoteObject>>#test: aRemoteObject itself sends a remote message to the given object
 			var answer = remoteObject.test_(localObject);
 			st.tests.assert(answer === st.false);
+		},
+		
+		testCopyOnSend: function(){
+			var remoteClass = st.OrcaRemoteTestObject.asRemote();
+			var localObject = remoteClass.testObject(); // copyOnSend - the complete object should be transferred
+			st.tests.assert(localObject.isRemote() === st.false);
 		},
 		
 		testServerSide: function(){
