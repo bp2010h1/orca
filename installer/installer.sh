@@ -105,7 +105,7 @@ eval "mv $(ls ../*.image | head -1)" "Squeak.image"
 eval "mv $(ls ../*.changes | head -1)" "Squeak.changes"
 mv ../SqueakV41.sources ./
 
-git clone https://github.com/bp2010h1/orca.git
+git clone http://github.com/bp2010h1/orca.git
 cat <<EOF> INSTALL
 Move this content into your Resources directory.
 EOF

@@ -102,7 +102,6 @@
 	home.character = function(aString) { return st.Character._wrapping(aString[0]); };
 	home.string = function(aString) { return st.ByteString._wrapping(aString);};
 	home.number = function(aNumber) {
-		// Try to simulate the Squeak-Number-Library
 		if (/^(-)?\d+$/.test(aNumber + "")){
 			return st.Integer._wrapping(aNumber);
 		} else {

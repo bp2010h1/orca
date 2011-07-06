@@ -8,6 +8,7 @@
 		_minus: function(other) { return st.number(st.unbox(this) - st.unbox(other)); },
 		_times: function(other) { return st.number(st.unbox(this) * st.unbox(other)); },
 		_slash: function(other) { return st.number(st.unbox(this) / st.unbox(other)); },
+		even: function(other) { return st.supa('even')(other); },
 		_less: function(other) {
 			return st.bool(st.unbox(this) < st.unbox(other));
 		},

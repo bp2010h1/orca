@@ -50,14 +50,23 @@
 	home.peekCallStack = function() {
 		return callStack[callStack.length - 1];
 	};
+	
+	home.getCurrentMethodContext = function(caller) {
+		var methodContext = caller.methodContext;
+		
+		if (methodContext == undefined) {
+			methodContext = home.peekCallStack();
+		}
+		
+		return methodContext
+	};
 
 	home.supa = function(methodName) {
 		return function() {
-			var currentContext = home.peekCallStack();
-			// Accessing .__proto__ here brings us one step higher in the class-hierarchy
-			// At this point, if the super-prototype does not define the invoked method, a MessageNotUnderstood exception should be raised in Squeak-context
-			var invokedMethod = currentContext.currentMethod.methodHome.__proto__[methodName];
-			return invokedMethod.apply(currentContext.currentThis, arguments);
+			var methodContext = st.getCurrentMethodContext(arguments.callee.caller);
+			var superMethod = methodContext.currentMethod.methodHome.__proto__[methodName];
+
+			return superMethod.apply(methodContext.currentThis, arguments);
 		};
 	};
 
@@ -84,20 +93,16 @@
       		}
     	};
 
-		var currentThis = blockContext.originalThis;
-		if (currentThis == undefined) {
-			// We are in the outer-most block of a method. The 'current this' is the top of the call-stack.
-			var callStackTop = home.peekCallStack();
-			currentThis = callStackTop && callStackTop.currentThis;
-		}
-		func.originalThis = currentThis;
+		func.methodContext = st.getCurrentMethodContext(blockContext);
+		
 		// Unboxing a real block must give the same function as when evaluating it.
-		var originalEvaluated = function() {
+		b._evaluated = function() {
 			// Use the callStack to get the object, this block should be executed in.
 			// box the arguments in any case, as this is code parsed from Squeak-code and relies on the auto-boxing.
-			return func.apply(currentThis, st.boxIterable(arguments));
+			return func.apply(func.methodContext.currentThis, st.boxIterable(arguments));
 		};
-		b._original = b._evaluated = originalEvaluated;
+
+		b._original = b._evaluated;
 		b._constructor = function() {
 			// When using real blocks as constructor, don't unpack the constructor-parameters, 
 			// but box them to be sure (should not be necessary).
@@ -301,7 +306,10 @@
 	};
 
 	var wrapFunction = function(aFunc) {
-		return __debugging(__nonLocalReturn(aFunc));
+		if(home.DEBUG)
+			return __debugging(__nonLocalReturn(aFunc));
+		else
+			return __nonLocalReturn(aFunc);
 	}
 	// This is not part of the API, but must be exposed to access it in the eval()-call below
 	st.wrapFunction = wrapFunction;
@@ -331,37 +339,33 @@
 
 	// A wrapper to enable several debugging-functionalities
 	var __debugging = function(method) {
-		if (home.DEBUG) {
-			return function() {
-				try {
-					if (home.PRINT_CALLS) {
-						var indent = "";
-						for (var i = 0; i < callStack.length; i++) {
-							indent += "  ";
-						}
-						if (window.st && st.console) {
-							if (this._theClass == undefined) {
-								st.console.log(indent + this._classname + "." + arguments.callee.methodName);
-							} else {
-								st.console.log(indent + this._theClass._classname + "." + arguments.callee.methodName);
-							}
-						}
+		return function() {
+			try {
+				if (home.PRINT_CALLS) {
+					var indent = "";
+					for (var i = 0; i < callStack.length; i++) {
+						indent += "  ";
 					}
-					var result = method.apply(this, arguments);
-					return result;
-				} catch (e) {
-					if (e.DontDebug === DontDebugMarker) {
-						throw e;
-					} else if (home.DEBUG) {
-						debugger;
-					}else {
-						/* is an ST Exception */
-						throw e;
+					if (window.st && st.console) {
+						if (this._theClass == undefined) {
+							st.console.log(indent + this._classname + "." + arguments.callee.methodName);
+						} else {
+							st.console.log(indent + this._theClass._classname + "." + arguments.callee.methodName);
+						}
 					}
 				}
+				var result = method.apply(this, arguments);
+				return result;
+			} catch (e) {
+				if (e.DontDebug === DontDebugMarker) {
+					throw e;
+				} else if (home.DEBUG) {
+					debugger;
+				}else {
+					/* is an ST Exception */
+					throw e;
+				}
 			}
-		} else {
-			return method;
 		}
 	};
 
