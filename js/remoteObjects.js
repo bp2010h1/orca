@@ -18,7 +18,7 @@
 	//
 
 	home.passMessage = function(receiver, message) {
-		var message, answerString, resultObject;
+		var message, answerString, resultObject, json;
 		if (st.unbox(receiver.isRemote())) {
 			var messageArgs = [];
 			message._arguments().do_(st.block(function(each) {
@@ -39,7 +39,16 @@
 		}
 		message = JSON.stringify(message);
 		answerString = st.communication.send(message, "remote");
-		return parseAnswer(JSON.parse(answerString));
+		if(answerString === undefined){
+			debugger;
+			return;
+		}
+		try{
+			json = JSON.parse(answerString)}
+		catch (e){
+			debugger;
+			}
+		return parseAnswer(json);
 	};
 
 	// 
