@@ -8,12 +8,6 @@ st.klass("RemoteObjectTester", {
 
 	instanceMethods: {
 		
-		setUp: function(){
-			st.__defineGetter__("OrcaRemoteTestObject", function() {
-				return st.ILLEGAL_GLOBAL_HANDLER("OrcaRemoteTestObject");
-			});
-		},
-	
 		testAsRemote: function(){
 			var remoteObject = st.Object.asRemote();
 			st.tests.assert(remoteObject.isRemote() === st.true, "Object created through st.Object.asRemote() is not remote.");
@@ -118,7 +112,6 @@ st.klass("RemoteObjectTester", {
 			if (!remoteTestCase.runTests()._unbox()){
 				st.tests.assert(false, "The Tests of OrcaRemoteObjectsServerSideTest are not green.");
 				// testAsRemoteInSession: a #asRemoteIn:-message results in a RemoteObject?
-				// test
 			}
 		}
 
