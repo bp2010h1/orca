@@ -61,7 +61,7 @@
 		delete home.setup_session_id;
 		st.console.log("This session-id is " + id);
 		session_id = id;
-		doSend("", false, "forked"); // Open the connection initially
+		openLongPoll(); // Open the connection initially
 	};
 
 	// 
@@ -96,7 +96,23 @@
 	// Increased with every send and decreased with every received "answer"
 	var awaitedAnswers = 0;
 
+	var openLongPoll = function() {
+		sendAndHandleResponse("", false, "longPoll", "default", function(request) {
+			// If the server answeres the long-poll-request,
+			// it must be renewed immediately to allow it to send more requests.
+			// In addition to reopening the long-poll, the server-message is handled.
+			// This handling could result in another connection being opened,
+			// especially when the server-request was a blocking send and the client sends an answer.
+			openLongPoll();
+			return answerToMessage(request);
+		});
+	}
+
 	var doSend = function(data, isSynchronous, status, handlerId, ignoreResponse) {
+		return sendAndHandleResponse(data, isSynchronous, status, handlerId, ignoreResponse ? null : answerToMessage);
+	}
+
+	var sendAndHandleResponse = function(data, isSynchronous, status, handlerId, responseHandlerFunction) {
 		if (session_id == -1) {
 			throw "Session-ID has not been set up yet! Cannot send.";
 		}
@@ -106,14 +122,14 @@
 		var content = "status=" + st.escapeAll(status);
 		content += "&message=" + st.escapeAll(data);
 		content += "&handlerId=" + st.escapeAll(handlerId ? handlerId : "default");
-		if (!ignoreResponse && !isSynchronous)
-			request.onreadystatechange = function() { answerToMessage(request); };
+		if (responseHandlerFunction && !isSynchronous)
+			request.onreadystatechange = function() { responseHandlerFunction(request); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		st.console.log("Sending (synchronous: " +isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
-		if (!ignoreResponse && isSynchronous)
-			return answerToMessage(request);
+		if (responseHandlerFunction && isSynchronous)
+			return responseHandlerFunction(request);
 		return request.responseText;
 	}
 
@@ -128,7 +144,12 @@
 					var status = unescape(response[1]);
 					var handlerId = unescape(response[2]);
 					var message = unescape(response[3]);
-					if (status == "answer") {
+					if (status == "empty") {
+						// do nothing. The server has answered to a request,
+						// that has no meaningfull answer-semanitcs.
+						// Mainly this happens in return to an answer sent from the client.
+						return message;
+					} else if (status == "answer") {
 						// "answerTo: (answer)"
 						console.log("Received answer: " + message);
 						awaitedAnswers--;
@@ -149,8 +170,8 @@
 						// "answerTo: (forked)"
 						if (awaitedAnswers > 0) {
 							// Inside any blocking send from the client, a forked
-							// send from the server becomes blocking, because the clientInformation
-							// needs the opening connection to block
+							// send from the server becomes blocking, because we need
+							// to keep the context on the client intact.
 							handleMessage(message, handlerId); // Ignore result
 							return doSend("", true, "answer");
 						} else {
