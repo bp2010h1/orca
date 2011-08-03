@@ -102,7 +102,7 @@ st.klass("SendTester", {
 
 	instanceMethods: {
 		
-		_test1: function() {
+		test1: function() {
 			// Send blocked and expect immediate answer
 			// No asynch messages in the meantime
 			performTest("ba0");
@@ -123,7 +123,7 @@ st.klass("SendTester", {
 			performTest("bbraa1");
 		},
 		
-		test2: function() {
+		test3: function() {
 			// b>
 			//   f<
 			//   a<
@@ -131,7 +131,7 @@ st.klass("SendTester", {
 			performTest("bfa1");
 		},
 		
-		test3: function() {
+		test4: function() {
 			// b>
 			//   <b
 			//     b>
@@ -144,7 +144,7 @@ st.klass("SendTester", {
 			performTest("bbbaaa0");
 		},
 		
-		test4: function() {
+		test5: function() {
 			// b>
 			//   f<
 			//     f>
@@ -167,6 +167,5 @@ st.SendTester._newInstance();
 
 // This leads to this test being commented out
 
-var a = {testMock:function(){}};
-a;
-
+// var a = {testMock:function(){}};
+// a;
