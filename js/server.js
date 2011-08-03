@@ -32,10 +32,16 @@
 
 	home.serverBlock = function (squeakCode) {
 		// Returns block, that will be evaluated directly on the server, when evaluated
-		return st.block(function() {
-			var args = [ squeakCode ].concat(st.toArray(arguments));
-			return home.performOnServer.apply(home, args);
-		});
+	
+		var func = function() {
+			return st.block(function() {
+				var args = [ squeakCode ].concat(st.toArray(arguments));
+				return home.performOnServer.apply(home, args);
+			});
+		};
+		//because the st-block-function relies on the callers context in order to determine the 'this'-value, etc., we have to set it manually
+		func.methodContext = arguments.callee.caller.methodContext;
+		return func();
 	};
 
 })();
