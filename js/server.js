@@ -33,7 +33,7 @@
 	home.serverBlock = function (squeakCode) {
 		// Returns block, that will be evaluated directly on the server, when evaluated
 		return st.block(function() {
-			var args = [ squeakCode ].concat(st.unboxIterable(arguments));
+			var args = [ squeakCode ].concat(st.toArray(arguments));
 			return home.performOnServer.apply(home, args);
 		});
 	};
