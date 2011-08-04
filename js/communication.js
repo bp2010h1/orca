@@ -97,22 +97,10 @@
 	var awaitedAnswers = 0;
 
 	var openLongPoll = function() {
-		sendAndHandleResponse("", false, "longPoll", "default", function(request) {
-			// If the server answeres the long-poll-request,
-			// it must be renewed immediately to allow it to send more requests.
-			// In addition to reopening the long-poll, the server-message is handled.
-			// This handling could result in another connection being opened,
-			// especially when the server-request was a blocking send and the client sends an answer.
-			openLongPoll();
-			return answerToMessage(request);
-		});
+		doSend("", false, "longPoll");
 	}
 
 	var doSend = function(data, isSynchronous, status, handlerId, ignoreResponse) {
-		return sendAndHandleResponse(data, isSynchronous, status, handlerId, ignoreResponse ? null : answerToMessage);
-	}
-
-	var sendAndHandleResponse = function(data, isSynchronous, status, handlerId, responseHandlerFunction) {
 		if (session_id == -1) {
 			throw "Session-ID has not been set up yet! Cannot send.";
 		}
@@ -122,14 +110,14 @@
 		var content = "status=" + st.escapeAll(status);
 		content += "&message=" + st.escapeAll(data);
 		content += "&handlerId=" + st.escapeAll(handlerId ? handlerId : "default");
-		if (responseHandlerFunction && !isSynchronous)
-			request.onreadystatechange = function() { responseHandlerFunction(request); };
+		if (!ignoreResponse && !isSynchronous)
+			request.onreadystatechange = function() { answerToMessage(request); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		st.console.log("Sending (synchronous: " + isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
-		if (responseHandlerFunction && isSynchronous)
-			return responseHandlerFunction(request);
+		if (!ignoreResponse && isSynchronous)
+			return answerToMessage(request);
 		return request.responseText;
 	}
 
@@ -149,7 +137,7 @@
 						// that has no meaningfull answer-semanitcs.
 						// Mainly this happens in return to an answer sent from the client.
 						return message;
-					else if (status == "renewLongPoll") {
+					} else if (status == "renewLongPoll") {
 						// The long-poll-connection has timed out. Reopen it to show that we're still alive.
 						openLongPoll();
 					} else if (status == "answer") {
