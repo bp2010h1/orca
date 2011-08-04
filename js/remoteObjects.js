@@ -44,8 +44,8 @@
 		} else if (messageType === "blocked") {
 			answerString = st.communication.send(message, "remote");
 			if(answerString === undefined){
-				debugger;
-				return;
+				//try again? or just wait?
+				return st.communication.send("", "default");
 			}
 			try{
 				json = JSON.parse(answerString)}
