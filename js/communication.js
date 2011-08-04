@@ -126,7 +126,7 @@
 			request.onreadystatechange = function() { responseHandlerFunction(request); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		st.console.log("Sending (synchronous: " +isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
+		st.console.log("Sending (synchronous: " + isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
 		if (responseHandlerFunction && isSynchronous)
 			return responseHandlerFunction(request);
@@ -149,6 +149,9 @@
 						// that has no meaningfull answer-semanitcs.
 						// Mainly this happens in return to an answer sent from the client.
 						return message;
+					else if (status == "renewLongPoll") {
+						// The long-poll-connection has timed out. Reopen it to show that we're still alive.
+						openLongPoll();
 					} else if (status == "answer") {
 						// "answerTo: (answer)"
 						console.log("Received answer: " + message);
@@ -182,13 +185,14 @@
 					}
 				}
 				st.console.log("Illegal message received from the server: " + request.responseText);
-			} else if (request.status == 299) { // Server-request to reconnect (timeout), not 408 since that's displayed as error in chrome
-				st.console.statusInfo("Server-timeout, reconnecting. (Opening server-send connection)", 229);
-				// TODO Server needs to send info, which kind of connection is timed out (synchronous or not)
-				// re-open same kind of connection here
-				doSend("", false, "forked");
 			} else {
-				st.console.statusInfo("Channel disconnected: " + request.responseText, request.status);
+				st.console.statusInfo("Channel disconnected (" + 
+					(request.responseText ? ("text: " + request.responseText) : "no text")
+					+ "). Reconnecting..."
+				, request.status);
+				// TODO This is maybe not good; the long poll connection might be still up.
+				// Maybe just drop reconnecting here, something has gone wrong after all.
+				openLongPoll();
 			}
 		}
 	}
