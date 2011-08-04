@@ -33,15 +33,7 @@
 	};
 
 	home.statusInfo = function(text, httpStatus) {
-		if ((httpStatus == 200) || (httpStatus == 201)) {
-			logHTTP(text, httpStatus, "OK");
-		}
-		else if (httpStatus == 204) {
-			logHTTP(text, httpStatus, "No content");
-		}
-		else {
-			logHTTP(text, httpStatus, "Client aborted");
-		} 
+		home.log(httpStatus + ": " + text);
 	};
 
 	home.print = function(obj) {
@@ -49,13 +41,5 @@
 			home.log(index + " = " + obj[index]);
 		}
 	};
-
-	// 
-	// Private functions
-	// 
-
-	var logHTTP = function(text, httpStatus, statusText) {
-		home.log("HTTP -" + statusText + "(" + httpStatus + "). Content: " + text);
-	}
 
 })();
