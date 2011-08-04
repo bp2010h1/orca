@@ -26,6 +26,11 @@
 				Global = st.box(window);
 			return Global;
 		},
+		JSONObject: function() {
+			if (!JSONObject)
+				JSONObject = st.box(JSON);
+			return JSONObject;
+		},
 		Window: function() {
 			if (!Window)
 				Window = st.box(window);
