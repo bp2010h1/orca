@@ -132,6 +132,7 @@
 	var answerToMessage = function(request) {
 		if (request.readyState == 4) {
 			openConnections--;
+			var result;
 			if (request.status == 200) {
 				var response = /status=([^&]*)&handlerId=([^&]*)&message=([^&]*)/.exec(request.responseText);
 				if (response && response.length >= 2) {
@@ -142,7 +143,7 @@
 						// do nothing. The server has answered to a request,
 						// that has no meaningfull answer-semanitcs.
 						// Mainly this happens in return to an answer sent from the client.
-						return message;
+						result = message;
 					} else if (status == "answer") {
 						// "answerTo: (answer)"
 						console.log("Received answer: " + message);
@@ -151,14 +152,14 @@
 							awaitedAnswers = 0;
 							st.console.log("Illegal state: Received more answers than sends!");
 						}
-						return message; // No new connection
+						result = message; // No new connection
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var result = handleMessage(message, handlerId);
 						if (awaitedAnswers > 0) {
-							return doSend(result, true, "answer");
+							result = doSend(result, true, "answer");
 						} else {
-							return doSend(result, false, "answer");
+							result = doSend(result, false, "answer");
 						}
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
@@ -167,15 +168,18 @@
 							// send from the server becomes blocking, because we need
 							// to keep the context on the client intact.
 							handleMessage(message, handlerId); // Ignore result
-							return doSend("", true, "answer");
+							result = doSend("", true, "answer");
 						} else {
 							var result = doSend("", false , "answer");
 							handleMessage(message, handlerId); // Ignore result
-							return result;
+							result = result;
 						}
+					} else {
+						st.console.log("Illegal message received from the server: " + request.responseText);
 					}
+				} else {
+					st.console.statusInfo("Unexpected status in server-response", request.status);
 				}
-				st.console.log("Illegal message received from the server: " + request.responseText);
 			} else {
 				st.console.statusInfo("Channel disconnected (" + 
 					(request.responseText ? ("text: " + request.responseText) : "no text")
@@ -189,7 +193,10 @@
 				// - If the server has used the long-poll-connection to send a message
 				// - After an error
 				openLongPoll();
+			} else {
+				debugger;
 			}
+			return result;
 		}
 	}
 

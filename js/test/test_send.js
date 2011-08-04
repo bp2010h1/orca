@@ -10,6 +10,7 @@ var sendForked = function(data) {
 }
 
 var asynchMessages = 0;
+var asynchMessagesCheckPerformed;
 
 var taskHandler = function(message) {
 	// If message is an empty String, this test is finished
@@ -40,36 +41,43 @@ var taskHandler = function(message) {
 				// Check, that 0 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 0);
 				asynchMessages = 0;
+				asynchMessagesCheckPerformed = true;
 				nextTask = rest;
 				break;
 			case '1': 
 				// Check, that 1 asynch send has arrived in the meantime
 				st.tests.assert(asynchMessages == 1);
 				asynchMessages = 0;
+				asynchMessagesCheckPerformed = true;
 				nextTask = rest;
 				break;
 			case '2': 
 				// Check, that 2 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 2);
 				asynchMessages = 0;
+				asynchMessagesCheckPerformed = true;
 				nextTask = rest;
 				break;
 			case '3': 
 				// Check, that 3 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 3);
 				asynchMessages = 0;
+				asynchMessagesCheckPerformed = true;
 				nextTask = rest;
 				break;
 			case '4': 
 				// Check, that 4 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 4);
 				asynchMessages = 0;
+				asynchMessagesCheckPerformed = true;
 				nextTask = rest;
 				break;
 		}
 	}
 	if (nextTask != null) {
-		return taskHandler(nextTask);
+		debugger;
+		var res = taskHandler(nextTask);
+		debugger;
 	}
 	if (message == "") {
 		return "tests ok";
@@ -78,6 +86,9 @@ var taskHandler = function(message) {
 };
 
 st.communication.addMessageHandler(handlerId, function(message) {
+	
+	debugger;
+	
 	if (message == "asynch") {
 		// When receiving a forked message, don't send anything.
 		// It would get lost, as testing here cannot handle forked threads.
@@ -88,11 +99,17 @@ st.communication.addMessageHandler(handlerId, function(message) {
 		// Server want an answer to an asynch message
 		return sendForked("asynch");
 	}
-	return taskHandler(message);
+	var res = taskHandler(message);
+	debugger;
+	return res;
 });
 
 var performTest = function(testSpec) {
+	asynchMessagesCheckPerformed = false;
+	debugger;
 	st.tests.assert("tests ok" == taskHandler(testSpec), "Send test-spec failed: " + testSpec);
+	st.tests.assert(asynchMessagesCheckPerformed, "test-spec succeeded, but asynch-count not checked;" +
+		"This means something in the test went wrong after all.");
 }
 
 st.klass("SendTester", { 

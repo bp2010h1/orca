@@ -50,8 +50,8 @@
 			try{
 				json = JSON.parse(answerString)}
 			catch (e){
-				debugger;
-				}
+				throw "Illegal remote-object response from server: " + answerString;
+			}
 			return parseAnswer(json);
 		} else {
 			throw "Remote message sends have to be either forked or blocked"; 
