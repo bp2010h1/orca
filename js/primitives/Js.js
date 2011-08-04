@@ -6,6 +6,7 @@
 	var Global = null;
 	var Document = null;
 	var Window = null;
+	var JSONObject = null;
 
 	// Set up setInterval to track all added intervals
 	var intervals = [];
@@ -25,6 +26,11 @@
 			if (!Global)
 				Global = st.box(window);
 			return Global;
+		},
+		JSONObject: function() {
+			if (!JSONObject)
+				JSONObject = st.box(JSON);
+			return JSONObject;
 		},
 		Window: function() {
 			if (!Window)
