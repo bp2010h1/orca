@@ -95,6 +95,10 @@
 
 	// Increased with every send and decreased with every received "answer"
 	var awaitedAnswers = 0;
+	
+	// Increased when a request is opened and decreased when a response is handled.
+	// If after handling a response, this becomes zero, the long-poll-connection is renewed.
+	var openConnections = 0;
 
 	var openLongPoll = function() {
 		doSend("", false, "longPoll");
@@ -115,6 +119,7 @@
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		st.console.log("Sending (synchronous: " + isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
+		openConnections++;
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
 			return answerToMessage(request);
@@ -126,6 +131,7 @@
 	// The execution stack will preserve the info, where to return after all the sends
 	var answerToMessage = function(request) {
 		if (request.readyState == 4) {
+			openConnections--;
 			if (request.status == 200) {
 				var response = /status=([^&]*)&handlerId=([^&]*)&message=([^&]*)/.exec(request.responseText);
 				if (response && response.length >= 2) {
@@ -137,9 +143,6 @@
 						// that has no meaningfull answer-semanitcs.
 						// Mainly this happens in return to an answer sent from the client.
 						return message;
-					} else if (status == "renewLongPoll") {
-						// The long-poll-connection has timed out. Reopen it to show that we're still alive.
-						openLongPoll();
 					} else if (status == "answer") {
 						// "answerTo: (answer)"
 						console.log("Received answer: " + message);
@@ -178,8 +181,13 @@
 					(request.responseText ? ("text: " + request.responseText) : "no text")
 					+ "). Reconnecting..."
 				, request.status);
-				// TODO This is maybe not good; the long poll connection might be still up.
-				// Maybe just drop reconnecting here, something has gone wrong after all.
+			}
+			if (openConnections <= 0) {
+				// Reconnect to the server. 
+				// Happens in the following cases:
+				// - If the server times out the connection to check for our livelyness
+				// - If the server has used the long-poll-connection to send a message
+				// - After an error
 				openLongPoll();
 			}
 		}
