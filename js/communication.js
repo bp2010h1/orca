@@ -97,8 +97,6 @@
 	// This is not equal to the number of open connections
 	var awaitedAnswers = 0;
 
-	var syncConnectionOpen = false;
-
 	var openLongPoll = function() {
 		doSend("", false, "longPoll", "default", false, true);
 	}
@@ -157,11 +155,11 @@
 						result = message; // No new connection
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
-						var result = handleMessage(message, handlerId);
+						var server_result = handleMessage(message, handlerId);
 						if (awaitedAnswers > 0) {
-							result = doSend(result, true, "answer");
+							result = doSend(server_result, true, "answer");
 						} else {
-							result = doSend(result, false, "answer");
+							result = doSend(server_result, false, "answer");
 						}
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
@@ -172,9 +170,8 @@
 							handleMessage(message, handlerId); // Ignore result
 							result = doSend("", true, "answer");
 						} else {
-							var result = doSend("", false , "answer");
+							result = doSend("", false , "answer");
 							handleMessage(message, handlerId); // Ignore result
-							result = result;
 						}
 					} else {
 						st.console.log("Illegal message received from the server: " + request.responseText);
