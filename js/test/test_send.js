@@ -75,9 +75,7 @@ var taskHandler = function(message) {
 		}
 	}
 	if (nextTask != null) {
-		debugger;
 		var res = taskHandler(nextTask);
-		debugger;
 	}
 	if (message == "") {
 		return "tests ok";
@@ -86,9 +84,6 @@ var taskHandler = function(message) {
 };
 
 st.communication.addMessageHandler(handlerId, function(message) {
-	
-	debugger;
-	
 	if (message == "asynch") {
 		// When receiving a forked message, don't send anything.
 		// It would get lost, as testing here cannot handle forked threads.
@@ -99,14 +94,11 @@ st.communication.addMessageHandler(handlerId, function(message) {
 		// Server want an answer to an asynch message
 		return sendForked("asynch");
 	}
-	var res = taskHandler(message);
-	debugger;
-	return res;
+	return taskHandler(message);
 });
 
 var performTest = function(testSpec) {
 	asynchMessagesCheckPerformed = false;
-	debugger;
 	st.tests.assert("tests ok" == taskHandler(testSpec), "Send test-spec failed: " + testSpec);
 	st.tests.assert(asynchMessagesCheckPerformed, "test-spec succeeded, but asynch-count not checked;" +
 		"This means something in the test went wrong after all.");
