@@ -94,17 +94,16 @@
 	};
 
 	// Increased with every send and decreased with every received "answer"
+	// This is not equal to the number of open connections
 	var awaitedAnswers = 0;
-	
-	// Increased when a request is opened and decreased when a response is handled.
-	// If after handling a response, this becomes zero, the long-poll-connection is renewed.
-	var openConnections = 0;
+
+	var syncConnectionOpen = false;
 
 	var openLongPoll = function() {
-		doSend("", false, "longPoll");
+		doSend("", false, "longPoll", "default", false, true);
 	}
 
-	var doSend = function(data, isSynchronous, status, handlerId, ignoreResponse) {
+	var doSend = function(data, isSynchronous, status, handlerId, ignoreResponse, isLongPoll) {
 		if (session_id == -1) {
 			throw "Session-ID has not been set up yet! Cannot send.";
 		}
@@ -115,23 +114,26 @@
 		content += "&message=" + st.escapeAll(data);
 		content += "&handlerId=" + st.escapeAll(handlerId ? handlerId : "default");
 		if (!ignoreResponse && !isSynchronous)
-			request.onreadystatechange = function() { answerToMessage(request); };
+			request.onreadystatechange = function() { answerToMessage(request, isLongPoll); };
 		request.open("POST", url, !isSynchronous);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		st.console.log("Sending (synchronous: " + isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
-		openConnections++;
 		request.send(content);
 		if (!ignoreResponse && isSynchronous)
-			return answerToMessage(request);
+			return answerToMessage(request, isLongPoll);
 		return request.responseText;
 	}
 
 	// Answering a message can recursively cause doing more sends
 	// (either by sending the answer or from inside a message handler)
 	// The execution stack will preserve the info, where to return after all the sends
-	var answerToMessage = function(request) {
+	var answerToMessage = function(request, isLongPoll) {
 		if (request.readyState == 4) {
-			openConnections--;
+			if (isLongPoll)
+				// If this response closed the long-poll-connection, reopen it immediately
+				// to keep the connection to the server up and show, that we're still alive.
+				openLongPoll();
+			
 			var result;
 			if (request.status == 200) {
 				var response = /status=([^&]*)&handlerId=([^&]*)&message=([^&]*)/.exec(request.responseText);
@@ -186,17 +188,6 @@
 					+ "). Reconnecting..."
 				, request.status);
 			}
-			if (openConnections <= 0) {
-				// Reconnect to the server. 
-				// Happens in the following cases:
-				// - If the server times out the connection to check for our livelyness
-				// - If the server has used the long-poll-connection to send a message
-				// - After an error
-				openLongPoll();
-			} else {
-				debugger;
-			}
-			return result;
 		}
 	}
 
