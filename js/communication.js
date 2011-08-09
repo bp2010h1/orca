@@ -185,6 +185,7 @@
 					+ "). Reconnecting..."
 				, request.status);
 			}
+			return result;
 		}
 	}
 

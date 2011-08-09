@@ -13,6 +13,8 @@ var asynchMessages = 0;
 var asynchMessagesCheckPerformed;
 
 var taskHandler = function(message) {
+	console.log(" >>> Handling: " + message);
+	
 	// If message is an empty String, this test is finished
 	var nextTask = null;
 	if (message.length > 0) {
@@ -37,7 +39,7 @@ var taskHandler = function(message) {
 				nextTask = rest;
 				break;
 
-			case '0': 
+			case '0':
 				// Check, that 0 asynch sends has arrived in the meantime
 				st.tests.assert(asynchMessages == 0);
 				asynchMessages = 0;
@@ -75,7 +77,7 @@ var taskHandler = function(message) {
 		}
 	}
 	if (nextTask != null) {
-		var res = taskHandler(nextTask);
+		return taskHandler(nextTask);
 	}
 	if (message == "") {
 		return "tests ok";
@@ -119,6 +121,19 @@ st.klass("SendTester", {
 		
 		test2: function() {
 			// b>
+			//   <b
+			//     b>
+			//       <a
+			//     <a
+			//   <a
+			
+			// Open blocked connection 3 times. More is not necessary for testing.
+			
+			performTest("bbbaaa0");
+		},
+		
+		test3: function() {
+			// b>
 			//   b<
 			//     f>
 			//       f<
@@ -132,7 +147,7 @@ st.klass("SendTester", {
 			performTest("bbraa1");
 		},
 		
-		test3: function() {
+		test4: function() {
 			// b>
 			//   f<
 			//   a<
@@ -140,18 +155,6 @@ st.klass("SendTester", {
 			performTest("bfa1");
 		},
 		
-		test4: function() {
-			// b>
-			//   <b
-			//     b>
-			//       <a
-			//     <a
-			//   <a
-			
-			// Open blocked connection 3 times. More is not necessary for testing.
-			
-			performTest("bbbaaa0");
-		},
 		
 		test5: function() {
 			// b>
