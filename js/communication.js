@@ -37,13 +37,18 @@
 	// 
 
 	home.send = function(data, handlerId) {
-		awaitedAnswers++;
-		return doSend(data, true, "blocked", handlerId);
+		// If the client has sent a synchronous request, all following request
+		// will become automatically synchronous, too. When this request is finished,
+		// we reset the flag indicating that we are in a synchronous context.
+		var isOuterMostSynchronousContext = !isInSynchronousCall;
+		isInSynchronousCall = true;
+		var result = doSend(data, true, "blocked", handlerId);
+		if (isOuterMostSynchronousContext) isInSynchronousCall = false;
+		return result;
 	};
 
 	home.sendForked = function(data, handlerId) {
 		// No meaningfull result-value when sending forked
-		awaitedAnswers++;
 		doSend(data, false, "forked", handlerId, true);
 		return null;
 	};
@@ -93,31 +98,34 @@
 		return result;
 	};
 
-	// Increased with every send and decreased with every received "answer"
-	// This is not equal to the number of open connections
-	var awaitedAnswers = 0;
+	var isInSynchronousCall = false;
 
 	var openLongPoll = function() {
 		doSend("", false, "longPoll", "default", false, true);
 	}
 
-	var doSend = function(data, isSynchronous, status, handlerId, ignoreResponse, isLongPoll) {
+	var doSend = function(data, isSynchronousMandatory, status, handlerId, ignoreResponse, isLongPoll) {
 		if (session_id == -1) {
 			throw "Session-ID has not been set up yet! Cannot send.";
 		}
 		var url = st.fullURL(home.MESSAGE_PATH) + "?id=" + session_id;
 		
+		// If we are in a synchronous send from the client, all calls become synchronous calls,
+		// because the client is single-threaded.
+		isSynchronousMandatory = isSynchronousMandatory || isInSynchronousCall;
+		
 		var request = st.createRequest();
 		var content = "status=" + st.escapeAll(status);
 		content += "&message=" + st.escapeAll(data);
 		content += "&handlerId=" + st.escapeAll(handlerId ? handlerId : "default");
-		if (!ignoreResponse && !isSynchronous)
-			request.onreadystatechange = function() { answerToMessage(request, isLongPoll); };
-		request.open("POST", url, !isSynchronous);
+		if (!ignoreResponse && !isSynchronousMandatory)
+			request.onreadystatechange = function() {
+				answerToMessage(request, isLongPoll); };
+		request.open("POST", url, !isSynchronousMandatory);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		st.console.log("Sending (synchronous: " + isSynchronous + ", awaited answers: " + awaitedAnswers + ") " + status + " to " + handlerId + ": " + data);
+		st.console.log("Sending (synchronous: " + isSynchronousMandatory + ", is in synchronous call: " + isInSynchronousCall + ") " + status + " to " + handlerId + ": " + data);
 		request.send(content);
-		if (!ignoreResponse && isSynchronous)
+		if (!ignoreResponse && isSynchronousMandatory)
 			return answerToMessage(request, isLongPoll);
 		return request.responseText;
 	}
@@ -143,47 +151,28 @@
 						// do nothing. The server has answered to a request,
 						// that has no meaningfull answer-semanitcs.
 						// Mainly this happens in return to an answer sent from the client.
-						result = message;
+						
+						// The result stays null. It should not be relevant anywhere.
 					} else if (status == "answer") {
 						// "answerTo: (answer)"
 						console.log("Received answer: " + message);
-						awaitedAnswers--;
-						if (awaitedAnswers < 0) {
-							awaitedAnswers = 0;
-							st.console.log("Illegal state: Received more answers than sends!");
-						}
 						result = message; // No new connection
 					} else if (status == "blocked") {
 						// "answerTo: (blocked)"
 						var server_result = handleMessage(message, handlerId);
-						if (awaitedAnswers > 0) {
-							result = doSend(server_result, true, "answer");
-						} else {
-							result = doSend(server_result, false, "answer");
-						}
+						result = doSend(server_result, false, "answer");
 					} else if (status == "forked") {
 						// "answerTo: (forked)"
-						if (awaitedAnswers > 0) {
-							// Inside any blocking send from the client, a forked
-							// send from the server becomes blocking, because we need
-							// to keep the context on the client intact.
-							handleMessage(message, handlerId); // Ignore result
-							result = doSend("", true, "answer");
-						} else {
-							result = doSend("", false , "answer");
-							handleMessage(message, handlerId); // Ignore result
-						}
+						handleMessage(message, handlerId); // Ignore result
+						// The result stays null, it should not be relevant anywhere.
 					} else {
 						st.console.log("Illegal message received from the server: " + request.responseText);
 					}
 				} else {
-					st.console.statusInfo("Unexpected status in server-response", request.status);
+					st.console.log("Illegal message received from the server: " + request.responseText);
 				}
 			} else {
-				st.console.statusInfo("Channel disconnected (" + 
-					(request.responseText ? ("text: " + request.responseText) : "no text")
-					+ "). Reconnecting..."
-				, request.status);
+				st.console.statusInfo("Unexpected status in server-response", request.status);
 			}
 			return result;
 		}
