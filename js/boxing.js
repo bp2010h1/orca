@@ -295,7 +295,7 @@
 	var characterPoolFunction = poolingWrappingFunction(charPool, st.Character);
 	st.Character._addClassMethods({
 		_wrapping: function(primitiveValue) {
-			var firstAccess = primitiveValue in charPool;
+			var firstAccess = !(primitiveValue in charPool);
 			var result = characterPoolFunction(primitiveValue);
 			if (firstAccess)
 				// Set the Smalltalk instance variable 'value'
