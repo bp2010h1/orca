@@ -291,12 +291,15 @@
 		});
 	}
 
-	var characterPoolFunction = poolingWrappingFunction([], st.Character);
+	var charPool = [];
+	var characterPoolFunction = poolingWrappingFunction(charPool, st.Character);
 	st.Character._addClassMethods({
 		_wrapping: function(primitiveValue) {
+			var firstAccess = primitiveValue in charPool;
 			var result = characterPoolFunction(primitiveValue);
-			// TODO bad: this is set on each access to the character, even if an already pooled object is accessed
-			result.$value = st.number(primitiveValue.charCodeAt(0));
+			if (firstAccess)
+				// Set the Smalltalk instance variable 'value'
+				result.$value = st.number(primitiveValue.charCodeAt(0));
 			return result;
 		}
 	});
