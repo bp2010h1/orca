@@ -128,7 +128,7 @@
 		
 		var setFormat = function (newClass) {
 			if ('format' in attrs){
-				/* hack -- the problem is, that st.number is not accessible just yet */
+				/* strage construct avoiding the function st.number, because it is not accessible just yet */
 				newClass.__defineGetter__('$format', 
 					(function (format){ 
 						return function (){ 

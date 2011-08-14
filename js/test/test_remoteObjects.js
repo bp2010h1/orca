@@ -53,7 +53,7 @@ st.klass("RemoteObjectTester", {
 			var remoteObjectClass = remoteInstance._class();
 			st.tests.assert(remoteObjectClass.isRemote());
 			var remoteObjectClassName = remoteObjectClass.name();
-			st.tests.assert(remoteObjectClassName.isRemote() === st.false, "Symbols are no RemoteObjects (yet)");
+			st.tests.assert(remoteObjectClassName.isRemote() === st.false, "Symbols are no RemoteObjects");
 			st.tests.assert(remoteObjectClassName._equals(st.string("Object")));
 		},
 		

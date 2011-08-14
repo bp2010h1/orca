@@ -43,8 +43,7 @@
 				if (this._class().isVariable() === st.false){
 					return st.Error.signal("Access to an instVar at an index out of bounds.")
 				} else {
-					// not used yet
-					debugger;
+					throw "Variable classes are not supported";
 				}
 			}
 			return this[this.instanceVariables[jsIndex]];
