@@ -1,4 +1,4 @@
-#!/bin/bash
+	#!/bin/bash
 
 function run {
    image_arg="$1"
